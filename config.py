@@ -1,0 +1,5 @@
+dbuser = "swimming_pool"
+dbpass = "SSsnjHpPjbLWK5c2"
+dbhost = "13.239.32.219"
+dbport = "3306"
+dbname = "swimming_pool"
