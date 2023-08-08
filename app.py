@@ -12,6 +12,8 @@ import bcrypt
 
 app = Flask(__name__)
 app.config.from_object(config)
+app.secret_key = 'aHn6Zb7MstRxC8vEoF2zG3B9wQjKl5YD'
+
 
 db_conn = None
 connection = None
