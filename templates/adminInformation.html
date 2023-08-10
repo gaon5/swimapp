@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+
+{% block mytitle %}
+    Self Information
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <form action="/selfInformation" method="post" onsubmit="return validateForm()">
+        <label for="title">Title :</label>
+        <select name="title" id="title" required>
+            <option value="">-----Choose a title-----</option>
+            <option value="1">Mr.</option>
+            {% for i in title_list %}
+            {% endfor %}
+        </select>
+        <label for="first_name">First name :</label>
+        <input type="text" name="first_name" id="first_name" required>
+        <label for="last_name">Last name :</label>
+        <input type="text" name="last_name" id="last_name" required>
+        <label for="email">Email :</label>
+        <input type="email" name="email" id="email" required>
+        <label for="phone_number">Phone number :</label>
+        <input type="tel" name="phone_number" id="phone_number" required>
+        <input type="hidden" id="user_id" name="user_id" value="">
+        <button type="submit">Submit</button>
+    </form>
+    {{ admin_list }}
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        const first_name = document.getElementById('first_name');
+        const last_name = document.getElementById('last_name');
+        const phone_number = document.getElementById('phone_number');
+        function validateForm(){
+            const namePattern = /^[a-zA-Z]+$/;
+            const phonePattern = /^\d{7,11}$/;
+
+
+            if (!namePattern.test(first_name.value)) {
+                alert("First name should contain only letters.");
+                return false;
+            }
+            if (!namePattern.test(last_name.value)) {
+                alert("Last name should contain only letters.");
+                return false;
+            }
+            if (!phonePattern.test(phone_number.value)) {
+                alert("Wrong phone number length.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+{% endblock %}
