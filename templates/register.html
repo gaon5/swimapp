@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h1 class="card-title text-center">Hi, friend! Welcome to Waikirikiri Swim Centre!</h1><br><br>
+                    <h4 class="card-title text-center">Join us and dive right in!</h4><br>
+                    <div class="text-center my-3">
+                        <a href="#" class="btn btn-secondary">Login</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary active">Register</a>
+                    </div>
+                    <form action="{{ url_for('register') }}" method="post" autocomplete="off">
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user"></i> Username <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Username must contain only characters and numbers."></i>
+                            </label>
+                            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock"></i> Password <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Password must contain at least 8 characters, one letter, and one number."></i>
+                            </label>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope"></i> Email <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Enter a valid email address."></i>
+                            </label>
+                            <input type="email" class="form-control" name="email" id="email" placeholder="example@example.com" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label"><i class="fas fa-user"></i> First Name</label>
+                            <input type="text" class="form-control" name="first_name" id="first_name" placeholder="John" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label"><i class="fas fa-user"></i> Last Name</label>
+                            <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Doe" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                            <input type="tel" pattern="\d{4} \d{4} \d{4}" class="form-control" name="phone_number" id="phone_number" placeholder="1234 5678 9012" required>
+                        </div>
+
+                        <div class="msg">{{ msg }}</div>
+                        <div class="d-grid gap-2">
+                            <input type="submit" class="btn btn-primary" value="Register">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Initialize tooltips -->
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+
+{% endblock %}
