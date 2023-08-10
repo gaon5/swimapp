@@ -33,6 +33,9 @@ def get_cursor():
     db_conn = connection.cursor()
     return db_conn
 
+@app.route('/')
+def home():
+    return redirect('sample')
 
 @app.route('/sample', methods=['GET', 'POST'])
 def sample():
