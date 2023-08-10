@@ -152,3 +152,4 @@ CREATE TABLE IF NOT EXISTS payment_due (
 -- Insert a root user into the user_account table
 INSERT INTO user_account (username, email, password, is_root, register_date)
     VALUES('admin', 'admin@admin.com', '$2b$12$rZ/oMfPkT9q16IWgGJ9n6.e5xynS7f9elfPmPiR.TbEBo2yTkc2Dq', 1, "2023-08-08");
+-- admin/adminpassword
