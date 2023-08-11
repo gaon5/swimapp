@@ -65,7 +65,7 @@ def login():
             if bcrypt.checkpw(user_password.encode('utf-8'), password_hash.encode('utf-8')):
                 # If the passwords match, log the user in
                 session['loggedin'] = True
-                session['id'] = account[0]
+                session['user_id'] = account[0]
                 session['username'] = account[1]
                 session['is_member'] = account[4]
                 session['is_instructor'] = account[5]
@@ -80,7 +80,7 @@ def login():
                 elif session['is_admin'] == 1:
                     return redirect(url_for('admin_dashboard'))
                 else:
-                    return redirect(url_for('sample'))
+                    return redirect(url_for('dashboard'))
             else:
                 # Add a message to prompt the use
                 return 'Incorrect password!'
@@ -96,8 +96,12 @@ def login():
 def logout():
     # Remove session data, this will log the user out
     session.pop('loggedin', None)
-    session.pop('id', None)
+    session.pop('user_id', None)
     session.pop('username', None)
+    session.pop('is_member', None)
+    session.pop('is_admin', None)
+    session.pop('is_instructor', None)
+    session.pop('is_root', None)
 
     # Add a flash message to prompt the user
     return "'You have been logged out.', 'success'"
