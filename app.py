@@ -82,7 +82,7 @@ def register():
                 user_id = cursor.fetchone()[0]
 
                 cursor.execute('INSERT INTO member (user_id, first_name, last_name, phone_number) VALUES (%s, %s, %s, %s)', (user_id, first_name, last_name, phone_number))
-                connection.commit()
+                cursor.close()
 
                 msg = 'You have successfully registered!'
 

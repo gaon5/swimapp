@@ -19,21 +19,21 @@
                         
                         <div class="mb-3">
                             <label for="username" class="form-label">
-                                <i class="fas fa-user"></i> Username <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Username must contain only characters and numbers."></i>
+                                <i class="fas fa-user"></i> Username <i class="fas fa-info-circle"  data-bs-placement="right" title="Username must contain only characters and numbers."></i>
                             </label>
                             <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label">
-                                <i class="fas fa-lock"></i> Password <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Password must contain at least 8 characters, one letter, and one number."></i>
+                                <i class="fas fa-lock"></i> Password <i class="fas fa-info-circle"  data-bs-placement="right" title="Password must contain at least 8 characters, one letter, and one number."></i>
                             </label>
                             <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label">
-                                <i class="fas fa-envelope"></i> Email <i class="fas fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Enter a valid email address."></i>
+                                <i class="fas fa-envelope"></i> Email <i class="fas fa-info-circle"  data-bs-placement="right" title="Enter a valid email address."></i>
                             </label>
                             <input type="email" class="form-control" name="email" id="email" placeholder="example@example.com" required>
                         </div>
@@ -64,12 +64,6 @@
     </div>
 </div>
 
-<!-- Initialize tooltips -->
-<script>
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-</script>
+
 
 {% endblock %}
