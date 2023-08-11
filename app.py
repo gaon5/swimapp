@@ -46,6 +46,15 @@ def sample():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    Handle user registration:
+    1. Validate POST data and ensure all necessary fields are present.
+    2. Check the database to ensure no existing accounts share the same email or username.
+    3. Validate email, password, and username formats using regex.
+    4. If everything checks out, hash the password and insert the user into the database.
+    5. Also insert the member's additional information (like first name, last name, phone number).
+    
+    """
     msg = ''
 
     if request.method == 'POST':
