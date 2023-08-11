@@ -46,6 +46,19 @@ def sample():
 # http://localhost:5000/login/ - this will be the login page, we need to use both GET and POST requests   
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    """
+    Handle user login:
+    
+    1. Check if "username" and "password" POST data exist (i.e., the form has been submitted).
+    2. Create variables for the username and password for easy access.
+    3. Check if the username exists in the database.
+    4. If the username exists, validate the hashed password against the submitted password.
+    5. If passwords match, create session data for the logged-in user.
+    6. Redirect the user to the appropriate dashboard based on their role.
+    7. If the username or password is incorrect, inform the user.
+    8. If the request is a GET request or the form hasn't been submitted, show the login form.
+
+    """
    
     # Check if "username" and "password" POST requests exist (user submitted form)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
@@ -94,6 +107,13 @@ def login():
 
 @app.route('/logout')
 def logout():
+
+    """
+    Handle user logout:
+    
+    1. Remove user-specific data from the session to log the user out.
+    2. Redirect or inform the user that they have successfully logged out.
+    """
     # Remove session data, this will log the user out
     session.pop('loggedin', None)
     session.pop('user_id', None)
