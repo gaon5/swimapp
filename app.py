@@ -49,16 +49,16 @@ def sample():
 @app.route('/view_class')
 def view_class():
     sql_data = get_cursor()
-    sql = """SELECT class_date, start_time FROM class_list WHERE is_individual=0"""
+    sql = """SELECT class_id, class_name, class_date, start_time FROM class_list WHERE is_individual=0"""
     sql_data.execute(sql)
     sql_list = sql_data.fetchall()
     class_list = []
     # Check the weekday number of each date and append them.
     for item in sql_list:
         temp_list = list(item) # Convert tuple into list
-        weekday_number = item[0].weekday() + 1
-        time = str(item[1]) # Convert time into string
-        temp_list[1] = time[:-3] # Remove seconds from the time and replace timedelta with string
+        weekday_number = item[2].weekday() + 1
+        time = str(item[3]) # Convert time into string
+        temp_list[3] = time[:-3] # Remove seconds from the time and replace timedelta with string
         temp_list.append(weekday_number)
         class_list.append(temp_list)
     # Create time_list and row_list to display time and slots for the timetables
@@ -73,11 +73,23 @@ def view_class():
     # Compare class_list with time_list. Change the empty value as the "class" if there is a class at that time
     for item in class_list:
         for row in row_list:
-            if item[1] == row[0]:
-                row[item[-1]] = "class"
+            if item[3] == row[0]:
+                row[item[-1]] = {item[0]:item[1]}
     sql_data.close()
     return render_template('view_class.html', class_list=class_list, row_list=row_list)
 
+# Function to display details of a class
+@app.route('/display_class/<class_id>')
+def displayclass(class_id):
+    sample_value = class_id
+    sql_data = get_cursor()
+    sql = """SELECT class_id, class_name, class_date, start_time, end_time, class_list.detailed_information, book_number, first_name, last_name, pool.pool_name  FROM swimming_pool.class_list INNER JOIN instructor ON class_list.instructor_id=instructor.instructor_id INNER JOIN pool ON class_list.pool_id=pool.pool_id WHERE class_id=%s;"""
+    sql_value = (sample_value,)
+    sql_data.execute(sql, sql_value)
+    detail_list = sql_data.fetchone()
+    sql_data.close()
+    print(detail_list)
+    return render_template('display_class.html', detail_list=detail_list)
 
 if __name__ == '__main__':
     app.run(debug=True)

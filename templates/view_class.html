@@ -11,8 +11,9 @@
 
 <!--Opening hours: 6:00 - 21:00 during weekdays, 8:00 - 18:00 during weekends-->
 {% block body %}
+<div class="view_class">
     <H1>Timetable of Aqua Aerobic Classes</H1>
-    <br></wbr>
+    <br></br>
     <table class="table table-bordered">
         <tr>
             <th class="table-dark">Time/Days</th>
@@ -27,11 +28,20 @@
         {% for row in row_list %}
             <tr>
             {% for entry in row %}
-                <td>{{ entry }}</td>
+                {% if entry == '' %}
+                    <td>{{ entry }}</td>
+                {% elif entry == row[0] %}
+                    <td>{{ entry }}</td>
+                {% else %}
+                    {% for key in entry%}
+                        <td><a href="/display_class/{{key}}">{{ entry[key] }}</a></td>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
             </tr>
         {% endfor %}
-    </table> 
+    </table>
+</div> 
 {% endblock %}
 
 {% block myjs %}
