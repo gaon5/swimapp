@@ -83,7 +83,7 @@ def admin_change_information():
                     else:
                         sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
             else:
-                msg = "no modification"
+                msg = "No modification"
         sql = """SELECT a.user_id,a.title_id,a.first_name,a.last_name,a.phone_number,u.email FROM `admin` AS a
                     LEFT JOIN `user_account` AS u ON a.user_id=u.user_id
                     WHERE a.user_id=%s;"""
