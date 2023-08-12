@@ -6,12 +6,19 @@
 {% endblock %}
 
 {% block mycss %}
-
+    <style>
+        .msg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: red
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
     <div class="container" style="max-width: 800px">
-        <h5>{{ msg }}</h5>
+        <h5 class="msg py-3">{{ msg }}</h5>
         <form action="/instructor_change_information" class="row" method="post" onsubmit="return validateForm()">
             <div class="col-md-6">
                 <div class="input-group mb-3">
