@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+
+{% block mytitle %}
+    View aqua aerobic class timetable
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+<!--Opening hours: 6:00 - 21:00 during weekdays, 8:00 - 18:00 during weekends-->
+{% block body %}
+    <H1>Timetable of Aqua Aerobic Classes</H1>
+    <br></wbr>
+    <table class="table table-bordered">
+        <tr>
+            <th class="table-dark">Time/Days</th>
+            <th class="table-dark">Monday</th>
+            <th class="table-dark">Tuesday</th>
+            <th class="table-dark">Wednesday</th>
+            <th class="table-dark">Thursday</th>
+            <th class="table-dark">Friday</th>
+            <th class="table-dark">Saturday</th>
+            <th class="table-dark">Sunday</th>
+        </tr>
+        {% for row in row_list %}
+            <tr>
+            {% for entry in row %}
+                <td>{{ entry }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+    </table> 
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}
