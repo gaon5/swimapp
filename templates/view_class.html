@@ -12,18 +12,18 @@
 <!--Opening hours: 6:00 - 21:00 during weekdays, 8:00 - 18:00 during weekends-->
 {% block body %}
 <div class="view_class">
-    <H1>Timetable of Aqua Aerobic Classes</H1>
-    <br></br>
+    <H1>Timetable of Aqua Aerobic Classes ({{ date_list[0] }} - {{ date_list[-1] }})</H1>
+    <br>
     <table class="table table-bordered">
         <tr>
-            <th class="table-dark">Time/Days</th>
-            <th class="table-dark">Monday</th>
-            <th class="table-dark">Tuesday</th>
-            <th class="table-dark">Wednesday</th>
-            <th class="table-dark">Thursday</th>
-            <th class="table-dark">Friday</th>
-            <th class="table-dark">Saturday</th>
-            <th class="table-dark">Sunday</th>
+            <th class="table-dark">Time/Day</th>
+            <th class="table-dark">Monday ({{ date_list[0] }})</th>
+            <th class="table-dark">Tuesday ({{ date_list[1] }})</th>
+            <th class="table-dark">Wednesday ({{ date_list[2] }})</th>
+            <th class="table-dark">Thursday ({{ date_list[3] }})</th>
+            <th class="table-dark">Friday ({{ date_list[4] }})</th>
+            <th class="table-dark">Saturday ({{ date_list[5] }})</th>
+            <th class="table-dark">Sunday ({{ date_list[6] }})</th>
         </tr>
         {% for row in row_list %}
             <tr>

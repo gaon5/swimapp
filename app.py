@@ -1,5 +1,5 @@
 from flask import Flask, url_for, request, redirect, render_template, session
-from datetime import datetime
+from datetime import date, datetime, timedelta
 import mysql.connector
 import config
 import math
@@ -48,10 +48,20 @@ def sample():
 # Function to display aqua aerobics class timetable
 @app.route('/view_class')
 def view_class():
+    # Generate a list of dates for the week
+    start_date = date(2023,8,7)
+    end_date = date(2023,8,13)
+    delta = timedelta(days=1)
     sql_data = get_cursor()
-    sql = """SELECT class_id, class_name, class_date, start_time FROM class_list WHERE is_individual=0"""
-    sql_data.execute(sql)
+    # Select data of every aqua aerobic class within a week
+    sql = """SELECT class_id, class_name, class_date, start_time FROM class_list WHERE (is_individual=0) AND (class_date BETWEEN %s AND %s);"""
+    sql_value = (start_date,end_date)
+    sql_data.execute(sql,sql_value)
     sql_list = sql_data.fetchall()
+    date_list = []
+    while start_date <= end_date:
+        date_list.append(start_date.isoformat()[5:])
+        start_date += delta
     class_list = []
     # Check the weekday number of each date and append them.
     for item in sql_list:
@@ -70,13 +80,13 @@ def view_class():
         for i in range(7):
             temp_list.append('')
         row_list.append(temp_list)
-    # Compare class_list with time_list. Change the empty value as the "class" if there is a class at that time
+    # Compare class_list with time_list. Change the empty value to a dictionary of class_id (key) and class_name (value) if there is a class at that time
     for item in class_list:
         for row in row_list:
             if item[3] == row[0]:
                 row[item[-1]] = {item[0]:item[1]}
     sql_data.close()
-    return render_template('view_class.html', class_list=class_list, row_list=row_list)
+    return render_template('view_class.html', class_list=class_list, date_list=date_list, row_list=row_list)
 
 # Function to display details of a class
 @app.route('/display_class/<class_id>')
@@ -88,7 +98,6 @@ def displayclass(class_id):
     sql_data.execute(sql, sql_value)
     detail_list = sql_data.fetchone()
     sql_data.close()
-    print(detail_list)
     return render_template('display_class.html', detail_list=detail_list)
 
 if __name__ == '__main__':
