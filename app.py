@@ -62,7 +62,6 @@ def profiles():
 
         if result[4]:
             role = "member"
-<<<<<<< Updated upstream
             profile_detail_sql = """SELECT member.member_id,member.user_id,member.first_name,member.last_name,member.phone_number,
                                     member.detailed_information,member.street_name,member.birth_date,member.health_information,
                                     title.title,city.city,region.region 
@@ -102,43 +101,6 @@ def profiles():
             role = "root"
     
         return render_template("profile.html", role = role, profile_details = profile_details,title = title,)
-
-=======
-            profile_detail_sql = """SELECT m.member_id,m.user_id,m.first_name,m.last_name,m.phone_number,
-                                    m.detailed_information,m.street_name,m.birth_date,m.health_information,t.title,c.city,r.region
-                                    from member
-                                    inner join title on member.title_id = title.title_id
-                                    inner join city on member.city_id = city.city_id
-                                    inner join region on member.region_id = region.region_id
-                                    WHERE user_id = %s;"""
-            sql_data.execute(profile_detail_sql,user_id)
-            profile_details = sql_data.fetchone()
-        
-        elif result[5]:
-            role = "instructor"
-            profile_detail_sql = """SELECT i.instructor_id,i.user_id,i.first_name,i.last_name,i.phone_number, 
-                                    i.detailed_information, t.title
-                                    from instructor
-                                    inner join title on instructor.title_id = title.title_id 
-                                    WHERE user_id = %s;"""
-            sql_data.execute(profile_detail_sql,user_id)
-            profile_details = sql_data.fetchone()
-            
-        elif result[6]:
-            role = "admin"
-            profile_detail_sql = """SELECT a.admin_id,a.user_id,a.first_name,a.last_name,a.phone_number,t.title 
-                                     from admin 
-                                     inner join title on instructor.title_id = title.title_id 
-                                     WHERE user_id = %s;"""
-            sql_data.execute(profile_detail_sql,user_id)
-            profile_details = sql_data.fetchone()
-            
-        elif result[7]:
-            role = "root"
-    
-        return render_template("profile.html", 
-                               role = role, profile_details = profile_details)
->>>>>>> Stashed changes
     else:
         return "Please Log In"
 
