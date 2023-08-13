@@ -102,9 +102,10 @@ def instructor_change_information():
 def admin_change_information():
     def check_change(old, new):
         for i in range(len(new)):
-            if old[i+1] != new[i]:
+            if old[i + 1] != new[i]:
                 return True
         return False
+
     # if 'loggedIn' in session:
     if 1:
         # user_id = session["user_id"]
