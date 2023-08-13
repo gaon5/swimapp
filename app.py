@@ -47,7 +47,6 @@ def home():
     return render_template("base.html")
 
 
-
 @app.route('/profile', methods=['GET'])
 def profiles():
     if "loggedin" in session:
