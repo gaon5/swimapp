@@ -16,9 +16,36 @@
                   <span class="navbar-brand mb-0 h1" id="navtitle">Waikirikiri Swim centre</span>
                 </div>
             <div class="navright">
-                <a id="nav" href="#"><i class="fas fa-home"></i>Home</a>
-                <a id="nav" href="#"><i class="fas fa-users"></i>Log In</a>	
-                <a id="nav" href="#"><i class="fas fa-user-circle"></i> Register</a>
+                <a id="nav" href="#"></i>Home</a>
+                <a id="nav" href="#"></i>Log In</a>	
+                <a id="nav" href="#"></i> Register</a>
+                {% if user == 'member' %}
+                <a id="nav" href="{{ url_for('') }}"></i>Member Profile</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Swim Instructor</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Timetable</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Subscription</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Logout</a>
+            {% elif user == 'instructor' %}
+                <a id="nav" href="{{ url_for('') }}"></i> Instructor Profile</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Trainee Profile</a>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Schedule
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a id="nav" href="{{ url_for('') }}">>Aqua Aerobics</a>
+                      <a id="nav" href="{{ url_for('') }}">>Swimming Lessons</a>
+                    </div>
+                </div>
+                <a id="nav" href="{{ url_for('') }}"></i>Logout</a>
+            {% elif user == 'admin' %}
+                <a id="nav" href="{{ url_for('') }}"></i>Manager Profile</a>
+                <a id="nav" href="{{ url_for('') }}"></i> Member List</a>
+                <a id="nav" href="{{ url_for('') }}"></i> Attendance List</a>
+                <a id="nav" href="{{ url_for('') }}"></i> Instructors' Schedule</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Financial Report</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Logout</a>
+            {% endif %}
             </div>    
         </div>
     </nav>

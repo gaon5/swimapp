@@ -1,14 +1,7 @@
-{% extends "base.html" %}
+{% extends "layout.html" %}
 
+{% block title %}Home{% endblock %}
 
-{% block title %}
-    Index
-{% endblock %}
-
-{% block css_js %}
-
-{% endblock %}
-
-{% block body %}
-    <H1>This is Index</H1>
+{% block content %}
+<p>Welcome back, {{ username }}!</p>
 {% endblock %}
