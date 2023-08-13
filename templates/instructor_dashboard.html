@@ -16,6 +16,7 @@
                   <span class="navbar-brand mb-0 h1" id="navtitle">Waikirikiri Swim centre</span>
                 </div>
             <div class="navright">
+                <a id="nav" href="{{ url_for('instructor') }}"></i>Home</a>
                 <a id="nav" href="{{ url_for('') }}"></i> Instructor Profile</a>
                 <a id="nav" href="{{ url_for('') }}"></i>Trainee Profile</a>
                 <div class="dropdown">
@@ -27,7 +28,6 @@
                       <a id="nav" href="{{ url_for('') }}">>Swimming Lessons</a>
                     </div>
                 </div>
-                <a id="nav" href="{{ url_for('') }}"></i>Home</a>
                 <a id="nav" href="{{ url_for('') }}"></i>Log In</a>	
                 <a id="nav" href="{{ url_for('') }}"></i> Register</a>
                 <a id="nav" href="{{ url_for('') }}"></i>Logout</a>
@@ -37,7 +37,7 @@
     {% block content %}
     <p>Welcome back, {{ username }}!</p>
     {% endblock %}
-    
+
     {% block myjs %}{% endblock %}
     <div class="footer-clean">
         <footer>

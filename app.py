@@ -37,9 +37,19 @@ def welcome():
     sql_data.execute(sql, sql_value)
     sample_list = sql_data.fetchall()
     sql_data.close()
+    return render_template('welcome_page.html', sample_list=sample_list)
 
-    return render_template('welcomepage.html', sample_list=sample_list)
+@app.route('/admin')
+def admin():
+    return render_template('admin_dashboard.html')
 
+@app.route('/member')
+def member():
+    return render_template('member_dashboard.html')
+
+@app.route('instructor')
+def instructor():
+    return render_template('instructor_dashboard.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
