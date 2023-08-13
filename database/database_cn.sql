@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS class_list (
     end_time TIME, -- 课程的结束时间
     detailed_information TEXT, -- 课程的详细信息
     is_individual TINYINT(1), -- 标志课程是否为个别课程
+    maximum_number INT, -- 课程最大人数
     FOREIGN KEY (instructor_id) REFERENCES instructor(instructor_id), -- 建立外键关系
     FOREIGN KEY (pool_id) REFERENCES pool(pool_id) -- 建立外键关系
 );

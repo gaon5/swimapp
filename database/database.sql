@@ -79,7 +79,6 @@ CREATE TABLE IF NOT EXISTS member (
     birth_date DATE, -- Member's birth date
     health_information TEXT, -- Information about member's health
     state TINYINT(1), -- Member's state/status
-    maximum_number INT, -- Maximum number of people
     FOREIGN KEY (user_id) REFERENCES user_account(user_id), -- Establishing a foreign key relationship
     FOREIGN KEY (title_id) REFERENCES title(title_id), -- Establishing a foreign key relationship
     FOREIGN KEY (city_id) REFERENCES city(city_id), -- Establishing a foreign key relationship
@@ -112,6 +111,7 @@ CREATE TABLE IF NOT EXISTS class_list (
     end_time TIME, -- End time of the class
     detailed_information TEXT, -- Additional detailed information about the class
     is_individual TINYINT(1), -- Flag indicating if the class is individual
+    maximum_number INT, -- Maximum number of people
     FOREIGN KEY (instructor_id) REFERENCES instructor(instructor_id), -- Establishing a foreign key relationship
     FOREIGN KEY (pool_id) REFERENCES pool(pool_id) -- Establishing a foreign key relationship
 );
