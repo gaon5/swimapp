@@ -173,6 +173,5 @@ def member_details():
                                phone_number = phone_number, role = "member")
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)
