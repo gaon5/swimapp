@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Sample
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+<h2 class="content">Profile Page</h2>
+<h5 class="content">Your account details are below:</h5>
+<br>
+<form style="margin-left: 20px;">
+                  <fieldset>
+                    {% if role == "member" %}
+                    <label for="member_id" class="form-label">Member ID:</label><br>
+                    <input type="number" class="form-control" id="member_id" placeholder="{{member_id}}" size="50" readonly><br>
+                    {% endif %}
+                  </fieldset>
+                  <fieldset>
+                    {% if role == "instructor" %}
+                    <label for="instructor_id" class="form-label">Instructor ID:</label><br>
+                    <input type="number" class="form-control" id="member_id" placeholder="{{instructor_id}}" size="50" readonly><br>
+                    {% endif %}
+                  </fieldset>
+                  <fieldset>
+                    {% if role == "admin" %}
+                    <label for="instructor_id" class="form-label">Admin ID:</label><br>
+                    <input type="number" class="form-control" id="member_id" placeholder="{{admin_id}}" size="50" readonly><br>
+                    {% endif %}
+                  </fieldset>
+                  <br>
+
+                  <fieldset>
+                    <label for="title" class="form-label">Title:</label><br>
+                    <input type="text" class="form-control" id="title" placeholder="{{title}}" size="50" readonly><br>
+                  </fieldset>
+                  <br>
+
+                  <fieldset>
+                    <label for="first_name" class="form-label">First Name:</label><br>
+                    <input type="text" class="form-control" id="first_name" placeholder="{{first_name}}" size="50" readonly><br>
+                  </fieldset>
+                  <br>
+
+                  <fieldset>
+                    <label for="last_name" class="form-label">Last Name:</label><br>
+                    <input type="text" class="form-control" id="last_name" placeholder="{{last_name}}" size="50" readonly><br>
+                  </fieldset>
+                  <br>
+
+                  <fieldset>
+                    <label for="Phone" class="form-label">Phone Number:</label><br>
+                    <input type="text" class="form-control" id="Phone" placeholder="{{phone_number}}" size="50" readonly><br>
+                  </fieldset>
+              
+</form>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}

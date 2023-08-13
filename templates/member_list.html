@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Sample
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+<body style="margin-left: 20px;">
+    <h2 class="content">Members</h2>
+    
+    {% if role == "Admin" %}
+    <table>
+        <tr>
+          <th >Member ID</th>
+          <th >Title</th>
+          <th >First Name</th>
+          <th >Last Name</th>
+          <th >Phone Number</th>
+          <th >Detailed Information</th>
+        </tr>
+        {% for member in member_list_result %}
+            <tr>
+                <td ><a href="{{ url_for('member_details', UserID = member_list_result['user_id'] )}}">{{ member_list_result['member_id'] }}</a></td>
+                <td >{{ title }}</td>
+                <td >{{ member_list_result['first_name']  }}</td>
+                <td >{{ member_list_result['last_name'] }}</td>
+                <td >{{ member_list_result['phone_number'] }}</td>
+                <td >{{ member_list_result['detailed_information'] }}</td>
+            </tr>
+            {% endfor %}
+      </table>
+    {% endif %}
+
+    <!-- <a href="/home" class="back-button">Back to Home</a> -->
+    
+</body>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}
