@@ -1,11 +1,15 @@
+html {
+  height: 100%;
+}
+
 body {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: auto;
-  }
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.layout-main {
+  flex-grow: 1;
+}
 
 .footer-clean {
     margin-top: auto;
@@ -14,6 +18,7 @@ body {
     height: 25%;
     background-color:#219fe8ad;
     position: relative;
+
   }
   
   .footer-clean h6 {

@@ -47,7 +47,7 @@ def admin():
 def member():
     return render_template('member_dashboard.html')
 
-@app.route('instructor')
+@app.route('/instructor')
 def instructor():
     return render_template('instructor_dashboard.html')
 
