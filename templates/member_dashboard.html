@@ -16,14 +16,21 @@
                   <span class="navbar-brand mb-0 h1" id="navtitle">Waikirikiri Swim centre</span>
                 </div>
             <div class="navright">
-                <a id="nav" href="#"></i>Home</a>
-                <a id="nav" href="#"></i>Log In</a>	
-                <a id="nav" href="#"></i> Register</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Home</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Member Profile</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Swim Instructor</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Timetable</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Subscription</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Log In</a>	
+                <a id="nav" href="{{ url_for('') }}"></i> Register</a>
+                <a id="nav" href="{{ url_for('') }}"></i>Log Out</a>	
             </div>    
         </div>
     </nav>
-    {% block body %}{% endblock %}
-
+    {% block content %}
+    <p>Welcome back, {{ username }}!</p>
+    {% endblock %}
+    
     {% block myjs %}{% endblock %}
     <div class="footer-clean">
         <footer>
