@@ -5,10 +5,7 @@ import config
 import math
 import bcrypt
 
-
-
 # When you gonna start, pip install -r requirements.txt
-
 
 app = Flask(__name__)
 app.config.from_object(config)
