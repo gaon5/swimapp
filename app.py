@@ -127,42 +127,62 @@ def logout():
     # Add a flash message to prompt the user
     return "'You have been logged out.', 'success'"
 
-   
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """Handle user registration."""
+    """
+    Handle user registration.
+    1. Setup: Establishes the /register route for GET and POST requests.
+    2. Feedback Init: Initializes an empty feedback message with msg = ''.
+    3. GET Handling: On GET, retrieves titles, cities, and regions; returns the registration form.
+    4. POST Handling: On POST, extracts and processes submitted form data.
+    5. Validation: Checks for duplicate accounts, validates email, password, username, and birth date formats.
+    6. Data Storage: If valid, hashes password, stores user data in the database, retrieves the user's ID, and saves detailed info.
+    7. Feedback Setup: Sets a feedback message based on the registration outcome.
+    8. Response: Renders the register.html template with the feedback message.
+    
+    """
 
+    # Initial message to display to the user
     msg = ''
 
+    # If the HTTP request is GET (i.e., the user is accessing the registration page)
     if request.method == 'GET':
         with get_cursor() as cursor:
+            # Fetch available titles from the database
             cursor.execute('SELECT * FROM title')
             titles = cursor.fetchall()
 
+            # Fetch available cities from the database
             cursor.execute('SELECT * FROM city')
             cities = cursor.fetchall()
-            
+
+            # Fetch available regions from the database
             cursor.execute('SELECT * FROM region')
             regions = cursor.fetchall()
 
+        # Return the registration template with available titles, cities, and regions
         return render_template('register.html', msg=msg, titles=titles, cities=cities, regions=regions)
 
+    # If the HTTP request is POST (i.e., the user is submitting the registration form)
     if request.method == 'POST':
+        # Define the required and optional fields for registration
         required_fields = [
             'username', 'password', 'email', 'title_id', 'first_name', 'last_name', 
             'phone_number', 'city_id', 'region_id', 'street_name', 'birth_date'
         ]
         optional_fields = ['detailed_information', 'health_information']
 
-        # Ensure all necessary fields are present
+        # Ensure all necessary fields are present in the submitted form
         if not all(request.form.get(field) for field in required_fields):
             msg = "Please fill out all required fields!"
             return render_template('register.html', msg=msg)
 
+        # Extract form values
         values = {field: request.form[field] for field in required_fields}
         for field in optional_fields:
             values[field] = request.form.get(field, None)
 
+        # Process basic details
         username = values['username'].capitalize()
         password = values['password']
         email = values['email']
@@ -170,15 +190,18 @@ def register():
         last_name = values['last_name'].capitalize()
 
         with get_cursor() as cursor:
+            # Check if provided email or username already exists in the database
             cursor.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username))
             existing_data = cursor.fetchone()
 
+            # If there's a match, notify the user
             if existing_data:
                 existing_email, existing_username = existing_data
                 if existing_email == email:
                     msg = 'An account with this email already exists!'
                 if existing_username == username:
                     msg += ' An account with this username already exists!'
+            # Validation for email, password, username, name format, and birthdate
             elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
                 msg = 'Invalid email address!'
             elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
@@ -195,18 +218,27 @@ def register():
                 if input_date > datetime.today().date():
                     msg = 'Please provide a valid birth date. The date cannot be in the future.'
                 else:
-                    # Calculate the date in Python
+                    # Generate password hash and get current registration date
                     register_date = datetime.today().date()
                     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+                    # Insert the user's basic details into user_account
                     cursor.execute('INSERT INTO user_account (username, password, email, is_member, register_date) VALUES (%s, %s, %s, 1, %s )', (username, hashed, email, register_date))
+
+                    # Get the generated user_id for the above insert
                     cursor.execute('SELECT user_id from user_account WHERE username = %s', (username,))
                     user_id = cursor.fetchone()[0]
+
+                    # Insert the user's detailed information into the member table
                     cursor.execute('INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, detailed_information, city_id, region_id, street_name, birth_date, health_information, state) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                ( user_id, values['title_id'], values['first_name'], values['last_name'],
+                ( user_id, values['title_id'], first_name, last_name,
                 values['phone_number'], values['detailed_information'], values['city_id'], 
                 values['region_id'], values['street_name'], values['birth_date'], values['health_information'], 1))
+
+                    # Notify the user of successful registration
                     msg = 'You have successfully registered!'
 
+        # Return the registration template with the appropriate message
         return render_template('register.html', msg=msg)
 
 
