@@ -13,25 +13,37 @@
 <body style="margin-left: 20px;">
     <h2 class="content">Members</h2>
     
-    {% if role == "Admin" %}
-    <table>
-        <tr>
+    {% if role == "admin" %}
+    <table class="table table-bordered table-light">
+        <tr class="table-dark">
           <th >Member ID</th>
           <th >Title</th>
           <th >First Name</th>
           <th >Last Name</th>
           <th >Phone Number</th>
           <th >Detailed Information</th>
+          <th >Birth Date</th>
+          <th >Region</th>
+          <th >City</th>
+          <th >Street Address</th>
+          <th >Health Information</th>
+          <th >Edit</th>
         </tr>
         
         {% for member in member_list_result %}
             <tr>
-                <td ><a href="{{ url_for('member_details', UserID = member_list_result['user_id'] )}}">{{ member_list_result['member_id'] }}</a></td>
-                <td >{{ title }}</td>
-                <td >{{ member_list_result['first_name']  }}</td>
-                <td >{{ member_list_result['last_name'] }}</td>
-                <td >{{ member_list_result['phone_number'] }}</td>
-                <td >{{ member_list_result['detailed_information'] }}</td>
+                <td >{{ member[0] }}</td>
+                <td >{{ member[9] }}</td>
+                <td >{{ member[2]  }}</td>
+                <td >{{ member[3] }}</td>
+                <td >{{ member[4] }}</td>
+                <td >{{ member[5] }}</td>
+                <td >{{ member[7] }}</td>
+                <td >{{ member[11] }}</td>
+                <td >{{ member[10] }}</td>
+                <td >{{ member[6] }}</td>
+                <td >{{ member[8] }}</td>
+                <td ><a href="{{ url_for('profiles', user_id = member[1] )}}">Edit</a></td>
             </tr>
             {% endfor %}
       </table>

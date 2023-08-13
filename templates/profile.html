@@ -17,21 +17,21 @@
                   <fieldset>
                     {% if role == "member" %}
                     <label for="member_id" class="form-label">Member ID:</label><br>
-                    <input type="number" class="form-control" id="member_id" placeholder="{{member_id}}" size="50" readonly><br>
+                    <input type="number" class="form-control" id="member_id" placeholder="{{profile_details[0]}}" size="50" readonly><br>
                     {% endif %}
                   </fieldset>
 
                   <fieldset>
                     {% if role == "instructor" %}
                     <label for="instructor_id" class="form-label">Instructor ID:</label><br>
-                    <input type="number" class="form-control" id="member_id" placeholder="{{instructor_id}}" size="50" readonly><br>
+                    <input type="number" class="form-control" id="member_id" placeholder="{{profile_details[0]}}" size="50" readonly><br>
                     {% endif %}
                   </fieldset>
                   
                   <fieldset>
                     {% if role == "admin" %}
                     <label for="instructor_id" class="form-label">Admin ID:</label><br>
-                    <input type="number" class="form-control" id="member_id" placeholder="{{admin_id}}" size="50" readonly><br>
+                    <input type="number" class="form-control" id="member_id" placeholder="{{profile_details[0]}}" size="50" readonly><br>
                     {% endif %}
                   </fieldset>
                   <br>
@@ -44,19 +44,67 @@
 
                   <fieldset>
                     <label for="first_name" class="form-label">First Name:</label><br>
-                    <input type="text" class="form-control" id="first_name" placeholder="{{first_name}}" size="50" readonly><br>
+                    <input type="text" class="form-control" id="first_name" placeholder="{{profile_details[2]}}" size="50" readonly><br>
                   </fieldset>
                   <br>
 
                   <fieldset>
                     <label for="last_name" class="form-label">Last Name:</label><br>
-                    <input type="text" class="form-control" id="last_name" placeholder="{{last_name}}" size="50" readonly><br>
+                    <input type="text" class="form-control" id="last_name" placeholder="{{profile_details[3]}}" size="50" readonly><br>
                   </fieldset>
                   <br>
 
                   <fieldset>
                     <label for="Phone" class="form-label">Phone Number:</label><br>
-                    <input type="text" class="form-control" id="Phone" placeholder="{{phone_number}}" size="50" readonly><br>
+                    <input type="text" class="form-control" id="Phone" placeholder="{{profile_details[4]}}" size="50" readonly><br>
+                  </fieldset>
+
+                  <fieldset>
+                    {% if role == "member" %}
+                    <label for="details" class="form-label">Detailed Information:</label><br>
+                    <input type="text" class="form-control" id="details" placeholder="{{profile_details[5]}}" size="50" readonly><br>
+                    <br>
+                    {% endif %}
+                  </fieldset>
+
+                  <fieldset>
+                    {% if role == "member" %}
+                    <label for="Birthday" class="form-label">Birthday:</label><br>
+                    <input type="datetime" class="form-control" id="Birthday" placeholder="{{profile_details[7]}}" size="50" readonly><br>
+                    <br>
+                    {% endif %}
+                  </fieldset>
+
+                  <fieldset>
+                    {% if role == "member" %}
+                    <label for="health_info" class="form-label">Health Information:</label><br>
+                    <input type="text" class="form-control" id="health_info" placeholder="{{profile_details[8]}}" size="50" readonly><br>
+                    <br>
+                    {% endif %}
+                  </fieldset>
+
+                  <fieldset>
+                    {% if role == "member" %}
+                    <label for="city" class="form-label">City:</label><br>
+                    <input type="text" class="form-control" id="city" placeholder="{{profile_details[10]}}" size="50" readonly><br>
+                    <br>
+                    {% endif %}
+                  </fieldset>
+
+                  <fieldset>
+                    {% if role == "member" %}
+                    <label for="region" class="form-label">Region:</label><br>
+                    <input type="text" class="form-control" id="region" placeholder="{{profile_details[11]}}" size="50" readonly><br>
+                    <br>
+                    {% endif %}
+                  </fieldset>
+
+                  <fieldset>
+                    {% if role == "member" %}
+                    <label for="street" class="form-label">Street:</label><br>
+                    <input type="text" class="form-control" id="street" placeholder="{{profile_details[6]}}" size="50" readonly><br>
+                    <br>
+                    {% endif %}
                   </fieldset>
               
 </form>
