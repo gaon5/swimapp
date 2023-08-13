@@ -43,8 +43,8 @@
                     <label for="title" class="input-group-text">Title :</label>
                     <select name="title" class="form-select" id="title" disabled required>
                         <option value="" disabled>---Choose a title---</option>
-                        <option value="1">Mr.</option>
                         {% for i in title_list %}
+                            <option value={{ i[0] }}>{{ i[1] }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -69,10 +69,10 @@
             <div class="col-md-6">
                 <div class="input-group mb-3">
                     <label for="city" class="input-group-text">City :</label>
-                    <select name="city" class="form-select" id="city" disabled required>
+                    <select name="city" class="form-select" id="city"  onchange="update_city()" disabled required>
                         <option value="" disabled>---Choose a city---</option>
-                        <option value="1">Northland</option>
                         {% for i in city_list %}
+                            <option value={{ i[0] }}>{{ i[1] }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -82,9 +82,6 @@
                     <label for="region" class="input-group-text">Region :</label>
                     <select name="region" class="form-select" id="region" disabled required>
                         <option value="" disabled>---Choose a region---</option>
-                        <option value="1">Dargaville</option>
-                        {% for i in region_list %}
-                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -101,7 +98,7 @@
             </div>
             <input type="hidden" id="user_id" name="user_id" value="{{ member_detail[0] }}">
             <button type="button" id="Change" class="btn btn-info my-1" onclick="Change_form()">Change</button>
-            <button type="button" id="Cancel" class="btn btn-danger my-1" onclick="Cancel_form()" style="display: none">Cancel</button>
+            <button type="reset" id="Cancel" class="btn btn-danger my-1" onclick="Cancel_form()" style="display: none">Cancel</button>
             <button type="submit" id="Submit" class="btn btn-outline-primary my-1" disabled>Submit</button>
         </form>
     </div>
@@ -109,9 +106,20 @@
 
 {% block myjs %}
     <script>
+        const region_list = JSON.parse('{{ region_list|tojson }}');
         document.getElementById('title').value = {{ member_detail[1] }}
-        document.getElementById('city').value = {{ member_detail[6] }}
-        document.getElementById('region').value = {{ member_detail[7] }}
+        const city = document.getElementById('city')
+        const region = document.getElementById('region')
+        city.value = {{ member_detail[6] }}
+        for (const i in region_list) {
+            if (String(region_list[i][1]) === city.value){
+                const option = document.createElement('option');
+                option.value = region_list[i][0];
+                option.text = region_list[i][2];
+                region.appendChild(option);
+            }
+        }
+        region.value = {{ member_detail[7] }}
 
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');
@@ -145,6 +153,18 @@
             Submit.classList.add("btn-outline-primary")
         }
 
+        function update_city(){
+            region.innerHTML = '<option value="" disabled>---Choose a region---</option>';
+            for (const i in region_list) {
+                if (String(region_list[i][1]) === city.value){
+                    const option = document.createElement('option');
+                    option.value = region_list[i][0];
+                    option.text = region_list[i][2];
+                    region.appendChild(option);
+                }
+            }
+        }
+
         function validateForm() {
             const first_name = document.getElementById('first_name');
             const namePattern = /^[a-zA-Z]+$/;
@@ -174,7 +194,6 @@
                 phone_number.classList.remove("is-invalid")
             }
             return i !== 1;
-
         }
     </script>
 {% endblock %}

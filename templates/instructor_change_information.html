@@ -49,8 +49,8 @@
                     <label for="title" class="input-group-text">Title :</label>
                     <select name="title" class="form-select" id="title" disabled required>
                         <option value="" disabled>---Choose a title---</option>
-                        <option value="1">Mr.</option>
                         {% for i in title_list %}
+                            <option value={{ i[0] }}>{{ i[1] }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -62,7 +62,7 @@
             </div>
             <input type="hidden" id="user_id" name="user_id" value="{{ instructor_detail[0] }}">
             <button type="button" id="Change" class="btn btn-info my-1" onclick="Change_form()">Change</button>
-            <button type="button" id="Cancel" class="btn btn-danger my-1" onclick="Cancel_form()" style="display: none">Cancel</button>
+            <button type="reset" id="Cancel" class="btn btn-danger my-1" onclick="Cancel_form()" style="display: none">Cancel</button>
             <button type="submit" id="Submit" class="btn btn-outline-primary my-1" disabled>Submit</button>
         </form>
     </div>
@@ -133,7 +133,6 @@
                 phone_number.classList.remove("is-invalid")
             }
             return i !== 1;
-
         }
     </script>
 {% endblock %}

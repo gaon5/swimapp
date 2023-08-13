@@ -28,8 +28,22 @@ def get_cursor():
     return db_conn
 
 
+first_select = get_cursor()
+first_select.execute("""SELECT * FROM `city`;""")
+city_list = first_select.fetchall()
+first_select.execute("""SELECT * FROM `title`;""")
+title_list = first_select.fetchall()
+first_select.execute("""SELECT * FROM `region`;""")
+region_list = first_select.fetchall()
+first_select.close()
+
+
 @app.route('/sample', methods=['GET', 'POST'])
 def sample():
+    """
+    Just a page to test database connection is successful
+    :return: sample.html
+    """
     sample_value = 1
     sql_data = get_cursor()
     sql = """SELECT * FROM sample_database WHERE sample_id=%s;"""
@@ -43,6 +57,11 @@ def sample():
 
 @app.route('/instructor_change_information', methods=['GET', 'POST'])
 def instructor_change_information():
+    """
+    The webpage used to give the instructor change his own information
+    :return: instructor_change_information.html
+    """
+
     def check_change(old, new):
         for i in range(len(new)):
             if old[i + 1] != new[i]:
@@ -93,13 +112,18 @@ def instructor_change_information():
         sql_data.execute(sql, sql_value)
         instructor_detail = sql_data.fetchall()[0]
         sql_data.close()
-        return render_template('instructor_change_information.html', instructor_detail=instructor_detail, msg=msg)
+        return render_template('instructor_change_information.html', instructor_detail=instructor_detail, msg=msg, title_list=title_list)
     else:
         return redirect(url_for('login'))
 
 
 @app.route('/admin_change_information', methods=['GET', 'POST'])
 def admin_change_information():
+    """
+    The webpage used to give the admin change his own information
+    :return: admin_change_information.html
+    """
+
     def check_change(old, new):
         for i in range(len(new)):
             if old[i + 1] != new[i]:
@@ -149,11 +173,15 @@ def admin_change_information():
         sql_data.execute(sql, sql_value)
         admin_list = sql_data.fetchall()[0]
         sql_data.close()
-        return render_template('admin_change_information.html', admin_list=admin_list, msg=msg)
+        return render_template('admin_change_information.html', admin_list=admin_list, msg=msg, title_list=title_list)
 
 
 @app.route('/member_change_information', methods=['GET', 'POST'])
 def member_change_information():
+    """
+    The webpage used to give the member change his own information
+    :return: member_change_information.html
+    """
     # if 'loggedIn' in session:
     if 1:
         # user_id = session["user_id"]
@@ -196,7 +224,8 @@ def member_change_information():
         sql_data.execute(sql, sql_value)
         member_detail = sql_data.fetchall()[0]
         sql_data.close()
-        return render_template('member_change_information.html', member_detail=member_detail, msg=msg)
+        return render_template('member_change_information.html', member_detail=member_detail, msg=msg, title_list=title_list, city_list=city_list,
+                               region_list=region_list)
     else:
         return redirect(url_for('login'))
 
