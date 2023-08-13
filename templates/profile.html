@@ -20,12 +20,14 @@
                     <input type="number" class="form-control" id="member_id" placeholder="{{member_id}}" size="50" readonly><br>
                     {% endif %}
                   </fieldset>
+
                   <fieldset>
                     {% if role == "instructor" %}
                     <label for="instructor_id" class="form-label">Instructor ID:</label><br>
                     <input type="number" class="form-control" id="member_id" placeholder="{{instructor_id}}" size="50" readonly><br>
                     {% endif %}
                   </fieldset>
+                  
                   <fieldset>
                     {% if role == "admin" %}
                     <label for="instructor_id" class="form-label">Admin ID:</label><br>
