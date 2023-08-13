@@ -126,7 +126,7 @@ def member_list():
                             ORDER BY member_id;"""
         sql_data.execute(member_list_sql,)
         member_list_result = sql_data.fetchall()
-        print(member_list_result)
+        # print(member_list_result)
         return render_template("member_list.html",role = role,member_list_result = member_list_result,)
 
     else:
