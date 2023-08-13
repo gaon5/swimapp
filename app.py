@@ -49,6 +49,7 @@ def home():
 
 @app.route('/profile', methods=['GET'])
 def profiles():
+
     if "loggedin" in session:
 
         sql_data = get_cursor()
