@@ -17,40 +17,91 @@
                     </div>
                     <form action="{{ url_for('register') }}" method="post" autocomplete="off">
                         
-                        <div class="mb-3">
-                            <label for="username" class="form-label">
-                                <i class="fas fa-user"></i> Username <i class="fas fa-info-circle"  data-bs-placement="right" title="Username must contain only characters and numbers."></i>
+                        <div class="input-group mb-3">
+                            <label for="username" class="input-group-text">
+                                <i class="fas fa-user"></i> Username
                             </label>
                             <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">
-                                <i class="fas fa-lock"></i> Password <i class="fas fa-info-circle"  data-bs-placement="right" title="Password must contain at least 8 characters, one letter, and one number."></i>
+                        <div class="input-group mb-3">
+                            <label for="password" class="input-group-text">
+                                <i class="fas fa-lock"></i> Password
                             </label>
                             <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">
-                                <i class="fas fa-envelope"></i> Email <i class="fas fa-info-circle"  data-bs-placement="right" title="Enter a valid email address."></i>
+                        <div class="input-group mb-3">
+                            <label for="email" class="input-group-text">
+                                <i class="fas fa-envelope"></i> Email
                             </label>
                             <input type="email" class="form-control" name="email" id="email" placeholder="example@example.com" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="first_name" class="form-label"><i class="fas fa-user"></i> First Name</label>
+                        <div class="input-group mb-3">
+                            <label for="title_id" class="input-group-text">Title</label>
+                            <select class="form-control" name="title_id" id="title_id" required>
+                                <option value="">Choose a title</option>
+                                {% for title in titles %}
+                                    <option value="{{ title[0] }}">{{ title[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <label for="first_name" class="input-group-text"><i class="fas fa-user"></i> First Name</label>
                             <input type="text" class="form-control" name="first_name" id="first_name" placeholder="John" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="last_name" class="form-label"><i class="fas fa-user"></i> Last Name</label>
+                        <div class="input-group mb-3">
+                            <label for="last_name" class="input-group-text"><i class="fas fa-user"></i> Last Name</label>
                             <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Doe" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="phone_number" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                        <div class="input-group mb-3">
+                            <label for="phone_number" class="input-group-text"><i class="fas fa-phone"></i> Phone Number</label>
                             <input type="tel" pattern="\d{4} \d{4} \d{4}" class="form-control" name="phone_number" id="phone_number" placeholder="1234 5678 9012" required>
+                        </div>
+
+
+                        <div class="input-group mb-3">
+                            <label for="city_id" class="input-group-text">City</label>
+                            <select class="form-control" name="city_id" id="city_id" required>
+                                <option value="">Choose a city</option>
+                                {% for city in cities %}
+                                    <option value="{{ city[0] }}">{{ city[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <label for="region_id" class="input-group-text">Region</label>
+                            <select class="form-control" name="region_id" id="region_id" required>
+                                <option value="">Choose a region</option>
+                                {% for region in regions %}
+                                    <option value="{{ region[0] }}">{{ region[2] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <label for="street_name" class="input-group-text">Street Name</label>
+                            <input type="text" class="form-control" name="street_name" id="street_name" required>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <label for="birth_date" class="input-group-text">Birth Date</label>
+                            <input type="date" class="form-control" name="birth_date" id="birth_date" required>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <label for="detailed_information" class="input-group-text">Detailed Information</label>
+                            <textarea class="form-control" name="detailed_information" id="detailed_information" rows="3"></textarea>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <label for="health_information" class="input-group-text">Health Information</label>
+                            <textarea class="form-control" name="health_information" id="health_information" rows="3"></textarea>
                         </div>
 
                         <div class="msg">{{ msg }}</div>
@@ -63,7 +114,5 @@
         </div>
     </div>
 </div>
-
-
 
 {% endblock %}

@@ -1,5 +1,5 @@
 from flask import Flask, url_for, request, redirect, render_template, session
-from datetime import datetime
+from datetime import datetime, date
 import mysql.connector
 import config
 import math
@@ -130,30 +130,49 @@ def logout():
    
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """
-    Handle user registration:
-    1. Validate POST data and ensure all necessary fields are present.
-    2. Check the database to ensure no existing accounts share the same email or username.
-    3. Validate email, password, and username formats using regex.
-    4. If everything checks out, hash the password and insert the user into the database.
-    5. Also insert the member's additional information (like first name, last name, phone number).
-    
-    """
+    """Handle user registration."""
+
     msg = ''
 
+    if request.method == 'GET':
+        with get_cursor() as cursor:
+            cursor.execute('SELECT * FROM title')
+            titles = cursor.fetchall()
+
+            cursor.execute('SELECT * FROM city')
+            cities = cursor.fetchall()
+            
+            cursor.execute('SELECT * FROM region')
+            regions = cursor.fetchall()
+
+        return render_template('register.html', msg=msg, titles=titles, cities=cities, regions=regions)
+
     if request.method == 'POST':
-        # Ensure necessary fields are present
-        fields = ['username', 'password', 'email', 'first_name', 'last_name', 'phone_number']
-        if not all(field in request.form for field in fields):
-            return render_template('register.html', msg="Please fill out the form!")
+        required_fields = [
+            'username', 'password', 'email', 'title_id', 'first_name', 'last_name', 
+            'phone_number', 'city_id', 'region_id', 'street_name', 'birth_date'
+        ]
+        optional_fields = ['detailed_information', 'health_information']
 
-        username, password, email, first_name, last_name, phone_number= (request.form[field] for field in fields)
+        # Ensure all necessary fields are present
+        if not all(request.form.get(field) for field in required_fields):
+            msg = "Please fill out all required fields!"
+            return render_template('register.html', msg=msg)
 
-        # Check criteria
+        values = {field: request.form[field] for field in required_fields}
+        for field in optional_fields:
+            values[field] = request.form.get(field, None)
+
+        username = values['username'].capitalize()
+        password = values['password']
+        email = values['email']
+        first_name = values['first_name'].capitalize()
+        last_name = values['last_name'].capitalize()
+
         with get_cursor() as cursor:
             cursor.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username))
             existing_data = cursor.fetchone()
-           
+
             if existing_data:
                 existing_email, existing_username = existing_data
                 if existing_email == email:
@@ -164,22 +183,32 @@ def register():
                 msg = 'Invalid email address!'
             elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
                 msg = 'Password must contain at least 8 characters, one letter and one number!'
-            elif not re.match(r'[A-Za-z0-9]+', username):
-                msg = 'Username must contain only characters and numbers!'
+            elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', username):
+                msg = 'Username must be at least 8 characters long and contain both characters and numbers!'
+            elif not first_name.isalpha() or not last_name.isalpha():
+                msg = 'First name and Last name must only contain letters!'
+            elif not re.match(r'^\d{4}-\d{2}-\d{2}$', values['birth_date']):
+                msg = 'Birth date must be in the format YYYY-MM-DD!'
             else:
-                salt = bcrypt.gensalt()
-                hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+                # Validate that the provided birth date is in the past
+                input_date = datetime.strptime(values['birth_date'], '%Y-%m-%d').date()
+                if input_date > datetime.today().date():
+                    msg = 'Please provide a valid birth date. The date cannot be in the future.'
+                else:
+                    # Calculate the date in Python
+                    register_date = datetime.today().date()
+                    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                    cursor.execute('INSERT INTO user_account (username, password, email, is_member, register_date) VALUES (%s, %s, %s, 1, %s )', (username, hashed, email, register_date))
+                    cursor.execute('SELECT user_id from user_account WHERE username = %s', (username,))
+                    user_id = cursor.fetchone()[0]
+                    cursor.execute('INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, detailed_information, city_id, region_id, street_name, birth_date, health_information, state) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                ( user_id, values['title_id'], values['first_name'], values['last_name'],
+                values['phone_number'], values['detailed_information'], values['city_id'], 
+                values['region_id'], values['street_name'], values['birth_date'], values['health_information'], 1))
+                    msg = 'You have successfully registered!'
 
-                cursor.execute('INSERT INTO user_account (username, password, email, is_member) VALUES (%s, %s, %s, 1)', (username, hashed, email))
-                cursor.execute('SELECT user_id from user_account WHERE username = %s', (username,))
-                user_id = cursor.fetchone()[0]
+        return render_template('register.html', msg=msg)
 
-                cursor.execute('INSERT INTO member (user_id, first_name, last_name, phone_number) VALUES (%s, %s, %s, %s)', (user_id, first_name, last_name, phone_number))
-                cursor.close()
-
-                msg = 'You have successfully registered!'
-
-    return render_template('register.html', msg=msg)
 
 
 if __name__ == '__main__':
