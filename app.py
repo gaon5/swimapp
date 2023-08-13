@@ -42,6 +42,11 @@ def get_cursor():
 #     return render_template('sample.html', sample_list=sample_list)
 
 
+@app.route('/', methods=['GET'])
+def home():
+    return render_template("base.html")
+
+
 
 @app.route('/profile', methods=['GET'])
 def profiles():
