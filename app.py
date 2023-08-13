@@ -28,8 +28,8 @@ def get_cursor():
     return db_conn
 
 
-@app.route('/sample', methods=['GET', 'POST'])
-def sample():
+@app.route('/', methods=['GET', 'POST'])
+def welcome():
     sample_value = 1
     sql_data = get_cursor()
     sql = """SELECT * FROM sample_database WHERE sample_id=%s;"""
@@ -38,7 +38,7 @@ def sample():
     sample_list = sql_data.fetchall()
     sql_data.close()
 
-    return render_template('sample.html', sample_list=sample_list)
+    return render_template('welcomepage.html', sample_list=sample_list)
 
 
 if __name__ == '__main__':

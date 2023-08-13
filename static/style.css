@@ -1,14 +1,20 @@
-.footer-clean {
-    position: fixed;
+body {
+    position: absolute;
+    top: 0;
     left: 0;
+    right: 0;
     bottom: 0;
-    width: 100%;
-}
+    overflow: auto;
+  }
+
 .footer-clean {
+    margin-top: auto;
+    bottom:0;
+    width: 100%;
     height: 25%;
     background-color:#219fe8ad;
+    position: relative;
   }
-  
   .footer-clean h6 {
     margin-top:0;
     margin-bottom:12px;
@@ -77,4 +83,31 @@ float:right;
 #navtitle {
 position: absolute;
 top: 15px;
+}
+.row {
+    display: flex; /* Assuming you want to use flexbox for layout */
+    justify-content: space-between; /* To evenly distribute columns */
+    margin-left: 20px;
+    bottom: 50px;
+    position: relative;
+    top: 80px;
+}
+#info {
+    flex: 1;
+    border: 2px solid white;
+}  
+
+/* Styling for the individual columns */
+.col-md-3.text-center {
+    background-color: rgb(59, 156, 234);
+    height: 200px;
+    width: 300px;
+    padding: 20px; /* Add padding to create spacing between content and edges */
+    box-sizing: border-box; /* Include padding and border in the element's total width/height */
+    color: white; /* Text color */
+}
+
+/* Additional styling for the paragraph elements inside the columns */
+.col-md-3.text-center p {
+    margin: 10px 0; /* Add spacing between paragraphs */
 }
