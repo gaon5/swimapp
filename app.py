@@ -51,9 +51,19 @@ def sample():
     sql_data.execute(sql, sql_value)
     sample_list = sql_data.fetchall()
     sql_data.close()
+    return render_template('welcome_page.html', sample_list=sample_list)
 
-    return render_template('sample.html', sample_list=sample_list)
+@app.route('/admin')
+def admin():
+    return render_template('admin_dashboard.html')
 
+@app.route('/member')
+def member():
+    return render_template('member_dashboard.html')
+
+@app.route('/instructor')
+def instructor():
+    return render_template('instructor_dashboard.html')
 
 # Function to display aqua aerobics class timetable
 @app.route('/view_class', methods=['GET', 'POST'])
@@ -497,3 +507,4 @@ def displayclass(class_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
