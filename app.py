@@ -63,9 +63,11 @@ def view_class():
         end_time = datetime.strptime(end_date_string, "%Y-%m-%d")
         start_date = start_time.date()
         end_date = end_time.date()
+        # If previous week button is clicked, start_date and end_date are subtracted 7 days
         if "previous_week" in request.form:
             start_date -= timedelta(days=7)
             end_date -= timedelta(days=7)
+        # If next week button is clicked, start_date and end_date are added 7 days
         elif "next_week" in request.form:
             start_date += timedelta(days=7)
             end_date += timedelta(days=7)
