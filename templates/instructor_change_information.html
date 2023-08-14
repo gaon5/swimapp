@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "instructor_dashboard.html" %}
 
 
 {% block mytitle %}
@@ -70,19 +70,26 @@
 
 {% block myjs %}
     <script>
-        document.getElementById('title').value = {{ instructor_detail[1] }}
+        document.getElementById('title').value =
+        {{ instructor_detail[1] }}
 
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');
         const Submit = document.getElementById('Submit');
 
-        function Change_form(){
+        function Change_form() {
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
-            for (let i = 1; i < inputElements.length; i++) {inputElements[i].disabled = false}
-            for (let i = 0; i < selectElements.length; i++) {selectElements[i].disabled = false}
-            for (let i = 0; i < textareaElements.length; i++) {textareaElements[i].disabled = false}
+            for (let i = 1; i < inputElements.length; i++) {
+                inputElements[i].disabled = false
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = false
+            }
+            for (let i = 0; i < textareaElements.length; i++) {
+                textareaElements[i].disabled = false
+            }
             Change.style.display = 'none'
             Cancel.style.display = ''
             Submit.disabled = false
@@ -90,13 +97,19 @@
             Submit.classList.add("btn-primary")
         }
 
-        function Cancel_form(){
+        function Cancel_form() {
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
-            for (let i = 1; i < inputElements.length; i++) {inputElements[i].disabled = true}
-            for (let i = 0; i < selectElements.length; i++) {selectElements[i].disabled = true}
-            for (let i = 0; i < textareaElements.length; i++) {textareaElements[i].disabled = true}
+            for (let i = 1; i < inputElements.length; i++) {
+                inputElements[i].disabled = true
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = true
+            }
+            for (let i = 0; i < textareaElements.length; i++) {
+                textareaElements[i].disabled = true
+            }
             Change.style.display = ''
             Cancel.style.display = 'none'
             Submit.disabled = true

@@ -6,10 +6,7 @@ import math
 import bcrypt
 import re
 
-
 # When you gonna start, pip install -r requirements.txt
-
-
 
 
 app = Flask(__name__)
@@ -41,29 +38,11 @@ first_select.execute("""SELECT * FROM `region`;""")
 region_list = first_select.fetchall()
 first_select.close()
 
-  
-@app.route('/sample', methods=['GET', 'POST'])
-def sample():
-    sample_value = 1
-    sql_data = get_cursor()
-    sql = """SELECT * FROM sample_database WHERE sample_id=%s;"""
-    sql_value = (sample_value,)
-    sql_data.execute(sql, sql_value)
-    sample_list = sql_data.fetchall()
-    sql_data.close()
-    return render_template('welcome_page.html', sample_list=sample_list)
 
-@app.route('/admin')
-def admin():
-    return render_template('admin_dashboard.html')
+@app.route('/')
+def index():
+    return render_template('welcome_page.html')
 
-@app.route('/member')
-def member():
-    return render_template('member_dashboard.html')
-
-@app.route('/instructor')
-def instructor():
-    return render_template('instructor_dashboard.html')
 
 # Function to display aqua aerobics class timetable
 @app.route('/view_class', methods=['GET', 'POST'])
@@ -71,7 +50,7 @@ def view_class():
     sql_data = get_cursor()
     # Default dates based on today's date
     if request.method == 'GET':
-        end_date = date(2023,7,30)
+        end_date = date(2023, 7, 30)
         while end_date < date.today():
             end_date += timedelta(days=7)
         start_date = end_date - timedelta(days=6)
@@ -84,7 +63,7 @@ def view_class():
         end_time = datetime.strptime(end_date_string, "%Y-%m-%d")
         start_date = start_time.date()
         end_date = end_time.date()
-        if "previous_week" in request.form:    
+        if "previous_week" in request.form:
             start_date -= timedelta(days=7)
             end_date -= timedelta(days=7)
         elif "next_week" in request.form:
@@ -98,24 +77,23 @@ def view_class():
         date_to_add += timedelta(days=1)
     # Select data of every aqua aerobic class within a week
     sql = """SELECT class_id, class_name, class_date, start_time FROM class_list WHERE (is_individual=0) AND (class_date BETWEEN %s AND %s);"""
-    sql_value = (start_date,end_date)
-    sql_data.execute(sql,sql_value)
+    sql_value = (start_date, end_date)
+    sql_data.execute(sql, sql_value)
     sql_list = sql_data.fetchall()
     class_list = []
     # Check the weekday number of each date and append them.
     for item in sql_list:
-        temp_list = list(item) # Convert tuple into list
+        temp_list = list(item)  # Convert tuple into list
         weekday_number = item[2].weekday() + 1
-        time = str(item[3]) # Convert time into string
-        temp_list[3] = time[:-3] # Remove seconds from the time and replace timedelta with string
+        time = str(item[3])  # Convert time into string
+        temp_list[3] = time[:-3]  # Remove seconds from the time and replace timedelta with string
         temp_list.append(weekday_number)
         class_list.append(temp_list)
     # Create time_list and row_list to display time and slots for the timetables
-    time_list = ['6:00','7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00']
+    time_list = ['6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00']
     row_list = []
     for time in time_list:
-        temp_list = []
-        temp_list.append(time)
+        temp_list = [time]
         for i in range(7):
             temp_list.append([])
         row_list.append(temp_list)
@@ -123,7 +101,7 @@ def view_class():
     for item in class_list:
         for row in row_list:
             if item[3] == row[0]:
-                row[item[-1]].append({item[0]:item[1]})
+                row[item[-1]].append({item[0]: item[1]})
     sql_data.close()
     return render_template('view_class.html', class_list=class_list, date_list=date_list, row_list=row_list, start_date=start_date, end_date=end_date)
 
@@ -230,7 +208,7 @@ def logout():
     session.pop('is_root', None)
 
     # Add a flash message to prompt the user
-    return redirect(url_for('home'))
+    return redirect(url_for('index'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -493,6 +471,7 @@ def member_change_information():
     else:
         return redirect(url_for('login'))
 
+
 # Function to display details of a class
 @app.route('/display_class/<class_id>')
 def displayclass(class_id):
@@ -505,6 +484,6 @@ def displayclass(class_id):
     sql_data.close()
     return render_template('display_class.html', detail_list=detail_list)
 
+
 if __name__ == '__main__':
     app.run(debug=True)
-

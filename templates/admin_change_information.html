@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin_dashboard.html" %}
 
 
 {% block mytitle %}
@@ -14,7 +14,6 @@
             color: red
         }
     </style>
-
 {% endblock %}
 
 {% block body %}
@@ -71,11 +70,16 @@
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');
         const Submit = document.getElementById('Submit');
-        function Change_form(){
+
+        function Change_form() {
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
-            for (let i = 1; i < inputElements.length; i++) {inputElements[i].disabled = false}
-            for (let i = 0; i < selectElements.length; i++) {selectElements[i].disabled = false}
+            for (let i = 1; i < inputElements.length; i++) {
+                inputElements[i].disabled = false
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = false
+            }
             Change.style.display = 'none'
             Cancel.style.display = ''
             Submit.disabled = false
@@ -83,11 +87,15 @@
             Submit.classList.add("btn-primary")
         }
 
-        function Cancel_form(){
+        function Cancel_form() {
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
-            for (let i = 1; i < inputElements.length; i++) {inputElements[i].disabled = true}
-            for (let i = 0; i < selectElements.length; i++) {selectElements[i].disabled = true}
+            for (let i = 1; i < inputElements.length; i++) {
+                inputElements[i].disabled = true
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = true
+            }
             Change.style.display = ''
             Cancel.style.display = 'none'
             Submit.disabled = true
@@ -95,7 +103,7 @@
             Submit.classList.add("btn-outline-primary")
         }
 
-        function validateForm(){
+        function validateForm() {
             const namePattern = /^[a-zA-Z]+$/;
             const phonePattern = /^\d{7,11}$/;
             let i = 0;

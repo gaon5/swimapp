@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "member_dashboard.html" %}
 
 
 {% block mytitle %}
@@ -69,7 +69,7 @@
             <div class="col-md-6">
                 <div class="input-group mb-3">
                     <label for="city" class="input-group-text">City :</label>
-                    <select name="city" class="form-select" id="city"  onchange="update_city()" disabled required>
+                    <select name="city" class="form-select" id="city" onchange="update_city()" disabled required>
                         <option value="" disabled>---Choose a city---</option>
                         {% for i in city_list %}
                             <option value={{ i[0] }}>{{ i[1] }}</option>
@@ -107,31 +107,40 @@
 {% block myjs %}
     <script>
         const region_list = JSON.parse('{{ region_list|tojson }}');
-        document.getElementById('title').value = {{ member_detail[1] }}
+        document.getElementById('title').value =
+        {{ member_detail[1] }}
         const city = document.getElementById('city')
         const region = document.getElementById('region')
-        city.value = {{ member_detail[6] }}
+        city.value =
+        {{ member_detail[6] }}
         for (const i in region_list) {
-            if (String(region_list[i][1]) === city.value){
+            if (String(region_list[i][1]) === city.value) {
                 const option = document.createElement('option');
                 option.value = region_list[i][0];
                 option.text = region_list[i][2];
                 region.appendChild(option);
             }
         }
-        region.value = {{ member_detail[7] }}
+        region.value =
+        {{ member_detail[7] }}
 
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');
         const Submit = document.getElementById('Submit');
 
-        function Change_form(){
+        function Change_form() {
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
-            for (let i = 1; i < inputElements.length; i++) {inputElements[i].disabled = false}
-            for (let i = 0; i < selectElements.length; i++) {selectElements[i].disabled = false}
-            for (let i = 0; i < textareaElements.length; i++) {textareaElements[i].disabled = false}
+            for (let i = 1; i < inputElements.length; i++) {
+                inputElements[i].disabled = false
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = false
+            }
+            for (let i = 0; i < textareaElements.length; i++) {
+                textareaElements[i].disabled = false
+            }
             Change.style.display = 'none'
             Cancel.style.display = ''
             Submit.disabled = false
@@ -139,13 +148,19 @@
             Submit.classList.add("btn-primary")
         }
 
-        function Cancel_form(){
+        function Cancel_form() {
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
-            for (let i = 1; i < inputElements.length; i++) {inputElements[i].disabled = true}
-            for (let i = 0; i < selectElements.length; i++) {selectElements[i].disabled = true}
-            for (let i = 0; i < textareaElements.length; i++) {textareaElements[i].disabled = true}
+            for (let i = 1; i < inputElements.length; i++) {
+                inputElements[i].disabled = true
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = true
+            }
+            for (let i = 0; i < textareaElements.length; i++) {
+                textareaElements[i].disabled = true
+            }
             Change.style.display = ''
             Cancel.style.display = 'none'
             Submit.disabled = true
@@ -153,10 +168,10 @@
             Submit.classList.add("btn-outline-primary")
         }
 
-        function update_city(){
+        function update_city() {
             region.innerHTML = '<option value="" disabled>---Choose a region---</option>';
             for (const i in region_list) {
-                if (String(region_list[i][1]) === city.value){
+                if (String(region_list[i][1]) === city.value) {
                     const option = document.createElement('option');
                     option.value = region_list[i][0];
                     option.text = region_list[i][2];

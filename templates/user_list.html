@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin_dashboard.html" %}
 
 
 {% block title %}
@@ -38,7 +38,9 @@
                         <td>{{ i[5] }}</td>
                         <td>{{ i[3] }}</td>
                         <td>{{ i[6] }}</td>
-                        <td><button type="button" id="edit" class="btn btn-info my-1" onclick="Change_form({{ i[0] }})">Edit</button></td>
+                        <td>
+                            <button type="button" id="edit" class="btn btn-info my-1" onclick="Change_form({{ i[0] }})">Edit</button>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>
@@ -58,7 +60,9 @@
                         <td>{{ i[5] }}</td>
                         <td>{{ i[3] }}</td>
                         <td>{{ i[6] }}</td>
-                        <td><button type="button" id="edit" class="btn btn-info my-1" onclick="Change_form({{ i[0] }})">Edit</button></td>
+                        <td>
+                            <button type="button" id="edit" class="btn btn-info my-1" onclick="Change_form({{ i[0] }})">Edit</button>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>
@@ -68,9 +72,9 @@
 
 {% block myjs %}
     <script>
-    function Change_form(id){
-        {#go to edit page#}
-        console.log(id)
-    }
+        function Change_form(id) {
+            {#go to edit page#}
+            console.log(id)
+        }
     </script>
 {% endblock %}
