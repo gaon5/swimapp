@@ -1,4 +1,4 @@
-{% extends "admin_dashboard.html" %}
+{% extends "guest/layout.html" %}
 
 
 {% block title %}
@@ -39,7 +39,8 @@
                         <td>{{ i[3] }}</td>
                         <td>{{ i[6] }}</td>
                         <td>
-                            <button type="button" id="edit" class="btn btn-info my-1" onclick="Change_form({{ i[0] }})">Edit</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink(1, {{ i[0] }})">Edit</button>
+                            <a href="" class="btn btn-danger">DELETE</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -61,20 +62,44 @@
                         <td>{{ i[3] }}</td>
                         <td>{{ i[6] }}</td>
                         <td>
-                            <button type="button" id="edit" class="btn btn-info my-1" onclick="Change_form({{ i[0] }})">Edit</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink(0, {{ i[0] }})">Edit</button>
+                            <a href="" class="btn btn-danger">DELETE</a>
                         </td>
                     </tr>
                 {% endfor %}
             </table>
         </div>
     </div>
+
+    <div class="modal fade" id="myOwnModal" tabindex="-1" aria-labelledby="myOwnModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myOwnModalLabel">Car Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pt-3 pb-3">
+                        <div class="container w-75">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block myjs %}
     <script>
-        function Change_form(id) {
-            {#go to edit page#}
-            console.log(id)
+        const modal = document.getElementById('myOwnModal');
+        modal.addEventListener('shown.bs.modal', function () {
+        });
+        function showLink(is_member, id){
+
         }
     </script>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "member_dashboard.html" %}
+{% extends "guest/layout.html" %}
 
 
 {% block mytitle %}
@@ -132,7 +132,7 @@
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
-            for (let i = 1; i < inputElements.length; i++) {
+            for (let i = 0; i < inputElements.length; i++) {
                 inputElements[i].disabled = false
             }
             for (let i = 0; i < selectElements.length; i++) {

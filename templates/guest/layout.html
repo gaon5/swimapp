@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="../static/image/favicon.ico"/>
+    <link rel="icon" type="image/x-icon" href="../../static/images/ico.ico"/>
     <title>{% block mytitle %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
@@ -19,9 +19,29 @@
                 <span class="navbar-brand mb-0 h1" id="navtitle">Waikirikiri Swim centre</span>
             </div>
             <div class="navright">
-                <a id="nav" href="#">Home</a>
-                <a id="nav" href="#">Log In</a>
-                <a id="nav" href="#">Register</a>
+                <a id="nav" href="{{ url_for('index') }}">Home</a>
+                {% if not permissions %}
+                    <a id="nav" href="{{ url_for('login') }}">Login</a>
+                {% else %}
+                    {% if permissions == 1 %}
+                        <a id="nav" href="{{ url_for('dashboard') }}">My Dashboard</a>
+                        <a id="nav" href="{{ url_for('view_class') }}">View Class</a>
+                        <a id="nav" href="{{ url_for('user_list') }}">User List</a>
+                    {% elif permissions == 2 %}
+                        <a id="nav" href="{{ url_for('dashboard') }}">My Dashboard</a>
+                        <a id="nav" href="{{ url_for('view_class') }}">View Class</a>
+                        <a id="nav" href="{{ url_for('user_list') }}">User List</a>
+                        <a id="nav" href="{{ url_for('admin_change_information') }}">My Detail</a>
+                    {% elif permissions == 3 %}
+                        <a id="nav" href="{{ url_for('dashboard') }}">My Dashboard</a>
+                        <a id="nav" href="{{ url_for('view_class') }}">View Class</a>
+                        <a id="nav" href="{{ url_for('instructor_change_information') }}">My Detail</a>
+                    {% elif permissions == 4 %}
+                        <a id="nav" href="{{ url_for('view_class') }}">View Class</a>
+                        <a id="nav" href="{{ url_for('member_change_information') }}">My Detail</a>
+                    {% endif %}
+                    <a id="nav" href="{{ url_for('logout') }}">Log out</a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -35,11 +55,8 @@
             <div class="hours">
                 <h6>Opening Hours</h6>
                 <ul>
-                    <li>Mon - Fri</li>
-                    <li>9 - 6pm</li>
-                    <br>
-                    <li>Sat - Sun</li>
-                    <li>9 - 7pm</li>
+                    <li>Mon - Sun</li>
+                    <li>6AM - 9PM</li>
                 </ul>
             </div>
             <div class="name">
