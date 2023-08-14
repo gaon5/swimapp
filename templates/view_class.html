@@ -11,8 +11,16 @@
 
 <!--Opening hours: 6:00 - 21:00 during weekdays, 8:00 - 18:00 during weekends-->
 {% block body %}
+
 <div class="view_class">
     <H1>Timetable of Aqua Aerobic Classes ({{ date_list[0] }} - {{ date_list[-1] }})</H1>
+    <br>
+    <form action="{{ url_for('view_class') }}" method="post">
+        <input type="hidden" id="start_date" name="start_date" value="{{ start_date }}">
+        <input type="hidden" id="end_date" name="end_date" value="{{ end_date}}">
+        <input type="submit" id="previous_week" name="previous_week" value="Previous Week"></input>
+        <input type="submit" id="next_week" name="next_week" value="Next Week"></input>
+    </form>
     <br>
     <table class="table table-bordered">
         <tr>
@@ -28,14 +36,18 @@
         {% for row in row_list %}
             <tr>
             {% for entry in row %}
-                {% if entry == '' %}
+                {% if entry == row[0] %}
                     <td>{{ entry }}</td>
-                {% elif entry == row[0] %}
-                    <td>{{ entry }}</td>
+                {% elif entry == [] %}
+                    <td></td>
                 {% else %}
-                    {% for key in entry%}
-                        <td><a href="/display_class/{{key}}">{{ entry[key] }}</a></td>
+                <td>
+                    {% for item in entry%}
+                        {% for key in item %}
+                            <a href="/display_class/{{key}}">{{ item[key] }}</a><br>
+                        {% endfor %}
                     {% endfor %}
+                </td>
                 {% endif %}
             {% endfor %}
             </tr>
