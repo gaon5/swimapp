@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+
+{% block mytitle %}
+    Display class details
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+<div class="display_class">
+    <H1>Aqua Aerobic Class Details</H1>
+    <br>
+    <table class="profile">
+        <tr>
+            <td>Class ID:</td>
+            <td>{{ detail_list[0] }}</td>
+        </tr>
+        <tr>
+            <td>Class Name:</td>
+            <td>{{ detail_list[1] }}</td>
+        </tr>
+        <tr>
+            <td>Class Date:</td>
+            <td>{{ detail_list[2] }}</td>
+        </tr>
+        <tr>
+            <td>Start Time:</td>
+            <td>{{ detail_list[3] }}</td>
+        </tr>
+        <tr>
+            <td>End Time:</td>
+            <td>{{ detail_list[4] }}</td>
+        </tr>
+        <tr>
+            <td>Class Information:</td>
+            <td>{{ detail_list[5] }}</td>
+        </tr>
+        <tr>
+            <td>Number of bookings:</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>Available slots for booking:</td>
+            <td>30</td> <!--An assumption is made that every class only holds a maximum of 30 members-->
+        </tr>
+        <tr>
+            <td>Instructor:</td>
+            <td>{{ detail_list[6] }} {{ detail_list[7] }}</td>
+        </tr>
+        <tr>
+            <td>Pool:</td>
+            <td>{{ detail_list[8] }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}
