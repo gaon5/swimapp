@@ -29,6 +29,7 @@ def get_cursor():
     return db_conn
 
 
+
 first_select = get_cursor()
 first_select.execute("""SELECT * FROM `city`;""")
 city_list = first_select.fetchall()
@@ -53,7 +54,32 @@ def sample():
     sample_list = sql_data.fetchall()
     sql_data.close()
 
-    return render_template('sample.html', sample_list=sample_list)
+
+@app.route('/user_list', methods=['GET'])
+def user_list():
+    # if "loggedin" in session:
+    if 1:
+        # if session['admin'] == 1 or session['root'] == 1:
+        if 1:
+            sql_data = get_cursor()
+            sql = """SELECT m.user_id,m.first_name,m.last_name,m.phone_number,t.title,u.username,u.email,m.state FROM member AS m
+                        LEFT JOIN `user_account` AS u ON m.user_id=u.user_id
+                        LEFT JOIN `title` AS t ON t.title_id=m.title_id
+                        WHERE m.state = 1;"""
+            sql_data.execute(sql)
+            member_list = sql_data.fetchall()
+            sql = """SELECT i.user_id,i.first_name,i.last_name,i.phone_number,t.title,u.username,u.email,i.state FROM instructor AS i
+                        LEFT JOIN `user_account` AS u ON u.user_id=i.user_id
+                        LEFT JOIN `title` AS t ON t.title_id=i.title_id
+                        WHERE i.state = 1;"""
+            sql_data.execute(sql)
+            instructor_list = sql_data.fetchall()
+            sql_data.close()
+            return render_template("user_list.html", member_list=member_list, instructor_list=instructor_list)
+        else:
+            return url_for("/")
+    else:
+        return url_for("/login/")
 
 
 # http://localhost:5000/login/ - this will be the login page, we need to use both GET and POST requests   
