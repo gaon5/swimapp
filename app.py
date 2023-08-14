@@ -6,15 +6,12 @@ import math
 import bcrypt
 import re
 
-
-
 # When you gonna start, pip install -r requirements.txt
 
 
 app = Flask(__name__)
 app.config.from_object(config)
 app.secret_key = 'aHn6Zb7MstRxC8vEoF2zG3B9wQjKl5YD'
-
 
 db_conn = None
 connection = None
@@ -32,6 +29,16 @@ def get_cursor():
     return db_conn
 
 
+first_select = get_cursor()
+first_select.execute("""SELECT * FROM `city`;""")
+city_list = first_select.fetchall()
+first_select.execute("""SELECT * FROM `title`;""")
+title_list = first_select.fetchall()
+first_select.execute("""SELECT * FROM `region`;""")
+region_list = first_select.fetchall()
+first_select.close()
+
+
 @app.route('/sample', methods=['GET', 'POST'])
 def sample():
     sample_value = 1
@@ -43,6 +50,7 @@ def sample():
     sql_data.close()
 
     return render_template('sample.html', sample_list=sample_list)
+
 
 # http://localhost:5000/login/ - this will be the login page, we need to use both GET and POST requests   
 @app.route('/login/', methods=['GET', 'POST'])
@@ -60,21 +68,18 @@ def login():
     8. If the request is a GET request or the form hasn't been submitted, show the login form.
 
     """
-   
     # Check if "username" and "password" POST requests exist (user submitted form)
+    msg = ""
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         # Create variables for easy access
         username = request.form['username']
         user_password = request.form['password']
-
         # Check if account exists
         cursor = get_cursor()
         cursor.execute("SELECT * FROM user_account WHERE username = %s", (username,))
         account = cursor.fetchone()
-
         if account is not None:
             password_hash = account[3]
-
             # Check if the hashed password matches the one stored in the database
             if bcrypt.checkpw(user_password.encode('utf-8'), password_hash.encode('utf-8')):
                 # If the passwords match, log the user in
@@ -85,30 +90,27 @@ def login():
                 session['is_instructor'] = account[5]
                 session['is_admin'] = account[6]
                 session['is_root'] = account[7]
-
-                if session['is_member'] == 1:
                 # Redirect to home page
-                    return redirect(url_for('home'))
+                if session['is_root'] == 1:
+                    return redirect(url_for('dashboard'))
                 elif session['is_instructor'] == 1:
                     return redirect(url_for('staff_dashboard'))
                 elif session['is_admin'] == 1:
                     return redirect(url_for('admin_dashboard'))
                 else:
-                    return redirect(url_for('dashboard'))
+                    return redirect(url_for('home'))
             else:
                 # Add a message to prompt the use
-                return 'Incorrect password!'
+                msg = "Incorrect password!"
         else:
             # Account doesn't exist or username incorrect
-            return 'Incorrect username!'
-
+            msg = 'Incorrect username!'
     # Show the login form with message (if any)
-    return render_template('login.html')
+    return render_template('login.html', msg=msg)
 
 
 @app.route('/logout')
 def logout():
-
     """
     Handle user logout:
     
@@ -127,6 +129,7 @@ def logout():
     # Add a flash message to prompt the user
     return "'You have been logged out.', 'success'"
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """
@@ -141,33 +144,14 @@ def register():
     8. Response: Renders the register.html template with the feedback message.
     
     """
-
     # Initial message to display to the user
     msg = ''
-
+    today = datetime.today().date()
     # If the HTTP request is GET (i.e., the user is accessing the registration page)
-    if request.method == 'GET':
-        with get_cursor() as cursor:
-            # Fetch available titles from the database
-            cursor.execute('SELECT * FROM title')
-            titles = cursor.fetchall()
-
-            # Fetch available cities from the database
-            cursor.execute('SELECT * FROM city')
-            cities = cursor.fetchall()
-
-            # Fetch available regions from the database
-            cursor.execute('SELECT * FROM region')
-            regions = cursor.fetchall()
-
-        # Return the registration template with available titles, cities, and regions
-        return render_template('register.html', msg=msg, titles=titles, cities=cities, regions=regions)
-
-    # If the HTTP request is POST (i.e., the user is submitting the registration form)
     if request.method == 'POST':
         # Define the required and optional fields for registration
         required_fields = [
-            'username', 'password', 'email', 'title_id', 'first_name', 'last_name', 
+            'username', 'password', 'email', 'title_id', 'first_name', 'last_name',
             'phone_number', 'city_id', 'region_id', 'street_name', 'birth_date'
         ]
         optional_fields = ['detailed_information', 'health_information']
@@ -191,9 +175,8 @@ def register():
 
         with get_cursor() as cursor:
             # Check if provided email or username already exists in the database
-            cursor.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username))
+            cursor.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username,))
             existing_data = cursor.fetchone()
-
             # If there's a match, notify the user
             if existing_data:
                 existing_email, existing_username = existing_data
@@ -213,34 +196,24 @@ def register():
             elif not re.match(r'^\d{4}-\d{2}-\d{2}$', values['birth_date']):
                 msg = 'Birth date must be in the format YYYY-MM-DD!'
             else:
-                # Validate that the provided birth date is in the past
-                input_date = datetime.strptime(values['birth_date'], '%Y-%m-%d').date()
-                if input_date > datetime.today().date():
-                    msg = 'Please provide a valid birth date. The date cannot be in the future.'
-                else:
-                    # Generate password hash and get current registration date
-                    register_date = datetime.today().date()
-                    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-                    # Insert the user's basic details into user_account
-                    cursor.execute('INSERT INTO user_account (username, password, email, is_member, register_date) VALUES (%s, %s, %s, 1, %s )', (username, hashed, email, register_date))
-
-                    # Get the generated user_id for the above insert
-                    cursor.execute('SELECT user_id from user_account WHERE username = %s', (username,))
-                    user_id = cursor.fetchone()[0]
-
-                    # Insert the user's detailed information into the member table
-                    cursor.execute('INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, detailed_information, city_id, region_id, street_name, birth_date, health_information, state) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                ( user_id, values['title_id'], first_name, last_name,
-                values['phone_number'], values['detailed_information'], values['city_id'], 
-                values['region_id'], values['street_name'], values['birth_date'], values['health_information'], 1))
-
-                    # Notify the user of successful registration
-                    msg = 'You have successfully registered!'
-
+                # Generate password hash and get current registration date
+                hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                # Insert the user's basic details into user_account
+                cursor.execute("""INSERT INTO user_account (username, password, email, is_member, register_date) 
+                            VALUES (%s, %s, %s, 1, %s )""", (username, hashed, email, today))
+                # Get the generated user_id for the above insert
+                cursor.execute('SELECT user_id from user_account WHERE username = %s', (username,))
+                user_id = cursor.fetchone()[0]
+                # Insert the user's detailed information into the member table
+                sql = """INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, 
+                            city_id, region_id, street_name, birth_date, state)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1)"""
+                value = (user_id, values['title_id'], first_name, last_name, values['phone_number'], values['city_id'],
+                         values['region_id'], values['street_name'], values['birth_date'])
+                cursor.execute(sql, value)
+                return redirect(url_for('login'))
         # Return the registration template with the appropriate message
-        return render_template('register.html', msg=msg)
-
+    return render_template('register.html', msg=msg, titles=title_list, cities=city_list, regions=region_list, today=today)
 
 
 if __name__ == '__main__':
