@@ -114,6 +114,10 @@ def member_change_information():
                         msg = "This email already be used."
                     else:
                         sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
+                previous_url = str(request.referrer)
+                urlList = [x for x in previous_url.split('/') if x != '']
+                if urlList[-1] == 'user_list':
+                    return redirect(url_for('user_list'))
             sql = """SELECT m.user_id,m.title_id,m.first_name,m.last_name,m.phone_number,m.detailed_information,m.city_id,
                         m.region_id,m.street_name,m.birth_date,m.health_information,u.email FROM `member` AS m
                         LEFT JOIN `user_account` AS u ON m.user_id=u.user_id

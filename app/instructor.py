@@ -54,6 +54,10 @@ def instructor_change_information():
                             sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                 else:
                     msg = "no modification"
+                previous_url = str(request.referrer)
+                urlList = [x for x in previous_url.split('/') if x != '']
+                if urlList[-1] == 'user_list':
+                    return redirect(url_for('user_list'))
             sql = """SELECT i.user_id,i.title_id,i.first_name,i.last_name,i.phone_number,i.detailed_information,u.email FROM `instructor` AS i
                         LEFT JOIN `user_account` AS u ON i.user_id=u.user_id
                         WHERE i.user_id=%s;"""

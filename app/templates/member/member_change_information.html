@@ -107,12 +107,10 @@
 {% block myjs %}
     <script>
         const region_list = JSON.parse('{{ region_list|tojson }}');
-        document.getElementById('title').value =
-        {{ member_detail[1] }}
+        document.getElementById('title').value = {{ member_detail[1] }}
         const city = document.getElementById('city')
         const region = document.getElementById('region')
-        city.value =
-        {{ member_detail[6] }}
+        city.value = {{ member_detail[6] }}
         for (const i in region_list) {
             if (String(region_list[i][1]) === city.value) {
                 const option = document.createElement('option');
@@ -121,8 +119,7 @@
                 region.appendChild(option);
             }
         }
-        region.value =
-        {{ member_detail[7] }}
+        region.value = {{ member_detail[7] }}
 
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');

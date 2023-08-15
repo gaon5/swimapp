@@ -70,8 +70,7 @@
 
 {% block myjs %}
     <script>
-        document.getElementById('title').value =
-        {{ instructor_detail[1] }}
+        document.getElementById('title').value ={{ instructor_detail[1] }}
 
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');
