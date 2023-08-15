@@ -144,3 +144,23 @@ def display_class(class_id):
     detail_list = sql_data.fetchone()
     sql_data.close()
     return render_template('member/display_class.html', detail_list=detail_list, permissions=check_permissions())
+
+
+@app.route('/display_timetable')
+def display_timetable():
+    today = date(2023, 8, 9)  # datetime.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    week_list = ["Time/Day", start_of_week.strftime('%Y-%m-%d') + " " + week[start_of_week.weekday()]]
+    for i in range(1, 7, 1):
+        week_list.append((start_of_week + timedelta(days=i)).strftime('%Y-%m-%d') + " " + week[i])
+    sql_data = get_cursor()
+    sql = """SELECT class_id, class_name, class_date, start_time FROM class_list 
+                WHERE class_date BETWEEN %s AND %s;"""
+    sql_value = (week_list[0], week_list[-1])
+    sql_data.execute(sql, sql_value)
+    sql_list = sql_data.fetchall()
+    sql_data.close()
+    for i in range(1, len(week_list), 1):
+        week_list[i] = week_list[i][8:]
+    return render_template('timetable_base.html', week_list=week_list, sql_list=sql_list)
