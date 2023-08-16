@@ -146,16 +146,14 @@ def display_class(class_id):
     return render_template('member/display_class.html', detail_list=detail_list, permissions=check_permissions())
 
 
-@app.route('/display_timetable', methods=['GET','POST'])
+@app.route('/display_timetable', methods=['GET', 'POST'])
 def display_timetable():
-
     if request.method == 'POST':
         today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
-        print(today, type(today))
     else:
         today = date.today()
 
-    today = date(2023, 8, 10)
+    # today = date(2023, 8, 10)
     start_of_week = today - timedelta(days=today.weekday())
     week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     week_list = [["Time/Day", '']]
@@ -178,4 +176,4 @@ def display_timetable():
         sqlList[2] = sqlList[2].strftime('%Y-%m-%d')[5:]
         sqlList[-1] = int(str(sqlList[-1])[:-6])
         class_list.append(sqlList)
-    return render_template('timetable_base.html', week_list=week_list, class_list=class_list, today=today)
+    return render_template('instructor/instructor_timetable.html', week_list=week_list, class_list=class_list, today=today)
