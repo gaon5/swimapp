@@ -7,13 +7,18 @@
 {% block timetable_body1 %}
     <div class="container mt-3">
         <h1>Aqua Aerobic Timetable Template</h1>
-        <label for="pool"></label>
-        <select name="pool" id="pool">
-            <option value="">Pools</option>
+        <label for="pool_type"></label>
+        <select name="pool_type" id="pool_type">
+            <option value="" disabled selected>-- select a pool --</option>
+            {% for pool in pool_list %}
+                <option value="{{ pool[0] }}">{{ pool[1] }}</option>
+            {% endfor %}
         </select>
         <label for="class_type"></label>
         <select name="class_type" id="class_type">
-            <option value="">Class type</option>
+            <option value="" disabled selected>-- select a class type --</option>
+            <option value="0">Aqua Aerobic Classes</option>
+            <option value="1">Individual Swimming Lesson</option>
         </select>
     </div>
 {% endblock %}
@@ -27,5 +32,5 @@
 {% endblock %}
 
 {% block myOwnModal2 %}
-    <h2>qwe</h2>
+    <h2>asd</h2>
 {% endblock %}

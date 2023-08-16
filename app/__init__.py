@@ -8,6 +8,7 @@ import re
 
 app = Flask(__name__)
 app.config.from_object(config)
+app.config['PERMANENT_SESSION_LIFETIME'] = 86400
 app.secret_key = 'aHn6Zb7MstRxC8vEoF2zG3B9wQjKl5YD'
 
 db_conn = None
@@ -33,6 +34,8 @@ first_select.execute("""SELECT * FROM `title`;""")
 title_list = first_select.fetchall()
 first_select.execute("""SELECT * FROM `region`;""")
 region_list = first_select.fetchall()
+first_select.execute("""SELECT * FROM pool;""")
+pool_list = first_select.fetchall()
 first_select.close()
 
 

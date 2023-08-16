@@ -7,7 +7,6 @@
             align-items: center;
             justify-content: center;
         }
-
         #info {
             margin: 0 20px;
         }
@@ -29,24 +28,25 @@
             </form>
             {% for i in range(8) %}
                 <div class="col" style="padding: 0;">
-                    <div class="col border text-center" style="background-color: #212529; color: white; height: 50px;">{{ week_list[i][0] }} {{ week_list[i][1] }}</div>
+                    <div class="col border text-center" style="background-color: #212529; color: white; height: 50px;">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</div>
                     {% for j in range(10,19,1) %}
                         {% if i == 0 %}
                             <div class="border text-center" style="height: 100px;">{{ j }}:00</div>
                         {% else %}
                             {% set vars = {'foo': True} %}
-                            {% set show_list = [] %} <!--Create an empty show_list to store multiple activities-->
+                            {% set show_list = [] %}
                             {% for class in class_list %}
                                 {% if class[2] == week_list[i][0] and class[3] == j %}
                                     {{ show_list.append({class[0]:class[1]}) or "" }}
                                     {% if vars.update({'foo': False}) %}
+                                        <p>{{ class }}</p>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
-                            {% if vars.foo %} <!--Append empty space only when there is no class-->
+                            {% if vars.foo %}
                                 <div class="border text-center" style="height: 50px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal"></div>
                                 <div class="border text-center" style="height: 50px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal"></div>
-                            {% else %} <!--Display multiple activities (if any) in a division-->
+                            {% else %}
                                 <div class="border text-center" style="height: 100px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal2">
                                     {% for show in show_list %}
                                         {% for key in show %}
