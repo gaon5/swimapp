@@ -17,26 +17,32 @@
 {% block body %}
     <div class="container mt-3">
         <div class="row" style="min-width: 720px">
-            <h1>Aqua Aerobic Timetable Template</h1>
+            <h1>Class Timetable 2023</h1>
             <form action="{{ url_for('display_timetable') }}" method="post" id="this_week">
                 <input type="hidden" id="day" name="day">
                 <div id="navigation-container">
                     <button type="button" class="mx-5 px-2" onclick="previous_week()">&larr;</button>
-                    <p id="info" class="px-5">2023</p>
-                    <label for="pool"></label>
-                    <select name="pool" id="pool">
-                        <option value="">Pools</option>
+                    
+                    <label for="pool_type"></label>
+                    <select name="pool_type" id="pool_type">
+                        <option value="" disabled selected value>-- select a pool --</option>
+                        {% for pool in pool_list%}
+                            <option value="{{ pool[0] }}">{{ pool[1] }}</option>
+                        {% endfor %}
                     </select>
                     <label for="class_type"></label>
                     <select name="class_type" id="class_type">
-                        <option value="">Class type</option>
+                        <option value="" disabled selected value>-- select a class type --</option>
+                        <option value="0">Aqua Aerobic Classes</option>
+                        <option value="1">Individual Swimming Lesson</option>
                     </select>
+                    <button type="submit" class="mx-5 px-2" onclick="same_week()">Submit</button>
                     <button type="button" class="mx-5 px-2" onclick="next_week()">&rarr;</button>
                 </div>
             </form>
             {% for i in range(8) %}
                 <div class="col" style="padding: 0;">
-                    <div class="col border text-center" style="background-color: #212529; color: white; min-height: 50px;">{{ week_list[i][0] }} {{ week_list[i][1] }}</div>
+                    <div class="col border text-center" style="background-color: #212529; color: white; min-height: 50px;">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</div>
                     {% for j in range(10,19,1) %}
                         {% if i == 0 %}
                             <div class="border text-center" style="min-height: 100px;">{{ j }}:00</div>
@@ -87,6 +93,12 @@
         function next_week(){
             const currentDate = new Date("{{ today }}");
             currentDate.setDate(currentDate.getDate() + 7);
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
+            document.getElementById("this_week").submit();
+        }
+        function same_week(){
+            const currentDate = new Date("{{ today }}");
+            currentDate.setDate(currentDate.getDate());
             document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
             document.getElementById("this_week").submit();
         }

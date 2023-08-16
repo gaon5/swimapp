@@ -148,34 +148,59 @@ def display_class(class_id):
 
 @app.route('/display_timetable', methods=['GET','POST'])
 def display_timetable():
-
-    if request.method == 'POST':
-        today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
-        print(today, type(today))
-    else:
-        today = date.today()
-
-    today = date(2023, 8, 10)
+    sql_data = get_cursor()
+    # Default variables
+    today = date.today()
     start_of_week = today - timedelta(days=today.weekday())
+    sql = """SELECT class_id, class_name, class_date, start_time, end_time 
+                FROM class_list 
+                WHERE class_date BETWEEN %s AND %s;"""
+    sql_value = (start_of_week, start_of_week + timedelta(days=6))
+    if request.method == 'POST': # Overwrites default variables if the method is post
+        today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
+        start_of_week = today - timedelta(days=today.weekday())
+        class_type = request.form.get('class_type')
+        pool_type = request.form.get('pool_type')
+        if pool_type != None and class_type != None:
+            sql = """SELECT class_id, class_name, class_date, start_time, end_time  
+                FROM class_list 
+                INNER JOIN pool ON pool.pool_id=class_list.pool_id 
+                WHERE (pool.pool_id=%s) AND (is_individual=%s) AND (class_date BETWEEN %s AND %s);"""
+            sql_value = (pool_type, class_type, start_of_week, start_of_week + timedelta(days=6))
+        elif pool_type != None:
+            sql = """SELECT class_id, class_name, class_date, start_time, end_time  
+                FROM class_list
+                INNER JOIN pool ON pool.pool_id=class_list.pool_id  
+                WHERE (pool.pool_id=%s) AND (class_date BETWEEN %s AND %s);"""
+            sql_value = (pool_type, start_of_week, start_of_week + timedelta(days=6))
+        elif class_type != None:
+            sql = """SELECT class_id, class_name, class_date, start_time, end_time  
+                FROM class_list
+                WHERE (is_individual=%s) AND (class_date BETWEEN %s AND %s);"""
+            sql_value = (class_type, start_of_week, start_of_week + timedelta(days=6))
+        else:
+            sql = """SELECT class_id, class_name, class_date, start_time, end_time 
+                FROM class_list 
+                WHERE class_date BETWEEN %s AND %s;"""
+            sql_value = (start_of_week, start_of_week + timedelta(days=6))
     week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     week_list = [["Time/Day", '']]
-    for i in range(7):
-        temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
+    for i in range(7): # Create a weeklist with weekday and date in a list
+        temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%b-%d'), week[i]]
         week_list.append(temp_list)
-    sql_data = get_cursor()
-    sql = """SELECT class_id, class_name, class_date, start_time 
-                FROM class_list 
-                WHERE (is_individual=0) AND (class_date BETWEEN %s AND %s);"""
-    sql_value = (week_list[1][0], week_list[-1][0])
     sql_data.execute(sql, sql_value)
-    sql_list = sql_data.fetchall()
-    sql_data.close()
+    sql_list = sql_data.fetchall() # Fetch sql result
     for i in range(1, len(week_list), 1):
         week_list[i][0] = week_list[i][0][5:]
     class_list = []
     for sql in sql_list:
         sqlList = list(sql)
-        sqlList[2] = sqlList[2].strftime('%Y-%m-%d')[5:]
-        sqlList[-1] = int(str(sqlList[-1])[:-6])
+        sqlList[2] = sqlList[2].strftime('%Y-%b-%d')[5:]
+        sqlList[3] = int(str(sqlList[3])[:-6])
+        sqlList[4] = int(str(sqlList[4])[:-6])
         class_list.append(sqlList)
-    return render_template('timetable_base.html', week_list=week_list, class_list=class_list, today=today)
+    sql = """SELECT * FROM pool;"""
+    sql_data.execute(sql)
+    pool_list = sql_data.fetchall()
+    sql_data.close()
+    return render_template('timetable_base.html', week_list=week_list, class_list=class_list, today=today, pool_list=pool_list)
