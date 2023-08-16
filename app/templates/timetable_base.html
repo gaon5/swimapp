@@ -39,7 +39,6 @@
                                 {% if class[2] == week_list[i][0] and class[3] == j %}
                                     {{ show_list.append({class[0]:class[1]}) or "" }}
                                     {% if vars.update({'foo': False}) %}
-                                        <p>{{ class }}</p>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
@@ -122,6 +121,12 @@
         }
         function next_week(){
             currentDate.setDate(currentDate.getDate() + 7);
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
+            document.getElementById("this_week").submit();
+        }
+        function same_week(){
+            const currentDate = new Date("{{ today }}");
+            currentDate.setDate(currentDate.getDate());
             document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
             document.getElementById("this_week").submit();
         }
