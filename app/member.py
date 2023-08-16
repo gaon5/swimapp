@@ -146,21 +146,38 @@ def display_class(class_id):
     return render_template('member/display_class.html', detail_list=detail_list, permissions=check_permissions())
 
 
-@app.route('/display_timetable')
+@app.route('/display_timetable', methods=['GET','POST'])
 def display_timetable():
-    today = date(2023, 8, 9)  # datetime.today()
+    today = date.today()
     start_of_week = today - timedelta(days=today.weekday())
+    if request.method == 'POST':
+        start_date_string = request.form['start_date']
+        start_time = datetime.strptime(start_date_string, "%Y-%m-%d")
+        start_of_week = start_time.date()
+        if "previous_week" in request.form:
+            start_of_week -= timedelta(days=7)
+        else:
+            start_of_week += timedelta(days=7)
     week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    week_list = ["Time/Day", start_of_week.strftime('%Y-%m-%d') + " " + week[start_of_week.weekday()]]
-    for i in range(1, 7, 1):
-        week_list.append((start_of_week + timedelta(days=i)).strftime('%Y-%m-%d') + " " + week[i])
+    week_list = [["Time/Day",'']]
+    for i in range(0, 7, 1):
+        temp_list = []
+        temp_list.append((start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'))
+        temp_list.append(week[i])
+        week_list.append(temp_list)
     sql_data = get_cursor()
     sql = """SELECT class_id, class_name, class_date, start_time FROM class_list 
-                WHERE class_date BETWEEN %s AND %s;"""
-    sql_value = (week_list[0], week_list[-1])
+                WHERE (is_individual=0) AND (class_date BETWEEN %s AND %s);"""
+    sql_value = (week_list[1][0], week_list[-1][0])
     sql_data.execute(sql, sql_value)
     sql_list = sql_data.fetchall()
     sql_data.close()
     for i in range(1, len(week_list), 1):
-        week_list[i] = week_list[i][8:]
-    return render_template('timetable_base.html', week_list=week_list, sql_list=sql_list)
+        week_list[i][0] = week_list[i][0][5:]
+    class_list = []
+    for sql in sql_list:
+        sqlList = list(sql)
+        sqlList[2] = sqlList[2].strftime('%Y-%m-%d')[5:]
+        sqlList[-1] = int(str(sqlList[-1])[:-6])
+        class_list.append(sqlList)
+    return render_template('timetable_base.html', week_list=week_list, class_list=class_list, start_of_week=start_of_week) 

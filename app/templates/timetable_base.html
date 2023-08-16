@@ -6,21 +6,47 @@
 
 {% block body %}
     <div class="container mt-3">
+    <h1>Aqua Aerobic Timetable Template</h1>
+    <br>
+    <form action="{{ url_for('display_timetable') }}" method="post">
+        <input type="hidden" id="start_date" name="start_date" value="{{ start_of_week }}">
+        <input type="submit" id="previous_week" name="previous_week" value="Previous Week"></input>
+        <input type="submit" id="next_week" name="next_week" value="Next Week"></input>
+    </form>
+    </br>
     <div class="row">
         {% for i in range(8) %}
             <div class="col" style="padding: 0;">
-                <div class="col border text-center" style="background-color: #212529; color: white; min-height: 50px;">{{ week_list[i] }}</div>
-                {% for j in range(6,22,1) %}
-                    {% if i ==0 %}
+                <div class="col border text-center" style="background-color: #212529; color: white; min-height: 50px;">{{ week_list[i][0] }} {{ week_list[i][1] }}</div>
+                {% for j in range(10,19,1) %}
+                    {% if i == 0 %}
                         <div class="border text-center" style="min-height: 50px;">{{ j }}:00</div>
-                    {% else %}
-                        <div class="border text-center" style="min-height: 50px;"></div>
+                    {% else %} <!--When i is not 0 -->
+                        {% set vars = {'foo': True} %}
+                        {% set show_list = [] %} <!--Create an empty show_list to store multiple activities-->
+                        {% for class in class_list %}
+                            {% if class[2] == week_list[i][0] and class[3] == j %}
+                                {{show_list.append({class[0]:class[1]}) or "" }}
+                                {% if vars.update({'foo': False}) %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if vars.foo %} <!--Append empty space only when there is no class-->
+                            <div class="border text-center" style="min-height: 50px;"></div>
+                        {% else %} <!--Display multiple activities (if any) in a division-->
+                            <div class="border text-center" style="min-height: 50px;">
+                            {% for show in show_list %}
+                                {% for key in show %}
+                                    <a href="/display_class/{{ key }}">{{ show[key] }}</a><br>
+                                {% endfor %}
+                            {% endfor %}
+                            </div>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             </div>
         {% endfor %}
     </div>
-    {{ sql_list }}
     {% block timetable_body %}{% endblock %}
 {% endblock %}
 
