@@ -157,41 +157,11 @@ def display_timetable():
     else:
         today = date.today()
     start_of_week = today - timedelta(days=today.weekday())
-    sql = """SELECT class_id, class_name, class_date, start_time, end_time 
-                FROM class_list 
-                WHERE class_date BETWEEN %s AND %s;"""
-    sql_value = (start_of_week, start_of_week + timedelta(days=6))
-    if request.method == 'POST': # Overwrites default variables if the method is post
-        today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
-        start_of_week = today - timedelta(days=today.weekday())
-        class_type = request.form.get('class_type')
-        pool_type = request.form.get('pool_type')
-        if pool_type != None and class_type != None:
-            sql = """SELECT class_id, class_name, class_date, start_time, end_time  
-                FROM class_list 
-                INNER JOIN pool ON pool.pool_id=class_list.pool_id 
-                WHERE (pool.pool_id=%s) AND (is_individual=%s) AND (class_date BETWEEN %s AND %s);"""
-            sql_value = (pool_type, class_type, start_of_week, start_of_week + timedelta(days=6))
-        elif pool_type != None:
-            sql = """SELECT class_id, class_name, class_date, start_time, end_time  
-                FROM class_list
-                INNER JOIN pool ON pool.pool_id=class_list.pool_id  
-                WHERE (pool.pool_id=%s) AND (class_date BETWEEN %s AND %s);"""
-            sql_value = (pool_type, start_of_week, start_of_week + timedelta(days=6))
-        elif class_type != None:
-            sql = """SELECT class_id, class_name, class_date, start_time, end_time  
-                FROM class_list
-                WHERE (is_individual=%s) AND (class_date BETWEEN %s AND %s);"""
-            sql_value = (class_type, start_of_week, start_of_week + timedelta(days=6))
-        else:
-            sql = """SELECT class_id, class_name, class_date, start_time, end_time 
-                FROM class_list 
-                WHERE class_date BETWEEN %s AND %s;"""
-            sql_value = (start_of_week, start_of_week + timedelta(days=6))
     week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     week_list = [["Time/Day", '']]
-    for i in range(7): # Create a weeklist with weekday and date in a list
-        temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%b-%d'), week[i]]
+    # Create a weeklist with weekday and date in a list
+    for i in range(7):
+        temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
         week_list.append(temp_list)
     sql_data = get_cursor()
     sql = """SELECT class_id, class_name, class_date, start_time, end_time
@@ -199,7 +169,8 @@ def display_timetable():
                 WHERE class_date BETWEEN %s AND %s;"""
     sql_value = (week_list[1][0], week_list[-1][0])
     sql_data.execute(sql, sql_value)
-    sql_list = sql_data.fetchall() # Fetch sql result
+    # Fetch sql result
+    sql_list = sql_data.fetchall()
     for i in range(1, len(week_list), 1):
         week_list[i][0] = week_list[i][0][5:]
     class_list = []
