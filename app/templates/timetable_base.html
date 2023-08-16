@@ -7,48 +7,34 @@
             align-items: center;
             justify-content: center;
         }
-
         #info {
             margin: 0 20px;
         }
     </style>
+    {% block timetable_css %}{% endblock %}
 {% endblock %}
 
 {% block body %}
+    {% block timetable_body1 %}{% endblock %}
     <div class="container mt-3">
-        <div class="row" style="min-width: 720px">
-            <h1>Class Timetable 2023</h1>
+        <div class="row" style="min-width: 960px">
             <form action="{{ url_for('display_timetable') }}" method="post" id="this_week">
                 <input type="hidden" id="day" name="day">
                 <div id="navigation-container">
                     <button type="button" class="mx-5 px-2" onclick="previous_week()">&larr;</button>
-                    
-                    <label for="pool_type"></label>
-                    <select name="pool_type" id="pool_type">
-                        <option value="" disabled selected value>-- select a pool --</option>
-                        {% for pool in pool_list%}
-                            <option value="{{ pool[0] }}">{{ pool[1] }}</option>
-                        {% endfor %}
-                    </select>
-                    <label for="class_type"></label>
-                    <select name="class_type" id="class_type">
-                        <option value="" disabled selected value>-- select a class type --</option>
-                        <option value="0">Aqua Aerobic Classes</option>
-                        <option value="1">Individual Swimming Lesson</option>
-                    </select>
-                    <button type="submit" class="mx-5 px-2" onclick="same_week()">Submit</button>
+                    <p id="info" class="px-5">2023</p>
                     <button type="button" class="mx-5 px-2" onclick="next_week()">&rarr;</button>
                 </div>
             </form>
             {% for i in range(8) %}
                 <div class="col" style="padding: 0;">
-                    <div class="col border text-center" style="background-color: #212529; color: white; min-height: 50px;">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</div>
+                    <div class="col border text-center" style="background-color: #212529; color: white; height: 50px;">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</div>
                     {% for j in range(10,19,1) %}
                         {% if i == 0 %}
-                            <div class="border text-center" style="min-height: 100px;">{{ j }}:00</div>
+                            <div class="border text-center" style="height: 100px;">{{ j }}:00</div>
                         {% else %}
                             {% set vars = {'foo': True} %}
-                            {% set show_list = [] %} <!--Create an empty show_list to store multiple activities-->
+                            {% set show_list = [] %}
                             {% for class in class_list %}
                                 {% if class[2] == week_list[i][0] and class[3] == j %}
                                     {{ show_list.append({class[0]:class[1]}) or "" }}
@@ -56,14 +42,15 @@
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
-                            {% if vars.foo %} <!--Append empty space only when there is no class-->
-                                <div class="border text-center" style="min-height: 50px;"></div>
-                                <div class="border text-center" style="min-height: 50px;"></div>
-                            {% else %} <!--Display multiple activities (if any) in a division-->
-                                <div class="border text-center" style="min-height: 50px;">
+                            {% if vars.foo %}
+                                <div class="border text-center" style="height: 50px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal"></div>
+                                <div class="border text-center" style="height: 50px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal"></div>
+                            {% else %}
+                                <div class="border text-center" style="height: 100px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal2">
                                     {% for show in show_list %}
                                         {% for key in show %}
-                                            <a href="/display_class/{{ key }}">{{ show[key] }}</a><br>
+                                            <p>{{ show[key] }}</p>
+{#                                            <a href="/display_class/{{ key }}">{{ show[key] }}</a><br>#}
                                         {% endfor %}
                                     {% endfor %}
                                 </div>
@@ -75,23 +62,64 @@
         </div>
     </div>
 
+    {% block timetable_body2 %}{% endblock %}
 
-    {% block timetable_body %}{% endblock %}
-
+    <div class="modal fade" id="myOwnModal" tabindex="-1" aria-labelledby="myOwnModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myOwnModalLabel">Add class</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pt-3 pb-3">
+                        <div class="container w-75">
+                            <p>Add class</p>
+                            {% block myOwnModal %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myOwnModal2" tabindex="-1" aria-labelledby="myOwnModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myOwnModalLabel2">Class Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pt-3 pb-3">
+                        <div class="container w-75">
+                            <p>Class Detail</p>
+                            {% block myOwnModal2 %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 {% endblock %}
 
 {% block myjs %}
     <script>
+        const currentDate = new Date("{{ today }}");
+        document.getElementById('info').innerHTML = currentDate.toDateString();
         function previous_week(){
-            const currentDate = new Date("{{ today }}");
             currentDate.setDate(currentDate.getDate() - 7);
             document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
             document.getElementById("this_week").submit();
         }
         function next_week(){
-            const currentDate = new Date("{{ today }}");
             currentDate.setDate(currentDate.getDate() + 7);
             document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
             document.getElementById("this_week").submit();

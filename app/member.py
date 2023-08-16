@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 import math
 import bcrypt
 import re
-from app import app, check_permissions, get_cursor, title_list, city_list, region_list
+from app import app, check_permissions, get_cursor, title_list, city_list, region_list, pool_list
 
 
 @app.route('/view_class', methods=['GET', 'POST'])
@@ -138,7 +138,11 @@ def member_change_information():
 def display_class(class_id):
     sample_value = class_id
     sql_data = get_cursor()
-    sql = """SELECT class_id, class_name, class_date, start_time, end_time, class_list.detailed_information, first_name, last_name, pool.pool_name FROM swimming_pool.class_list INNER JOIN instructor ON class_list.instructor_id=instructor.instructor_id INNER JOIN pool ON class_list.pool_id=pool.pool_id WHERE class_id=%s;"""
+    sql = """SELECT class_id, class_name, class_date, start_time, end_time, class_list.detailed_information, first_name, last_name, pool.pool_name 
+                FROM swimming_pool.class_list 
+                INNER JOIN instructor ON class_list.instructor_id=instructor.instructor_id 
+                INNER JOIN pool ON class_list.pool_id=pool.pool_id 
+                WHERE class_id=%s;"""
     sql_value = (sample_value,)
     sql_data.execute(sql, sql_value)
     detail_list = sql_data.fetchone()
@@ -146,11 +150,12 @@ def display_class(class_id):
     return render_template('member/display_class.html', detail_list=detail_list, permissions=check_permissions())
 
 
-@app.route('/display_timetable', methods=['GET','POST'])
+@app.route('/display_timetable', methods=['GET', 'POST'])
 def display_timetable():
-    sql_data = get_cursor()
-    # Default variables
-    today = date.today()
+    if request.method == 'POST':
+        today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
+    else:
+        today = date.today()
     start_of_week = today - timedelta(days=today.weekday())
     sql = """SELECT class_id, class_name, class_date, start_time, end_time 
                 FROM class_list 
@@ -188,6 +193,11 @@ def display_timetable():
     for i in range(7): # Create a weeklist with weekday and date in a list
         temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%b-%d'), week[i]]
         week_list.append(temp_list)
+    sql_data = get_cursor()
+    sql = """SELECT class_id, class_name, class_date, start_time, end_time
+                FROM class_list 
+                WHERE class_date BETWEEN %s AND %s;"""
+    sql_value = (week_list[1][0], week_list[-1][0])
     sql_data.execute(sql, sql_value)
     sql_list = sql_data.fetchall() # Fetch sql result
     for i in range(1, len(week_list), 1):
@@ -195,12 +205,8 @@ def display_timetable():
     class_list = []
     for sql in sql_list:
         sqlList = list(sql)
-        sqlList[2] = sqlList[2].strftime('%Y-%b-%d')[5:]
+        sqlList[2] = sqlList[2].strftime('%Y-%m-%d')[5:]
         sqlList[3] = int(str(sqlList[3])[:-6])
         sqlList[4] = int(str(sqlList[4])[:-6])
         class_list.append(sqlList)
-    sql = """SELECT * FROM pool;"""
-    sql_data.execute(sql)
-    pool_list = sql_data.fetchall()
-    sql_data.close()
-    return render_template('timetable_base.html', week_list=week_list, class_list=class_list, today=today, pool_list=pool_list)
+    return render_template('instructor/instructor_timetable.html', week_list=week_list, class_list=class_list, today=today, pool_list=pool_list)
