@@ -1,55 +1,94 @@
 {% extends "guest/layout.html" %}
 
 {% block mycss %}
+    <style>
+        #navigation-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
+        #info {
+            margin: 0 20px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-3">
-    <h1>Aqua Aerobic Timetable Template</h1>
-    <br>
-    <form action="{{ url_for('display_timetable') }}" method="post">
-        <input type="hidden" id="start_date" name="start_date" value="{{ start_of_week }}">
-        <input type="submit" id="previous_week" name="previous_week" value="Previous Week"></input>
-        <input type="submit" id="next_week" name="next_week" value="Next Week"></input>
-    </form>
-    </br>
-    <div class="row">
-        {% for i in range(8) %}
-            <div class="col" style="padding: 0;">
-                <div class="col border text-center" style="background-color: #212529; color: white; min-height: 50px;">{{ week_list[i][0] }} {{ week_list[i][1] }}</div>
-                {% for j in range(10,19,1) %}
-                    {% if i == 0 %}
-                        <div class="border text-center" style="min-height: 50px;">{{ j }}:00</div>
-                    {% else %} <!--When i is not 0 -->
-                        {% set vars = {'foo': True} %}
-                        {% set show_list = [] %} <!--Create an empty show_list to store multiple activities-->
-                        {% for class in class_list %}
-                            {% if class[2] == week_list[i][0] and class[3] == j %}
-                                {{show_list.append({class[0]:class[1]}) or "" }}
-                                {% if vars.update({'foo': False}) %}
+        <div class="row" style="min-width: 720px">
+            <h1>Aqua Aerobic Timetable Template</h1>
+            <form action="{{ url_for('display_timetable') }}" method="post" id="this_week">
+                <input type="hidden" id="day" name="day">
+                <div id="navigation-container">
+                    <button type="button" class="mx-5 px-2" onclick="previous_week()">&larr;</button>
+                    <p id="info" class="px-5">2023</p>
+                    <label for="pool"></label>
+                    <select name="pool" id="pool">
+                        <option value="">Pools</option>
+                    </select>
+                    <label for="class_type"></label>
+                    <select name="class_type" id="class_type">
+                        <option value="">Class type</option>
+                    </select>
+                    <button type="button" class="mx-5 px-2" onclick="next_week()">&rarr;</button>
+                </div>
+            </form>
+            {% for i in range(8) %}
+                <div class="col" style="padding: 0;">
+                    <div class="col border text-center" style="background-color: #212529; color: white; min-height: 50px;">{{ week_list[i][0] }} {{ week_list[i][1] }}</div>
+                    {% for j in range(10,19,1) %}
+                        {% if i == 0 %}
+                            <div class="border text-center" style="min-height: 100px;">{{ j }}:00</div>
+                        {% else %}
+                            {% set vars = {'foo': True} %}
+                            {% set show_list = [] %} <!--Create an empty show_list to store multiple activities-->
+                            {% for class in class_list %}
+                                {% if class[2] == week_list[i][0] and class[3] == j %}
+                                    {{ show_list.append({class[0]:class[1]}) or "" }}
+                                    {% if vars.update({'foo': False}) %}
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                        {% if vars.foo %} <!--Append empty space only when there is no class-->
-                            <div class="border text-center" style="min-height: 50px;"></div>
-                        {% else %} <!--Display multiple activities (if any) in a division-->
-                            <div class="border text-center" style="min-height: 50px;">
-                            {% for show in show_list %}
-                                {% for key in show %}
-                                    <a href="/display_class/{{ key }}">{{ show[key] }}</a><br>
-                                {% endfor %}
                             {% endfor %}
-                            </div>
+                            {% if vars.foo %} <!--Append empty space only when there is no class-->
+                                <div class="border text-center" style="min-height: 50px;"></div>
+                                <div class="border text-center" style="min-height: 50px;"></div>
+                            {% else %} <!--Display multiple activities (if any) in a division-->
+                                <div class="border text-center" style="min-height: 50px;">
+                                    {% for show in show_list %}
+                                        {% for key in show %}
+                                            <a href="/display_class/{{ key }}">{{ show[key] }}</a><br>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
+
+
     {% block timetable_body %}{% endblock %}
+
+
+
 {% endblock %}
 
 {% block myjs %}
-
+    <script>
+        function previous_week(){
+            const currentDate = new Date("{{ today }}");
+            currentDate.setDate(currentDate.getDate() - 7);
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
+            document.getElementById("this_week").submit();
+        }
+        function next_week(){
+            const currentDate = new Date("{{ today }}");
+            currentDate.setDate(currentDate.getDate() + 7);
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
+            document.getElementById("this_week").submit();
+        }
+    </script>
 {% endblock %}
