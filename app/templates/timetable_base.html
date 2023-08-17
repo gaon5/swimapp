@@ -10,8 +10,12 @@
         #info {
             margin: 0 20px;
         }
-        .little_box:hover{
+        .little_box:hover {
             background-color: #dbe3e8;
+        }
+        th {
+            height: 50px;
+            width: 120px;
         }
     </style>
     {% block timetable_css %}{% endblock %}
@@ -49,17 +53,23 @@
                     <button type="button" class="mx-5 px-2" onclick="next_week()">&rarr;</button>
                 </div>
             </form>
-            {% for i in range(8) %}
-                <div class="col" id="day{{ i }}" style="padding: 0;">
-                    <div class="col border text-center" style="background-color: #212529; color: white; height: 50px;">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</div>
-                    {% for j in range(10,19,1) %}
-                        {% if i == 0 %}
-                            <div class="border text-center" style="height: 100px;">{{ j }}:00</div>
-                        {% else %}
-                        {% endif %}
+            <table class="table table-bordered">
+                <tr>
+                    {% for i in range(0,8,1) %}
+                        <th class="table-dark">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</th>
                     {% endfor %}
-                </div>
-            {% endfor %}
+                </tr>
+                {% for i in range(1,19,1) %}
+                    <tr>
+                        {% if i%2 == 1 %}
+                            <th rowspan="2">{{ (i + 1)//2 + 9 }}:00</th>
+                        {% endif %}
+                        {% for j in range(1,8,1) %}
+                            <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
         </div>
     </div>
     {% block timetable_body2 %}{% endblock %}
@@ -112,61 +122,46 @@
     <script>
         const currentDate = new Date("{{ today }}");
         document.getElementById('info').innerHTML = currentDate.toDateString();
-        function previous_week(){
+        function previous_week() {
             currentDate.setDate(currentDate.getDate() - 7);
             document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
             document.getElementById("this_week").submit();
         }
-        function next_week(){
+        function next_week() {
             currentDate.setDate(currentDate.getDate() + 7);
             document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
             document.getElementById("this_week").submit();
         }
-        class_list = JSON.parse('{{ class_list|tojson }}');
 
-        function createClassElement(classInfo) {
+        class_list = JSON.parse('{{ all_details|tojson }}');
+        for (const i in class_list) {
+
+
+            {# add judgment #}
+
+
+            let id = class_list[i]["x"] + class_list[i]["y"]
+            const box = document.getElementById(id)
             const classElement = document.createElement("div");
-            classElement.className = "border text-center little_box";
+            classElement.innerHTML = `<a href="javascript:void(0);">${class_list[i]["class_name"]}</a>`;
             classElement.setAttribute("data-bs-toggle", "modal");
             classElement.setAttribute("data-bs-target", "#myOwnModal2");
-            if (classInfo){
-                classElement.style.height = (classInfo.continuance * 100) + "px"; // Adjust height based on continuance
-                classElement.innerHTML = `<p>${classInfo.class_name}</p>`;
-                classElement.setAttribute("onclick", "showLink("+ classInfo.id +")");
-            }else {
-                classElement.style.height = "50px";
+            classElement.setAttribute("onclick", "show_detail(" + i + ")");
+            box.appendChild(classElement);
+            if (class_list[i]["continuance"] > 1) {
+                box.rowSpan = class_list[i]["continuance"]
+                let id2 = class_list[i]["x"] + String(Number(class_list[i]["y"]) + 1)
+                const box2 = document.getElementById(id2)
+                box2.parentNode.removeChild(box2);
             }
+        }
 
-            return classElement;
+        function showLink(x, y) {
+            console.log(x, y)
         }
-        for (const day in class_list) {
-            if (class_list.hasOwnProperty(day)) {
-                const dayContainer = document.getElementById("day" + day);
-                let break_time = 0
-                for (let hour = 10; hour <= 18; hour++) {
-                    for (let minute = 0; minute < 60; minute += 30) {
-                        if (break_time){
-                            break_time--
-                            break;
-                        }
-                        const classesInSlot = class_list[day].filter(function (classInfo) {
-                            return Math.floor(classInfo.start_time) === hour && classInfo.start_time % 1 * 60 === minute;
-                        });
-                        if (classesInSlot.length > 0) {
-                            classesInSlot.forEach(function (classInfo) {
-                                break_time = classInfo["continuance"]/0.5 - 1
-                                const classElement = createClassElement(classInfo);
-                                dayContainer.appendChild(classElement);
-                            });
-                        } else {
-                            const emptySlot = createClassElement();
-                            dayContainer.appendChild(emptySlot);
-                        }
-                    }
-                }
-            }
-        }
-        function showLink(id){
+
+        function show_detail(id) {
+            event.stopPropagation();
             console.log(id)
         }
     </script>
