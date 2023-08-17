@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 import math
 import bcrypt
 import re
+import json
 from app import app, check_permissions, get_cursor, title_list, city_list, region_list, pool_list
 
 
@@ -164,20 +165,38 @@ def display_timetable():
         temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
         week_list.append(temp_list)
     sql_data = get_cursor()
-    sql = """SELECT class_id, class_name, class_date, start_time, end_time
-                FROM class_list 
-                WHERE class_date BETWEEN %s AND %s;"""
+    sql = """SELECT c.class_id, c.instructor_id, c.pool_id, p.pool_name, c.is_individual, c.class_name, c.detailed_information, 
+                CONCAT(t.title, " ", i.first_name, " ", i.last_name) AS instructor_name, i.phone_number, i.detailed_information,
+                i.state, c.class_date, c.start_time, c.end_time
+                FROM class_list AS c
+                LEFT JOIN pool AS p ON c.pool_id=p.pool_id
+                LEFT JOIN instructor AS i ON c.instructor_id=i.instructor_id
+                LEFT JOIN title AS t ON i.title_id=t.title_id
+                WHERE (c.class_date BETWEEN %s AND %s) AND (i.state=1)
+                ORDER BY start_time"""
     sql_value = (week_list[1][0], week_list[-1][0])
     sql_data.execute(sql, sql_value)
-    # Fetch sql result
-    sql_list = sql_data.fetchall()
+    all_details_sql = sql_data.fetchall()
+
+    all_details = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': [], '7': []}
+    for item in all_details_sql:
+        level_1 = str(item[11].weekday())
+        time = item[12].total_seconds()/3600
+        continuance = (item[13]-item[12]).total_seconds()/3600
+        all_details[level_1].append({
+            "id": str(item[0]),
+            "instructor_id": str(item[1]),
+            "pool_id": str(item[2]),
+            "is_individual": str(item[4]),
+            "pool_name": item[3],
+            "class_name": item[5],
+            "class_detail": item[6],
+            "instructor_name": item[7],
+            "instructor_phone": item[8],
+            "instructor_detail": item[9],
+            "start_time": time,
+            "continuance": continuance
+        })
     for i in range(1, len(week_list), 1):
         week_list[i][0] = week_list[i][0][5:]
-    class_list = []
-    for sql in sql_list:
-        sqlList = list(sql)
-        sqlList[2] = sqlList[2].strftime('%Y-%m-%d')[5:]
-        sqlList[3] = int(str(sqlList[3])[:-6])
-        sqlList[4] = int(str(sqlList[4])[:-6])
-        class_list.append(sqlList)
-    return render_template('instructor/instructor_timetable.html', week_list=week_list, class_list=class_list, today=today, pool_list=pool_list)
+    return render_template('instructor/instructor_timetable.html', week_list=week_list, class_list=all_details, today=today, pool_list=pool_list)

@@ -10,12 +10,35 @@
         #info {
             margin: 0 20px;
         }
+        .little_box:hover{
+            background-color: #dbe3e8;
+        }
     </style>
     {% block timetable_css %}{% endblock %}
 {% endblock %}
 
 {% block body %}
     {% block timetable_body1 %}{% endblock %}
+    <div class="container mt-3">
+        <label for="pool_type"></label>
+        <select name="pool_type" id="pool_type">
+            <option value="" disabled selected>-- select a pool --</option>
+            {% for pool in pool_list %}
+                <option value="{{ pool[0] }}">{{ pool[1] }}</option>
+            {% endfor %}
+        </select>
+        <label for="class_type"></label>
+        <select name="class_type" id="class_type">
+            <option value="" disabled selected>-- select a class type --</option>
+            <option value="0">Public Lesson</option>
+            <option value="1">Individual Lesson</option>
+        </select>
+        <label for="instructor"></label>
+        <select name="instructor" id="instructor">
+            <option value="" disabled selected>-- select a instructor --</option>
+            <option value="1">person1</option>
+        </select>
+    </div>
     <div class="container mt-3">
         <div class="row" style="min-width: 960px">
             <form action="{{ url_for('display_timetable') }}" method="post" id="this_week">
@@ -27,41 +50,17 @@
                 </div>
             </form>
             {% for i in range(8) %}
-                <div class="col" style="padding: 0;">
+                <div class="col" id="day{{ i }}" style="padding: 0;">
                     <div class="col border text-center" style="background-color: #212529; color: white; height: 50px;">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</div>
                     {% for j in range(10,19,1) %}
                         {% if i == 0 %}
                             <div class="border text-center" style="height: 100px;">{{ j }}:00</div>
-                        {% else %}
-                            {% set vars = {'foo': True} %}
-                            {% set show_list = [] %}
-                            {% for class in class_list %}
-                                {% if class[2] == week_list[i][0] and class[3] == j %}
-                                    {{ show_list.append({class[0]:class[1]}) or "" }}
-                                    {% if vars.update({'foo': False}) %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                            {% if vars.foo %}
-                                <div class="border text-center" style="height: 50px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal"></div>
-                                <div class="border text-center" style="height: 50px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal"></div>
-                            {% else %}
-                                <div class="border text-center" style="height: 100px;min-width: 120px" data-bs-toggle="modal" data-bs-target="#myOwnModal2">
-                                    {% for show in show_list %}
-                                        {% for key in show %}
-                                            <p>{{ show[key] }}</p>
-{#                                            <a href="/display_class/{{ key }}">{{ show[key] }}</a><br>#}
-                                        {% endfor %}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
                         {% endif %}
                     {% endfor %}
                 </div>
             {% endfor %}
         </div>
     </div>
-
     {% block timetable_body2 %}{% endblock %}
 
     <div class="modal fade" id="myOwnModal" tabindex="-1" aria-labelledby="myOwnModalLabel" aria-hidden="true">
@@ -75,7 +74,6 @@
                     <div class="pt-3 pb-3">
                         <div class="container w-75">
                             <p>Add class</p>
-                            {% block myOwnModal %}{% endblock %}
                         </div>
                     </div>
                 </div>
@@ -96,7 +94,6 @@
                     <div class="pt-3 pb-3">
                         <div class="container w-75">
                             <p>Class Detail</p>
-                            {% block myOwnModal2 %}{% endblock %}
                         </div>
                     </div>
                 </div>
@@ -124,11 +121,42 @@
             document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
             document.getElementById("this_week").submit();
         }
-        function same_week(){
-            const currentDate = new Date("{{ today }}");
-            currentDate.setDate(currentDate.getDate());
-            document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
-            document.getElementById("this_week").submit();
+        class_list = JSON.parse('{{ class_list|tojson }}');
+
+        function createClassElement(classInfo) {
+            const classElement = document.createElement("div");
+            classElement.className = "border text-center little_box";
+            classElement.style.height = (classInfo.continuance * 100) + "px"; // Adjust height based on continuance
+            classElement.innerHTML = `<p>${classInfo.class_name}</p>`;
+            return classElement;
+        }
+        for (const day in class_list) {
+            if (class_list.hasOwnProperty(day)) {
+                const dayContainer = document.getElementById("day" + day);
+
+                // Create time slots for each half hour from 10:00 to 18:00
+                for (let hour = 10; hour <= 18; hour++) {
+                    for (let minute = 0; minute < 60; minute += 30) {
+
+                        const classesInSlot = class_list[day].filter(function (classInfo) {
+                            return Math.floor(classInfo.start_time) === hour && classInfo.start_time % 1 * 60 === minute;
+                        });
+                        if (classesInSlot.length > 0) {
+                            classesInSlot.forEach(function (classInfo) {
+                                const classElement = createClassElement(classInfo);
+                                dayContainer.appendChild(classElement);
+                            });
+                        } else {
+                            // If no classes, create an empty slot
+                            const emptySlot = document.createElement("div");
+                            emptySlot.className = "border text-center little_box";
+                            emptySlot.style.height = "50px"; // Default height for empty slot
+                            dayContainer.appendChild(emptySlot);
+                        }
+                    }
+                }
+            }
         }
     </script>
+    {% block timetable_js %}{% endblock %}
 {% endblock %}
