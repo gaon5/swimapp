@@ -55,6 +55,7 @@
                     {% for j in range(10,19,1) %}
                         {% if i == 0 %}
                             <div class="border text-center" style="height: 100px;">{{ j }}:00</div>
+                        {% else %}
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -126,36 +127,47 @@
         function createClassElement(classInfo) {
             const classElement = document.createElement("div");
             classElement.className = "border text-center little_box";
-            classElement.style.height = (classInfo.continuance * 100) + "px"; // Adjust height based on continuance
-            classElement.innerHTML = `<p>${classInfo.class_name}</p>`;
+            classElement.setAttribute("data-bs-toggle", "modal");
+            classElement.setAttribute("data-bs-target", "#myOwnModal2");
+            if (classInfo){
+                classElement.style.height = (classInfo.continuance * 100) + "px"; // Adjust height based on continuance
+                classElement.innerHTML = `<p>${classInfo.class_name}</p>`;
+                classElement.setAttribute("onclick", "showLink("+ classInfo.id +")");
+            }else {
+                classElement.style.height = "50px";
+            }
+
             return classElement;
         }
         for (const day in class_list) {
             if (class_list.hasOwnProperty(day)) {
                 const dayContainer = document.getElementById("day" + day);
-
-                // Create time slots for each half hour from 10:00 to 18:00
+                let break_time = 0
                 for (let hour = 10; hour <= 18; hour++) {
                     for (let minute = 0; minute < 60; minute += 30) {
-
+                        if (break_time){
+                            break_time--
+                            break;
+                        }
                         const classesInSlot = class_list[day].filter(function (classInfo) {
                             return Math.floor(classInfo.start_time) === hour && classInfo.start_time % 1 * 60 === minute;
                         });
                         if (classesInSlot.length > 0) {
                             classesInSlot.forEach(function (classInfo) {
+                                break_time = classInfo["continuance"]/0.5 - 1
                                 const classElement = createClassElement(classInfo);
                                 dayContainer.appendChild(classElement);
                             });
                         } else {
-                            // If no classes, create an empty slot
-                            const emptySlot = document.createElement("div");
-                            emptySlot.className = "border text-center little_box";
-                            emptySlot.style.height = "50px"; // Default height for empty slot
+                            const emptySlot = createClassElement();
                             dayContainer.appendChild(emptySlot);
                         }
                     }
                 }
             }
+        }
+        function showLink(id){
+            console.log(id)
         }
     </script>
     {% block timetable_js %}{% endblock %}

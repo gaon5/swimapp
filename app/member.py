@@ -180,7 +180,7 @@ def display_timetable():
 
     all_details = {'1': [], '2': [], '3': [], '4': [], '5': [], '6': [], '7': []}
     for item in all_details_sql:
-        level_1 = str(item[11].weekday())
+        level_1 = str(item[11].weekday()+1)
         time = item[12].total_seconds()/3600
         continuance = (item[13]-item[12]).total_seconds()/3600
         all_details[level_1].append({
