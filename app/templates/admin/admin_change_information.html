@@ -75,32 +75,32 @@
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             for (let i = 0; i < inputElements.length; i++) {
-                inputElements[i].disabled = false
+                inputElements[i].disabled = false;
             }
             for (let i = 0; i < selectElements.length; i++) {
-                selectElements[i].disabled = false
+                selectElements[i].disabled = false;
             }
-            Change.style.display = 'none'
-            Cancel.style.display = ''
-            Submit.disabled = false
-            Submit.classList.remove("btn-outline-primary")
-            Submit.classList.add("btn-primary")
+            Change.style.display = 'none';
+            Cancel.style.display = '';
+            Submit.disabled = false;
+            Submit.classList.remove("btn-outline-primary");
+            Submit.classList.add("btn-primary");
         }
 
         function Cancel_form() {
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             for (let i = 1; i < inputElements.length; i++) {
-                inputElements[i].disabled = true
+                inputElements[i].disabled = true;
             }
             for (let i = 0; i < selectElements.length; i++) {
-                selectElements[i].disabled = true
+                selectElements[i].disabled = true;
             }
-            Change.style.display = ''
-            Cancel.style.display = 'none'
-            Submit.disabled = true
-            Submit.classList.remove("btn-primary")
-            Submit.classList.add("btn-outline-primary")
+            Change.style.display = '';
+            Cancel.style.display = 'none';
+            Submit.disabled = true;
+            Submit.classList.remove("btn-primary");
+            Submit.classList.add("btn-outline-primary");
         }
 
         function validateForm() {
@@ -110,29 +110,29 @@
 
             const first_name = document.getElementById('first_name');
             if (!namePattern.test(first_name.value)) {
-                first_name.classList.add("is-invalid")
+                first_name.classList.add("is-invalid");
                 alert("First name should contain only letters.");
                 i = 1;
             } else {
-                first_name.classList.remove("is-invalid")
+                first_name.classList.remove("is-invalid");
             }
 
             const last_name = document.getElementById('last_name');
             if (!namePattern.test(last_name.value)) {
-                last_name.classList.add("is-invalid")
+                last_name.classList.add("is-invalid");
                 alert("Last name should contain only letters.");
                 i = 1;
             } else {
-                last_name.classList.remove("is-invalid")
+                last_name.classList.remove("is-invalid");
             }
 
             const phone_number = document.getElementById('phone_number');
             if (!phonePattern.test(phone_number.value)) {
-                phone_number.classList.add("is-invalid")
+                phone_number.classList.add("is-invalid");
                 alert("Wrong phone number length.");
                 i = 1;
             } else {
-                phone_number.classList.remove("is-invalid")
+                phone_number.classList.remove("is-invalid");
             }
             return i !== 1;
         }

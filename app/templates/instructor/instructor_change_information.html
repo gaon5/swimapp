@@ -70,7 +70,7 @@
 
 {% block myjs %}
     <script>
-        document.getElementById('title').value ={{ instructor_detail[1] }}
+        document.getElementById('title').value ={{ instructor_detail[1] }};
 
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');
@@ -81,19 +81,19 @@
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
             for (let i = 0; i < inputElements.length; i++) {
-                inputElements[i].disabled = false
+                inputElements[i].disabled = false;
             }
             for (let i = 0; i < selectElements.length; i++) {
-                selectElements[i].disabled = false
+                selectElements[i].disabled = false;
             }
             for (let i = 0; i < textareaElements.length; i++) {
-                textareaElements[i].disabled = false
+                textareaElements[i].disabled = false;
             }
-            Change.style.display = 'none'
-            Cancel.style.display = ''
-            Submit.disabled = false
-            Submit.classList.remove("btn-outline-primary")
-            Submit.classList.add("btn-primary")
+            Change.style.display = 'none';
+            Cancel.style.display = '';
+            Submit.disabled = false;
+            Submit.classList.remove("btn-outline-primary");
+            Submit.classList.add("btn-primary");
         }
 
         function Cancel_form() {
@@ -101,19 +101,19 @@
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
             for (let i = 1; i < inputElements.length; i++) {
-                inputElements[i].disabled = true
+                inputElements[i].disabled = true;
             }
             for (let i = 0; i < selectElements.length; i++) {
-                selectElements[i].disabled = true
+                selectElements[i].disabled = true;
             }
             for (let i = 0; i < textareaElements.length; i++) {
-                textareaElements[i].disabled = true
+                textareaElements[i].disabled = true;
             }
-            Change.style.display = ''
-            Cancel.style.display = 'none'
-            Submit.disabled = true
-            Submit.classList.remove("btn-primary")
-            Submit.classList.add("btn-outline-primary")
+            Change.style.display = '';
+            Cancel.style.display = 'none';
+            Submit.disabled = true;
+            Submit.classList.remove("btn-primary");
+            Submit.classList.add("btn-outline-primary");
         }
 
         function validateForm() {
@@ -123,26 +123,26 @@
             let i = 0;
             if (!namePattern.test(first_name.value)) {
                 alert("First name should contain only letters.");
-                first_name.classList.add("is-invalid")
+                first_name.classList.add("is-invalid");
                 i = 1;
             } else {
-                first_name.classList.remove("is-invalid")
+                first_name.classList.remove("is-invalid");
             }
             const last_name = document.getElementById('last_name');
             if (!namePattern.test(last_name.value)) {
                 alert("Last name should contain only letters.");
-                last_name.classList.add("is-invalid")
+                last_name.classList.add("is-invalid");
                 i = 1;
             } else {
-                last_name.classList.remove("is-invalid")
+                last_name.classList.remove("is-invalid");
             }
             const phone_number = document.getElementById('phone_number');
             if (!phonePattern.test(phone_number.value)) {
-                phone_number.classList.add("is-invalid")
+                phone_number.classList.add("is-invalid");
                 alert("Wrong phone number length.");
                 i = 1;
             } else {
-                phone_number.classList.remove("is-invalid")
+                phone_number.classList.remove("is-invalid");
             }
             return i !== 1;
         }
