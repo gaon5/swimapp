@@ -75,6 +75,7 @@
             </table>
         </div>
     </div>
+
     {% block timetable_body2 %}{% endblock %}
 
     <div class="modal fade" id="myOwnModal" tabindex="-1" aria-labelledby="myOwnModalLabel" aria-hidden="true">
@@ -148,84 +149,84 @@
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block myjs %}
     <script>
         const currentDate = new Date("{{ today }}");
         document.getElementById('info').innerHTML = currentDate.toDateString();
+
         function previous_week() {
             currentDate.setDate(currentDate.getDate() - 7);
-            document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10);
             document.getElementById("this_week").submit();
         }
+
         function next_week() {
             currentDate.setDate(currentDate.getDate() + 7);
-            document.getElementById('day').value = currentDate.toISOString().slice(0, 10)
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10);
             document.getElementById("this_week").submit();
         }
 
         class_list = JSON.parse('{{ all_details|tojson }}');
 
-        function clean_table(){
+        function clean_table() {
             for (let w = 1; w < 8; w++) {
-                    for (let e = 1; e < 19; e++){
-                        let temp = String(w) + String(e)
-                        const thElement = document.getElementById(temp)
-                        if (thElement.style.display === 'none'){
-                            thElement.removeAttribute('style');
-                        }
-                        thElement.setAttribute('rowspan', '1');
-                        if (thElement.hasChildNodes()) {
-                            const childNodes = thElement.getElementsByTagName('div');
-                            for (let i = childNodes.length - 1; i >= 0; i--) {
-                                const childNode = childNodes[i];
-                                thElement.removeChild(childNode);
-                            }
+                for (let e = 1; e < 19; e++) {
+                    let temp = String(w) + String(e);
+                    const thElement = document.getElementById(temp);
+                    if (thElement.style.display === 'none') {
+                        thElement.removeAttribute('style');
+                    }
+                    thElement.setAttribute('rowspan', '1');
+                    if (thElement.hasChildNodes()) {
+                        const childNodes = thElement.getElementsByTagName('div');
+                        for (let i = childNodes.length - 1; i >= 0; i--) {
+                            const childNode = childNodes[i];
+                            thElement.removeChild(childNode);
                         }
                     }
                 }
+            }
         }
 
         function display_timetable() {
             for (const i in class_list) {
-                let pool_type = Number(document.getElementById("pool_type").value)
-                console.log("pool_type",pool_type,class_list[i]["pool_id"])
+                let pool_type = Number(document.getElementById("pool_type").value);
                 if (pool_type) {
                     if (class_list[i]["pool_id"] !== pool_type) {
-                        continue
+                        continue;
                     }
                 }
-                let class_type = Number(document.getElementById("class_type").value)
+                let class_type = Number(document.getElementById("class_type").value);
                 if (class_type) {
                     if (class_list[i]["is_individual"] !== (class_type - 1)) {
-                        continue
+                        continue;
                     }
                 }
-                let instructor = Number(document.getElementById("instructor").value)
+                let instructor = Number(document.getElementById("instructor").value);
                 if (instructor) {
                     if (class_list[i]["instructor_id"] !== instructor) {
-                        continue
+                        continue;
                     }
                 }
-                let id = class_list[i]["x"] + class_list[i]["y"]
-                const box = document.getElementById(id)
+                let id = class_list[i]["x"] + class_list[i]["y"];
+                const box = document.getElementById(id);
                 const classElement = document.createElement("div");
                 classElement.innerHTML = `<a href="javascript:void(0);">${class_list[i]["class_name"]}</a>`;
                 classElement.setAttribute("data-bs-toggle", "modal");
                 classElement.setAttribute("data-bs-target", "#myOwnModal2");
                 classElement.setAttribute("onclick", "show_detail(" + i + ")");
-                if (box.style.display === 'none'){
-                    let id3 = class_list[i]["x"] + String(Number(class_list[i]["y"]) - 1)
-                    const box3 = document.getElementById(id3)
+                if (box.style.display === 'none') {
+                    let id3 = class_list[i]["x"] + String(Number(class_list[i]["y"]) - 1);
+                    const box3 = document.getElementById(id3);
                     box3.appendChild(classElement);
-                }else{
+                } else {
                     box.appendChild(classElement);
                     if (class_list[i]["continuance"] > 1) {
-                        box.rowSpan = class_list[i]["continuance"]
-                        let id2 = class_list[i]["x"] + String(Number(class_list[i]["y"]) + 1)
-                        const box2 = document.getElementById(id2)
+                        box.rowSpan = class_list[i]["continuance"];
+                        let id2 = class_list[i]["x"] + String(Number(class_list[i]["y"]) + 1);
+                        const box2 = document.getElementById(id2);
                         box2.style.display = 'none';
                     }
                 }
@@ -233,40 +234,40 @@
         }
 
         document.getElementById('pool_type').addEventListener('change', function () {
-            clean_table()
-            display_timetable()
+            clean_table();
+            display_timetable();
         });
         document.getElementById('class_type').addEventListener('change', function () {
-            clean_table()
-            display_timetable()
+            clean_table();
+            display_timetable();
         });
         document.getElementById('instructor').addEventListener('change', function () {
-            clean_table()
-            display_timetable()
+            clean_table();
+            display_timetable();
         });
 
-        function reset_select(){
-            document.getElementById('pool_type').value=""
-            document.getElementById('class_type').value=""
-            document.getElementById('instructor').value=""
-            clean_table()
-            display_timetable()
+        function reset_select() {
+            document.getElementById('pool_type').value = "";
+            document.getElementById('class_type').value = "";
+            document.getElementById('instructor').value = "";
+            clean_table();
+            display_timetable();
         }
 
-        display_timetable()
+        display_timetable();
 
         function show_detail(id) {
             event.stopPropagation();
-            document.getElementById("class_name").value = class_list[id]["class_name"]
-            document.getElementById("pool_name").value = class_list[id]["pool_name"]
-            document.getElementById("instructor_name").value = class_list[id]["instructor_name"]
-            document.getElementById("instructor_phone").value = class_list[id]["instructor_phone"]
-            document.getElementById("instructor_id").value = class_list[id]["instructor_id"]
-            document.getElementById("class_id").value = class_list[id]["class_id"]
+            document.getElementById("class_name").value = class_list[id]["class_name"];
+            document.getElementById("pool_name").value = class_list[id]["pool_name"];
+            document.getElementById("instructor_name").value = class_list[id]["instructor_name"];
+            document.getElementById("instructor_phone").value = class_list[id]["instructor_phone"];
+            document.getElementById("instructor_id").value = class_list[id]["instructor_id"];
+            document.getElementById("class_id").value = class_list[id]["class_id"];
         }
 
         function showLink(x, y) {
-            console.log(x, y)
+            console.log(x, y);
         }
     </script>
     {% block timetable_js %}{% endblock %}

@@ -62,13 +62,14 @@ def view_class():
                 for i in range(7):
                     temp_list.append([])
                 row_list.append(temp_list)
-            # Compare class_list with time_list. Append the list with a dictionary of class_id (key) and class_name (value) if there is a class at that time.
+            # Compare class_list with time_list. Append the list with a dictionary of class_id(key) and class_name(value) if there is a class at that time.
             for item in class_list:
                 for row in row_list:
                     if item[3] == row[0]:
                         row[item[-1]].append({item[0]: item[1]})
             sql_data.close()
-            return render_template('member/view_class.html', class_list=class_list, date_list=date_list, row_list=row_list, start_date=start_date, end_date=end_date, permissions=check_permissions())
+            return render_template('member/view_class.html', class_list=class_list, date_list=date_list, row_list=row_list, start_date=start_date,
+                                   end_date=end_date, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
