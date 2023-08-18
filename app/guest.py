@@ -89,7 +89,8 @@ def dashboard():
             if session['is_instructor'] == 1:
                 return render_template('instructor/instructor_dashboard.html', permissions=check_permissions())
             elif session['is_admin'] == 1:
-                return render_template('admin/admin_dashboard.html', permissions=check_permissions())
+                return render_template('admin/admin_dashboard.html',instructor_count=instructor_count, member_count=member_count, user_count = user_count,
+                                            pool_count= pool_count,class_count= class_count, permissions=check_permissions())
             elif session['is_root'] == 1:
                 return render_template('root/root_dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count = user_count,
                                             pool_count= pool_count,class_count= class_count, permissions=check_permissions())
