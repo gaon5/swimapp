@@ -38,7 +38,7 @@
                             <td>{{ member_list[i][5] }}</td>
                             <td>{{ member_list[i][6] }}</td>
                             <td>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ i }})">Edit</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ i }})">EDIT</button>
                                 <button type="button" class="btn btn-danger" onclick="confirmDelete(1, {{ member_list[i][0] }})">DELETE</button>
                             </td>
                         </tr>
@@ -59,7 +59,7 @@
                             <td>{{ instructor_list[i][5] }}</td>
                             <td>{{ instructor_list[i][6] }}</td>
                             <td>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myOwnModal2" onclick="showLink2({{ i }})">Edit</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myOwnModal2" onclick="showLink2({{ i }})">EDIT</button>
                                 <button type="button" class="btn btn-danger" onclick="confirmDelete(0, {{ instructor_list[i][0] }})">DELETE</button>
                             </td>
                         </tr>
@@ -245,8 +245,8 @@
         const modal2 = document.getElementById('myOwnModal2');
         modal2.addEventListener('shown.bs.modal', function () {
         });
-        const city = document.getElementById('member_city')
-        const region = document.getElementById('member_region')
+        const city = document.getElementById('member_city');
+        const region = document.getElementById('member_region');
         const region_list = JSON.parse('{{ region_list|tojson }}');
         function update_city() {
             region.innerHTML = '<option value="" disabled>---Choose a region---</option>';
@@ -270,12 +270,12 @@
             document.getElementById('member_phone_number').value = member_list[id][3];
             document.getElementById('member_detailed_information').value = member_list[id][8];
             document.getElementById('member_city').value = member_list[id][9];
-            update_city()
+            update_city();
             document.getElementById('member_region').value = member_list[id][10];
             document.getElementById('member_street_name').value = member_list[id][11];
             document.getElementById('member_health_information').value = member_list[id][13];
             document.getElementById('member_user_id').value = member_list[id][0];
-            validateForm()
+            validateForm();
         }
         function showLink2(id){
             document.getElementById('instructor_first_name').value = instructor_list[id][1];
@@ -285,7 +285,7 @@
             document.getElementById('instructor_title').value = instructor_list[id][7];
             document.getElementById('instructor_detailed_information').value = instructor_list[id][8];
             document.getElementById('instructor_user_id').value = instructor_list[id][0];
-            validateForm2()
+            validateForm2();
         }
         function validateForm() {
             const first_name = document.getElementById('member_first_name');
@@ -296,40 +296,40 @@
             let i = 0;
             if (!namePattern.test(first_name.value)) {
                 first_name_msg.innerText = "First name should contain only letters.";
-                first_name.classList.add("is-invalid")
+                first_name.classList.add("is-invalid");
                 i = 1;
             } else {
-                first_name.classList.remove("is-invalid")
+                first_name.classList.remove("is-invalid");
                 first_name_msg.innerText = "";
             }
             const last_name = document.getElementById('member_last_name');
             const last_name_msg = document.getElementById('member_last_name_msg');
             if (!namePattern.test(last_name.value)) {
                 last_name_msg.innerText = "Last name should contain only letters.";
-                last_name.classList.add("is-invalid")
+                last_name.classList.add("is-invalid");
                 i = 1;
             } else {
-                last_name.classList.remove("is-invalid")
+                last_name.classList.remove("is-invalid");
                 last_name_msg.innerText = "";
             }
             const phone_number = document.getElementById('member_phone_number');
             const phone_number_msg = document.getElementById('member_phone_number_msg');
             if (!phonePattern.test(phone_number.value)) {
-                phone_number.classList.add("is-invalid")
+                phone_number.classList.add("is-invalid");
                 phone_number_msg.innerText = "Wrong phone number length.";
                 i = 1;
             } else {
-                phone_number.classList.remove("is-invalid")
+                phone_number.classList.remove("is-invalid");
                 phone_number_msg.innerText = "";
             }
             const email = document.getElementById('member_email');
             const email_msg = document.getElementById('member_email_msg');
             if (!emailPattern.test(email.value)) {
-                email.classList.add("is-invalid")
+                email.classList.add("is-invalid");
                 email_msg.innerText = "Invalid email address.";
                 i = 1;
             } else {
-                email.classList.remove("is-invalid")
+                email.classList.remove("is-invalid");
                 email_msg.innerText = "";
             }
             return i !== 1;
@@ -343,40 +343,40 @@
             const first_name_msg = document.getElementById('instructor_first_name_msg');
             if (!namePattern.test(first_name.value)) {
                 first_name_msg.innerText = "First name should contain only letters.";
-                first_name.classList.add("is-invalid")
+                first_name.classList.add("is-invalid");
                 i = 1;
             } else {
-                first_name.classList.remove("is-invalid")
+                first_name.classList.remove("is-invalid");
                 first_name_msg.innerText = "";
             }
             const last_name = document.getElementById('instructor_last_name');
             const last_name_msg = document.getElementById('instructor_last_name_msg');
             if (!namePattern.test(last_name.value)) {
                 last_name_msg.innerText = "Last name should contain only letters.";
-                last_name.classList.add("is-invalid")
+                last_name.classList.add("is-invalid");
                 i = 1;
             } else {
-                last_name.classList.remove("is-invalid")
+                last_name.classList.remove("is-invalid");
                 last_name_msg.innerText = "";
             }
             const phone_number = document.getElementById('instructor_phone_number');
             const phone_number_msg = document.getElementById('instructor_phone_number_msg');
             if (!phonePattern.test(phone_number.value)) {
-                phone_number.classList.add("is-invalid")
+                phone_number.classList.add("is-invalid");
                 phone_number_msg.innerText = "Wrong phone number length.";
                 i = 1;
             } else {
-                phone_number.classList.remove("is-invalid")
+                phone_number.classList.remove("is-invalid");
                 phone_number_msg.innerText = "";
             }
             const email = document.getElementById('instructor_email');
             const email_msg = document.getElementById('instructor_email_msg');
             if (!emailPattern.test(email.value)) {
-                email.classList.add("is-invalid")
+                email.classList.add("is-invalid");
                 email_msg.innerText = "Invalid email address.";
                 i = 1;
             } else {
-                email.classList.remove("is-invalid")
+                email.classList.remove("is-invalid");
                 email_msg.innerText = "";
             }
             return i !== 1;
