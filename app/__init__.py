@@ -34,8 +34,6 @@ first_select.execute("""SELECT * FROM `title`;""")
 title_list = first_select.fetchall()
 first_select.execute("""SELECT * FROM `region`;""")
 region_list = first_select.fetchall()
-first_select.execute("""SELECT * FROM pool;""")
-pool_list = first_select.fetchall()
 first_select.close()
 
 

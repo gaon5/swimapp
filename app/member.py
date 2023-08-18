@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 import math
 import bcrypt
 import re
-from app import app, check_permissions, get_cursor, title_list, city_list, region_list, pool_list
+from app import app, check_permissions, get_cursor, title_list, city_list, region_list
 
 
 @app.route('/view_class', methods=['GET', 'POST'])
@@ -176,9 +176,12 @@ def display_timetable():
     sql_value = (week_list[1][0], week_list[-1][0])
     sql_data.execute(sql, sql_value)
     all_details_sql = sql_data.fetchall()
+    sql_data.execute("""SELECT * FROM pool;""")
+    pool_list = sql_data.fetchall()
+    sql_data.execute("""SELECT * FROM instructor AS i LEFT JOIN title AS t ON i.title_id=t.title_id WHERE i.state=1;""")
+    instructor_list = sql_data.fetchall()
     for i in range(1, len(week_list), 1):
         week_list[i][0] = week_list[i][0][5:]
-
     all_details = []
     for item in all_details_sql:
         time = int(((item[10].total_seconds() / 3600) - 9) * 2)
@@ -188,14 +191,13 @@ def display_timetable():
             "y": str(time - 1),
             "continuance": continuance,
             "id": str(item[0]),
-            "instructor_id": str(item[1]),
-            "pool_id": str(item[2]),
-            "is_individual": str(item[4]),
+            "instructor_id": item[1],
+            "pool_id": item[2],
+            "is_individual": item[4],
             "pool_name": item[3],
             "class_name": item[5],
-            "instructor_name": item[7],
-            "instructor_phone": item[8]
+            "instructor_name": item[6],
+            "instructor_phone": item[7]
         })
     all_details = {item['id']: item for item in all_details}
-    print(all_details)
-    return render_template('instructor/instructor_timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list)
+    return render_template('instructor/instructor_timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list, instructor_list=instructor_list)
