@@ -6,7 +6,7 @@
 
 {% block timetable_body1 %}
     <div class="container mt-3">
-        <h1>Aqua Aerobic Timetable Template</h1>
+        <h1>My Schedule</h1>
     </div>
 {% endblock %}
 
@@ -19,7 +19,11 @@
 {% endblock %}
 
 {% block myOwnModalLabel2 %}
-
+    <form action="/class_details" method="post">
+        <input type="hidden" id="class_id" name="class_id">
+        <input type="hidden" id="instructor_id" name="instructor_id">
+        <button type="submit" class="btn btn-primary my-1">View all about this class detail</button>
+    </form>
 {% endblock %}
 
 {% block timetable_js %}

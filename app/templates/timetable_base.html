@@ -24,36 +24,48 @@
 {% block body %}
     {% block timetable_body1 %}{% endblock %}
     <div class="container mt-3">
-        <label for="pool_type"></label>
-        <select name="pool_type" id="pool_type">
-            <option value="" disabled selected>-- select a pool --</option>
-            {% for pool in pool_list %}
-                <option value="{{ pool[0] }}">{{ pool[1] }}</option>
-            {% endfor %}
-        </select>
-        <label for="class_type"></label>
-        <select name="class_type" id="class_type">
-            <option value="" disabled selected>-- select a class type --</option>
-            <option value="1">Public Lesson</option>
-            <option value="2">Individual Lesson</option>
-        </select>
-        <label for="instructor"></label>
-        <select name="instructor" id="instructor">
-            <option value="" disabled selected>-- select a instructor --</option>
-            {% for instructor in instructor_list %}
-                <option value="{{ instructor[0] }}">{{ instructor[9] }} {{ instructor[3] }} {{ instructor[4] }}</option>
-            {% endfor %}
-        </select>
-        <button class="btn btn-primary my-1" onclick="reset_select()">Reset</button>
+        <div class="row">
+            <div class="col-md-3">
+                <select name="pool_type" class="form-select" id="pool_type">
+                    <option value="" disabled selected>-- select a pool --</option>
+                    {% for pool in pool_list %}
+                        <option value="{{ pool[0] }}">{{ pool[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="class_type" class="form-select" id="class_type">
+                    <option value="" disabled selected>-- select a class type --</option>
+                    <option value="1">Public Lesson</option>
+                    <option value="2">Individual Lesson</option>
+                </select>
+            </div>
+            {% if permissions > 2 %}
+                <div class="col-md-3">
+                    <select name="instructor" class="form-select" id="instructor">
+                        <option value="" disabled selected>-- select a instructor --</option>
+                        {% for instructor in instructor_list %}
+                            <option value="{{ instructor[0] }}">{{ instructor[9] }} {{ instructor[3] }} {{ instructor[4] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% else %}
+                <input type="hidden" name="instructor" id="instructor" value="{{ instructor_id }}">
+            {% endif %}
+
+            <div class="col-md-3">
+                <button class="btn btn-primary my-1" onclick="reset_select()">RESET</button>
+            </div>
+        </div>
     </div>
     <div class="container mt-3">
         <div class="row" style="min-width: 960px">
-            <form action="{{ url_for('view_class') }}" method="post" id="this_week">
+            <form action="{{ link }}" method="post" id="this_week">
                 <input type="hidden" id="day" name="day">
                 <div id="navigation-container">
-                    <button type="button" class="mx-5 px-2" onclick="previous_week()">&larr;</button>
+                    <button type="button" class="btn btn-secondary mx-5 px-2" onclick="previous_week()">&larr;</button>
                     <p id="info" class="px-5">2023</p>
-                    <button type="button" class="mx-5 px-2" onclick="next_week()">&rarr;</button>
+                    <button type="button" class="btn btn-secondary mx-5 px-2" onclick="next_week()">&rarr;</button>
                 </div>
             </form>
             <table class="table table-bordered">
@@ -68,7 +80,11 @@
                             <th rowspan="2">{{ (i + 1)//2 + 9 }}:00</th>
                         {% endif %}
                         {% for j in range(1,8,1) %}
-                            <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>
+                            {% if permissions == 2 %}
+                                <th id="{{ j }}{{ i }}" class="little_box"></th>
+                            {% else %}
+                                <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -134,11 +150,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <form action="javascript:void(0);">
-                                <input type="hidden" id="class_id" name="class_id">
-                                <input type="hidden" id="instructor_id" name="instructor_id">
-                                <button type="submit" class="btn btn-primary my-1">View all about this class detail</button>
-                            </form>
+                            <div class="col-md-12">
+                                <div class="input-group mb-3">
+                                    <label for="class_umber" class="input-group-text">Number of members :</label>
+                                    <input type="text" class="form-control" name="class_umber" id="class_umber" disabled>
+                                </div>
+                            </div>
                             {% block myOwnModalLabel2 %}{% endblock %}
                         </div>
                     </div>
@@ -175,9 +192,9 @@
                 for (let e = 1; e < 19; e++) {
                     let temp = String(w) + String(e);
                     const thElement = document.getElementById(temp);
-                    if (thElement.style.display === 'none') {
-                        thElement.removeAttribute('style');
-                    }
+
+                    thElement.removeAttribute('style');
+
                     thElement.setAttribute('rowspan', '1');
                     if (thElement.hasChildNodes()) {
                         const childNodes = thElement.getElementsByTagName('div');
@@ -214,9 +231,14 @@
                 const box = document.getElementById(id);
                 const classElement = document.createElement("div");
                 classElement.innerHTML = `<a href="javascript:void(0);">${class_list[i]["class_name"]}</a>`;
+                if(class_list[i]["is_individual"]){
+                    box.style.backgroundColor = "#f89696";
+                }else{
+                    box.style.backgroundColor = "#89d0ff";
+                }
                 classElement.setAttribute("data-bs-toggle", "modal");
                 classElement.setAttribute("data-bs-target", "#myOwnModal2");
-                classElement.setAttribute("onclick", "show_detail(" + i + ")");
+                classElement.setAttribute("onclick", "show_detail_base(" + i + ")");
                 if (box.style.display === 'none') {
                     let id3 = class_list[i]["x"] + String(Number(class_list[i]["y"]) - 1);
                     const box3 = document.getElementById(id3);
@@ -249,26 +271,33 @@
         function reset_select() {
             document.getElementById('pool_type').value = "";
             document.getElementById('class_type').value = "";
-            document.getElementById('instructor').value = "";
+            {% if permissions != 2 %}
+                document.getElementById('instructor').value = "";
+            {% endif %}
             clean_table();
             display_timetable();
         }
 
         display_timetable();
-
-        function show_detail(id) {
+        member_count = JSON.parse('{{ member_count|tojson }}');
+        function show_detail_base(id) {
             event.stopPropagation();
             document.getElementById("class_name").value = class_list[id]["class_name"];
             document.getElementById("pool_name").value = class_list[id]["pool_name"];
             document.getElementById("instructor_name").value = class_list[id]["instructor_name"];
             document.getElementById("instructor_phone").value = class_list[id]["instructor_phone"];
             document.getElementById("instructor_id").value = class_list[id]["instructor_id"];
-            document.getElementById("class_id").value = class_list[id]["class_id"];
+            document.getElementById("class_id").value = id;
+            if (member_count[id]) {
+                document.getElementById("class_umber").value = member_count[id];
+            } else {
+                document.getElementById("class_umber").value = 0;
+        }
         }
 
         function showLink(x, y) {
             console.log(x, y);
         }
+        {% block timetable_js %}{% endblock %}
     </script>
-    {% block timetable_js %}{% endblock %}
 {% endblock %}
