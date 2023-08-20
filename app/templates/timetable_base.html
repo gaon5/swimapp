@@ -187,7 +187,10 @@
         }
 
         class_list = JSON.parse('{{ all_details|tojson }}');
-        lock_list = JSON.parse('{{ lock_list|tojson }}');
+
+        {% if lock_list %}
+            lock_list = JSON.parse('{{ lock_list|tojson }}');
+        {% endif %}
 
         function clean_table() {
             for (let w = 1; w < 8; w++) {
@@ -255,6 +258,8 @@
                     }
                 }
             }
+
+        {% if lock_list %}
             for (const i in lock_list) {
                 let id4 = lock_list[i][1] + lock_list[i][2];
                 const box3 = document.getElementById(id4);
@@ -265,6 +270,8 @@
                 }
                 box3.style.backgroundColor = "#5e5e5e";
             }
+        {% endif %}
+
         }
 
         document.getElementById('pool_type').addEventListener('change', function () {
