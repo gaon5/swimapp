@@ -80,11 +80,7 @@
                             <th rowspan="2">{{ (i + 1)//2 + 9 }}:00</th>
                         {% endif %}
                         {% for j in range(1,8,1) %}
-                            {% if permissions == 2 %}
-                                <th id="{{ j }}{{ i }}" class="little_box"></th>
-                            {% else %}
-                                <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>
-                            {% endif %}
+                            <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -98,7 +94,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="myOwnModalLabel">{% block add_title %}{% endblock %}</h5>
+                    <h5 class="modal-title" id="myOwnModalLabel">More operations</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -149,13 +145,18 @@
                                         <input type="text" class="form-control" name="instructor_phone" id="instructor_phone" disabled>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="input-group mb-3">
-                                    <label for="class_umber" class="input-group-text">Number of members :</label>
-                                    <input type="text" class="form-control" name="class_umber" id="class_umber" disabled>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="class_number" class="input-group-text">Number of members :</label>
+                                        <input type="text" class="form-control" name="class_number" id="class_number" disabled>
+                                    </div>
                                 </div>
                             </div>
+                            <form action="/class_details" method="post">
+                                <input type="hidden" id="class_id" name="class_id">
+                                <input type="hidden" id="instructor_id" name="instructor_id">
+                                <button type="submit" class="btn btn-primary my-1">View all about this class detail</button>
+                            </form>
                             {% block myOwnModalLabel2 %}{% endblock %}
                         </div>
                     </div>
@@ -186,6 +187,7 @@
         }
 
         class_list = JSON.parse('{{ all_details|tojson }}');
+        lock_list = JSON.parse('{{ lock_list|tojson }}');
 
         function clean_table() {
             for (let w = 1; w < 8; w++) {
@@ -253,6 +255,16 @@
                     }
                 }
             }
+            for (const i in lock_list) {
+                let id4 = lock_list[i][1] + lock_list[i][2];
+                const box3 = document.getElementById(id4);
+                for (let u=1;u<lock_list[i][3];u++){
+                    let id5 = lock_list[i][1] + String(Number(lock_list[i][2]) + u);
+                    const box4 = document.getElementById(id5);
+                    box4.style.backgroundColor = "#5e5e5e";
+                }
+                box3.style.backgroundColor = "#5e5e5e";
+            }
         }
 
         document.getElementById('pool_type').addEventListener('change', function () {
@@ -289,15 +301,18 @@
             document.getElementById("instructor_id").value = class_list[id]["instructor_id"];
             document.getElementById("class_id").value = id;
             if (member_count[id]) {
-                document.getElementById("class_umber").value = member_count[id];
+                document.getElementById("class_number").value = member_count[id];
             } else {
-                document.getElementById("class_umber").value = 0;
-        }
+                document.getElementById("class_number").value = 0;
+            }
         }
 
         function showLink(x, y) {
-            console.log(x, y);
+            const week_dat = JSON.parse('{{ week_list|tojson }}');
+            const time = ["10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"]
+            document.getElementById("send_day").value = week_dat[x][0];
+            document.getElementById("send_time").value = time[y-1];
         }
-        {% block timetable_js %}{% endblock %}
     </script>
+    {% block timetable_js %}{% endblock %}
 {% endblock %}

@@ -110,6 +110,15 @@ def instructor_timetable():
             sql = """SELECT user_id,instructor_id FROM instructor WHERE user_id=%s"""
             sql_data.execute(sql, (user_id,))
             instructor_id = sql_data.fetchall()[0][1]
+            sql_data.execute("SELECT user_id, date, start_time, end_time FROM available_time WHERE (date BETWEEN %s AND %s) AND (user_id=%s);", (week_list[1][0], week_list[-1][0], user_id,))
+            lock_list = sql_data.fetchall()
+            for i in range(len(lock_list)):
+                time = int(((lock_list[i][2].total_seconds() / 3600) - 9) * 2)
+                continuance = int(((lock_list[i][3] - lock_list[i][2]).total_seconds() / 3600) * 2)
+                lock_list[i] = list(lock_list[i])
+                lock_list[i][1] = str(lock_list[i][1].weekday() + 1)
+                lock_list[i][2] = time - 1
+                lock_list[i][3] = continuance
             for i in range(1, len(week_list), 1):
                 week_list[i][0] = week_list[i][0][5:]
             all_details = []
@@ -134,7 +143,54 @@ def instructor_timetable():
                 member_count[i] = list(member_count[i])
             member_count = {item[0]: item[1] for item in member_count}
             return render_template('instructor/instructor_timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_id=instructor_id,
-                                   all_details=all_details, member_count=member_count, link=url_for('instructor_timetable'), permissions=check_permissions())
+                                   all_details=all_details, member_count=member_count, lock_list=lock_list, link=url_for('instructor_timetable'), permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/schedule_time', methods=['GET', 'POST'])
+def schedule_time():
+    if 'loggedIn' in session:
+        if check_permissions():
+            sql_data = get_cursor()
+            user_id = session["user_id"]
+            error_msg = ""
+            success_msg= ""
+            today = date.today() + timedelta(days=1)
+            if request.method == 'POST':
+                available_date = datetime.strptime(request.form.get('available_date'), '%Y-%m-%d').date()
+                start_time = datetime.strptime(request.form.get('start_time'), '%H:%M:%S')
+                total_sec = start_time.hour*3600 + start_time.minute*60 + start_time.second
+                start_time = timedelta(seconds=total_sec)
+                end_time = datetime.strptime(request.form.get('end_time'), '%H:%M:%S')
+                total_sec = end_time.hour*3600 + end_time.minute*60 + end_time.second
+                end_time = timedelta(seconds=total_sec)
+                sql = """SELECT date, start_time, end_time FROM available_time WHERE user_id=%s;"""
+                sql_value = (user_id,)
+                sql_data.execute(sql, sql_value)
+                check_list = sql_data.fetchall()
+                if start_time >= end_time:
+                    error_msg = "End time cannot be earlier or equal to start time"
+                    return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
+                for check in check_list:
+                    if check[0] == available_date and start_time >= check[1] and start_time < check[2]:
+                        error_msg = "Invalid start time or end time"
+                        return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
+                    elif check[0] == available_date and end_time > check[1] and end_time <= check[2]:
+                        error_msg = "Invalid start time or end time"
+                        return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
+                sql = """INSERT INTO available_time VALUES (NULL,%s,%s,%s,%s);"""
+                sql_value = (user_id,available_date,start_time,end_time)
+                sql_data.execute(sql, sql_value)
+                success_msg = "Schedule added successfully"
+            sql = """SELECT date, start_time, end_time FROM available_time WHERE user_id=%s;"""
+            sql_value = (user_id,)
+            sql_data.execute(sql, sql_value)
+            date_list = sql_data.fetchall()
+            sql_data.close()
+            return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=date_list, today=today, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
