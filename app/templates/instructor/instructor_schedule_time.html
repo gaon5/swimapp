@@ -1,0 +1,99 @@
+{% extends "guest/layout.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <div class="container mt-3">
+        <h1 style="text-align: center;">Schedule Available Time</h1>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card mt-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Select a date, start time and end time below:</h5><br>
+                        <form action="{{ url_for('schedule_time') }}" method="post" onsubmit="return validateForm()">
+                            <div class="input-group mb-3">
+                                <div class="input-group mb-3">
+                                    <label for="available_date" class="input-group-text">Date:</label>
+                                    <input type="date" class="form-control" name="available_date" id="available_date" min={{ today }} max="2024-01-01" required>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <label for="start_time" class="input-group-text">Start Time:</label>
+                                    <select class="form-control" name="start_time" id="start_time" required>
+                                        <option value="" selected="selected" disabled>---Choose a time---</option>
+                                        {% for i in range(10,19,1) %}
+                                            {% if i == 18 %}
+                                                <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                            {% else %}
+                                                <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                                <option value="{{ i }}:30:00">{{ i }}:30</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <label for="end_time" class="input-group-text">End Time:</label>
+                                    <select class="form-control" name="end_time" id="end_time" required>
+                                        <option value="" selected="selected" disabled>---Choose a time---</option>
+                                        {% for i in range(10,19,1) %}
+                                            {% if i == 18 %}
+                                                <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                            {% else %}
+                                                <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                                <option value="{{ i }}:30:00">{{ i }}:30</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                </div>
+                            </div>
+                        </form>
+                        {% if error_msg %}
+                        <div class="alert alert-danger">
+                            {{ error_msg }}
+                        </div>
+                        {% elif success_msg %}
+                            <div class="alert alert-success">
+                                {{ success_msg }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if date_list %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">My available schedule for individual lessons</h5><br>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Start Time</th>
+                                    <th scope="col">End Time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for date in date_list %}
+                                    <tr>
+                                        <th scope="row">{{ date[0] }}</th>
+                                        <td>{{ date[1] }}</td>
+                                        <td>{{ date[2] }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

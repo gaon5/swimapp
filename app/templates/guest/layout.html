@@ -36,7 +36,7 @@
                             <li class="nav-item mx-3"><a class="dropdown-item" href="{{ url_for('admin_change_information') }}">My Detail</a></li>
                         {% elif permissions == 2 %}
                             <li class="nav-item mx-3"><a class="dropdown-item" href="{{ url_for('dashboard') }}">My Dashboard</a></li>
-                            <li class="nav-item mx-3"><a class="dropdown-item" href="{{ url_for('view_class') }}">View Class</a></li>
+                            <li class="nav-item mx-3"><a class="dropdown-item" href="{{ url_for('instructor_timetable') }}">View My Timetable</a></li>
                             <li class="nav-item mx-3"><a class="dropdown-item" href="{{ url_for('instructor_change_information') }}">My Detail</a></li>
                         {% elif permissions == 1 %}
                             <li class="nav-item mx-3"><a class="dropdown-item" href="{{ url_for('view_class') }}">View Class</a></li>

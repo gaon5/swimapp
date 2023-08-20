@@ -6,16 +6,20 @@
 
 {% block timetable_body1 %}
     <div class="container mt-3">
-        <h1>Aqua Aerobic Timetable Template</h1>
+        <h1>My Schedule</h1>
     </div>
 {% endblock %}
 
 {% block add_title %}
-    <p>Book</p>
+    <p>Block time</p>
 {% endblock %}
 
 {% block myOwnModalLabel %}
-    <p>add class</p>
+    <form action="javascript:void(0);" id="schedule_time">
+        <input type="hidden" id="send_day" name="send_day">
+        <input type="hidden" id="send_time" name="send_time">
+        <button type="button" class="btn btn-primary my-1" onclick="lock_time()">Lock time</button>
+    </form>
 {% endblock %}
 
 {% block myOwnModalLabel2 %}
@@ -23,5 +27,11 @@
 {% endblock %}
 
 {% block timetable_js %}
-
+    <script>
+        function lock_time(){
+            document.getElementById("schedule_time").action = "/schedule_time"
+            document.getElementById("schedule_time").method = "get"
+            document.getElementById("schedule_time").submit();
+        }
+    </script>
 {% endblock %}
