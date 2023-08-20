@@ -67,17 +67,38 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    if 'loggedIn' in session:
-        if session['is_instructor'] == 1:
-            return render_template('instructor/instructor_dashboard.html', permissions=check_permissions())
-        elif session['is_admin'] == 1:
-            return render_template('admin/admin_dashboard.html', permissions=check_permissions())
-        elif session['is_root'] == 1:
-            return render_template('root/root_dashboard.html', permissions=check_permissions())
+        sql_data = get_cursor()
+        sql = """SELECT COUNT(instructor_id) FROM swimming_pool.instructor;"""
+        sql_data.execute(sql)
+        instructor_count = sql_data.fetchall()
+        sql = """SELECT COUNT(member_id) FROM swimming_pool.member"""
+        sql_data.execute(sql)
+        member_count = sql_data.fetchall()
+        sql = """SELECT COUNT(user_id) FROM swimming_pool.user_account;"""
+        sql_data.execute(sql)
+        user_count = sql_data.fetchall()
+        sql = """SELECT COUNT(pool_id) FROM swimming_pool.pool;"""
+        sql_data.execute(sql)
+        pool_count = sql_data.fetchall()
+        sql= """SELECT COUNT(DISTINCT class_name) FROM swimming_pool.class_list;"""
+        sql_data.execute(sql)
+        class_count = sql_data.fetchall()
+        print(class_count)
+        sql_data.close()
+        if 'loggedIn' in session:
+            if session['is_instructor'] == 1:
+                return render_template('instructor/instructor_dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count = user_count,
+                                            pool_count= pool_count,class_count= class_count, permissions=check_permissions())
+            elif session['is_admin'] == 1:
+                return render_template('admin/admin_dashboard.html',instructor_count=instructor_count, member_count=member_count, user_count = user_count,
+                                            pool_count= pool_count,class_count= class_count, permissions=check_permissions())
+            elif session['is_root'] == 1:
+                return render_template('root/root_dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count = user_count,
+                                            pool_count= pool_count,class_count= class_count, permissions=check_permissions())
+            else:
+                return redirect(url_for('index'))
         else:
             return redirect(url_for('index'))
-    else:
-        return redirect(url_for('index'))
 
 
 @app.route('/jump', methods=['GET', 'POST'])
