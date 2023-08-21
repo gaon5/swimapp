@@ -11,9 +11,9 @@ from app import app, check_permissions, get_cursor, title_list, city_list, regio
 def index():
     # Select news from database, and display.
     if 'loggedIn' in session:
-        return render_template('guest/welcome_page.html', permissions=check_permissions())
+        return render_template('guest/index.html', permissions=check_permissions())
     else:
-        return render_template('guest/welcome_page.html')
+        return render_template('guest/index.html')
 
 
 # http://localhost:5000/login/ - this will be the login page, we need to use both GET and POST requests
@@ -86,14 +86,14 @@ def dashboard():
     sql_data.close()
     if 'loggedIn' in session:
         if session['is_instructor'] == 1:
-            return render_template('instructor/instructor_dashboard.html', instructor_count=instructor_count, member_count=member_count,
+            return render_template('instructor/dashboard.html', instructor_count=instructor_count, member_count=member_count,
                                    user_count=user_count,
                                    pool_count=pool_count, class_count=class_count, permissions=check_permissions())
         elif session['is_admin'] == 1:
-            return render_template('admin/admin_dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
+            return render_template('admin/dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
                                    pool_count=pool_count, class_count=class_count, permissions=check_permissions())
         elif session['is_root'] == 1:
-            return render_template('root/root_dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
+            return render_template('root/dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
                                    pool_count=pool_count, class_count=class_count, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
@@ -205,6 +205,11 @@ def register():
     return render_template('guest/register.html', msg=msg, titles=title_list, cities=city_list, regions=region_list, today=today)
 
 
-@app.route('/subscription_payment', methods=['GET', 'POST'])
-def payment():
-    return render_template('member/subscription_payment.html')
+@app.route('/monthly_payment', methods=['GET', 'POST'])
+def monthly_payment():
+    return render_template('guest/monthly_payment.html')
+
+
+@app.route('/individual_payment', methods=['GET', 'POST'])
+def individual_payment():
+    return render_template('guest/individual_payment.html')

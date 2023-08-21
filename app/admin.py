@@ -41,7 +41,7 @@ def user_list():
 def admin_change_information():
     """
     The webpage used to give the admin change his own information
-    :return: admin_change_information.html
+    :return: change_information.html
     """
 
     def check_change(old, new):
@@ -92,7 +92,7 @@ def admin_change_information():
             sql_data.execute(sql, sql_value)
             admin_list = sql_data.fetchall()[0]
             sql_data.close()
-            return render_template('admin/admin_change_information.html', admin_list=admin_list, msg=msg, title_list=title_list, permissions=check_permissions())
+            return render_template('admin/change_information.html', admin_list=admin_list, msg=msg, title_list=title_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
@@ -114,6 +114,85 @@ def delete_user():
                 sql_data.execute(sql, (user_id,))
             sql_data.close()
             return redirect(url_for('user_list'))
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/admin_timetable', methods=['GET', 'POST'])
+def admin_timetable():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            user_id = session["user_id"]
+            if request.method == 'POST':
+                today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
+            else:
+                today = date.today()
+            start_of_week = today - timedelta(days=today.weekday())
+            week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            week_list = [["Time/Day", '']]
+            for i in range(7):
+                temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
+                week_list.append(temp_list)
+            sql_data = get_cursor()
+            sql = """SELECT c.class_id, c.instructor_id, c.pool_id, p.pool_name, c.is_individual, c.class_name, 
+                        CONCAT(t.title, " ", i.first_name, " ", i.last_name) AS instructor_name, i.phone_number,
+                        i.state, c.class_date, c.start_time, c.end_time
+                        FROM class_list AS c
+                        LEFT JOIN pool AS p ON c.pool_id=p.pool_id
+                        LEFT JOIN instructor AS i ON c.instructor_id=i.instructor_id
+                        LEFT JOIN title AS t ON i.title_id=t.title_id
+                        WHERE (c.class_date BETWEEN %s AND %s) AND (i.state=1)
+                        ORDER BY c.start_time"""
+            sql_value = (week_list[1][0], week_list[-1][0])
+            sql_data.execute(sql, sql_value)
+            all_details_sql = sql_data.fetchall()
+            sql_data.execute("""SELECT * FROM pool;""")
+            pool_list = sql_data.fetchall()
+            sql = """SELECT class_id, COUNT(member_id) AS member_count
+                        FROM book_list
+                        GROUP BY class_id;"""
+            sql_data.execute(sql)
+            member_count = sql_data.fetchall()
+            sql_data.execute("SELECT * FROM instructor AS i LEFT JOIN title AS t ON i.title_id=t.title_id WHERE i.state=1;")
+            instructor_list = sql_data.fetchall()
+            for i in range(1, len(week_list), 1):
+                week_list[i][0] = week_list[i][0][5:]
+            all_details = []
+            for item in all_details_sql:
+                time = int(((item[10].total_seconds() / 3600) - 5) * 2)
+                continuance = int(((item[11] - item[10]).total_seconds() / 3600) * 2)
+                all_details.append({
+                    "x": str(item[9].weekday() + 1),
+                    "y": str(time - 1),
+                    "continuance": continuance,
+                    "id": str(item[0]),
+                    "instructor_id": item[1],
+                    "pool_id": item[2],
+                    "is_individual": item[4],
+                    "pool_name": item[3],
+                    "class_name": item[5],
+                    "instructor_name": item[6],
+                    "instructor_phone": item[7]
+                })
+            all_details = {item['id']: item for item in all_details}
+            for i in range(len(member_count)):
+                member_count[i] = list(member_count[i])
+            member_count = {item[0]: item[1] for item in member_count}
+            return render_template('admin/timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_list=instructor_list,
+                                   all_details=all_details, member_count=member_count, link=url_for('admin_timetable'), permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/admin_add_class', methods=['GET', 'POST'])
+def admin_add_class():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            return render_template('admin/add_class.html')
         else:
             return redirect(url_for('index'))
     else:

@@ -1,4 +1,4 @@
-{% extends "guest/layout.html" %}
+{% extends "guest/base.html" %}
 
 {% block mycss %}
     <style>
@@ -14,8 +14,11 @@
             background-color: #dbe3e8;
         }
         th {
-            height: 50px;
+            height: 40px;
             width: 120px;
+        }
+        th a{
+            font-size: 15px;
         }
     </style>
     {% block timetable_css %}{% endblock %}
@@ -40,7 +43,7 @@
                     <option value="2">Individual Lesson</option>
                 </select>
             </div>
-            {% if permissions > 2 %}
+            {% if permissions != 2 %}
                 <div class="col-md-3">
                     <select name="instructor" class="form-select" id="instructor">
                         <option value="" disabled selected>-- select a instructor --</option>
@@ -74,10 +77,10 @@
                         <th class="table-dark">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</th>
                     {% endfor %}
                 </tr>
-                {% for i in range(1,19,1) %}
+                {% for i in range(1,31,1) %}
                     <tr>
                         {% if i%2 == 1 %}
-                            <th rowspan="2">{{ (i + 1)//2 + 9 }}:00</th>
+                            <th rowspan="2">{{ (i + 1)//2 + 5 }}:00</th>
                         {% endif %}
                         {% for j in range(1,8,1) %}
                             <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>

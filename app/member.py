@@ -10,7 +10,7 @@ from app import app, check_permissions, get_cursor, title_list, city_list, regio
 def member_change_information():
     """
     The webpage used to give the member change his own information
-    :return: member_change_information.html
+    :return: change_information.html
     """
     if 'loggedIn' in session:
         if check_permissions():
@@ -57,7 +57,7 @@ def member_change_information():
             sql_data.execute(sql, sql_value)
             member_detail = sql_data.fetchall()[0]
             sql_data.close()
-            return render_template('member/member_change_information.html', member_detail=member_detail, msg=msg, title_list=title_list,
+            return render_template('member/change_information.html', member_detail=member_detail, msg=msg, title_list=title_list,
                                    city_list=city_list, region_list=region_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
@@ -65,20 +65,20 @@ def member_change_information():
         return redirect(url_for('login'))
 
 
-@app.route('/display_class/<class_id>')
-def display_class(class_id):
-    sample_value = class_id
-    sql_data = get_cursor()
-    sql = """SELECT class_id, class_name, class_date, start_time, end_time, class_list.detailed_information, first_name, last_name, pool.pool_name 
-                FROM swimming_pool.class_list 
-                INNER JOIN instructor ON class_list.instructor_id=instructor.instructor_id 
-                INNER JOIN pool ON class_list.pool_id=pool.pool_id 
-                WHERE class_id=%s;"""
-    sql_value = (sample_value,)
-    sql_data.execute(sql, sql_value)
-    detail_list = sql_data.fetchone()
-    sql_data.close()
-    return render_template('member/display_class.html', detail_list=detail_list, permissions=check_permissions())
+# @app.route('/display_class/<class_id>')
+# def display_class(class_id):
+#     sample_value = class_id
+#     sql_data = get_cursor()
+#     sql = """SELECT class_id, class_name, class_date, start_time, end_time, class_list.detailed_information, first_name, last_name, pool.pool_name
+#                 FROM swimming_pool.class_list
+#                 INNER JOIN instructor ON class_list.instructor_id=instructor.instructor_id
+#                 INNER JOIN pool ON class_list.pool_id=pool.pool_id
+#                 WHERE class_id=%s;"""
+#     sql_value = (sample_value,)
+#     sql_data.execute(sql, sql_value)
+#     detail_list = sql_data.fetchone()
+#     sql_data.close()
+#     return render_template('member/display_class.html', detail_list=detail_list, permissions=check_permissions())
 
 
 @app.route('/view_class', methods=['GET', 'POST'])
@@ -103,7 +103,7 @@ def view_class():
                         LEFT JOIN pool AS p ON c.pool_id=p.pool_id
                         LEFT JOIN instructor AS i ON c.instructor_id=i.instructor_id
                         LEFT JOIN title AS t ON i.title_id=t.title_id
-                        WHERE (c.class_date BETWEEN %s AND %s) AND (i.state=1)
+                        WHERE (c.class_date BETWEEN %s AND %s) AND (i.state=1) AND (c.is_individual=0)
                         ORDER BY c.start_time"""
             sql_value = (week_list[1][0], week_list[-1][0])
             sql_data.execute(sql, sql_value)
@@ -113,15 +113,15 @@ def view_class():
             sql_data.execute("""SELECT * FROM instructor AS i LEFT JOIN title AS t ON i.title_id=t.title_id WHERE i.state=1;""")
             instructor_list = sql_data.fetchall()
             sql = """SELECT class_id, COUNT(member_id) AS member_count
-                                    FROM book_list
-                                    GROUP BY class_id;"""
+                        FROM book_list
+                        GROUP BY class_id;"""
             sql_data.execute(sql)
             member_count = sql_data.fetchall()
             for i in range(1, len(week_list), 1):
                 week_list[i][0] = week_list[i][0][5:]
             all_details = []
             for item in all_details_sql:
-                time = int(((item[10].total_seconds() / 3600) - 9) * 2)
+                time = int(((item[10].total_seconds() / 3600) - 5) * 2)
                 continuance = int(((item[11] - item[10]).total_seconds() / 3600) * 2)
                 all_details.append({
                     "x": str(item[9].weekday() + 1),
@@ -137,7 +137,7 @@ def view_class():
                     "instructor_phone": item[7]
                 })
             all_details = {item['id']: item for item in all_details}
-            return render_template('instructor/instructor_timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list,
+            return render_template('instructor/timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list,
                                    member_count=member_count, instructor_list=instructor_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))

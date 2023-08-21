@@ -1,12 +1,16 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Jump</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-<div class="container">
+{% extends "guest/base.html" %}
+
+
+{% block mytitle %}
+    Admin dashboard
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+<div class="container" style="min-height: 800px;">
     <div class="row py-5">
         <div class="col text-center py-5">
             <p>{{ msg }}</p>
@@ -15,6 +19,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block myjs %}
 <script type="text/javascript">
     onload = function () {
         setInterval(go, 1000);
@@ -27,5 +34,4 @@
         }
     }
 </script>
-</body>
-</html>
+{% endblock %}

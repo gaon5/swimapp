@@ -10,7 +10,7 @@ from app import app, check_permissions, get_cursor, title_list
 def instructor_change_information():
     """
     The webpage used to give the instructor change his own information
-    :return: instructor_change_information.html
+    :return: change_information.html
     """
 
     def check_change(old, new):
@@ -65,7 +65,7 @@ def instructor_change_information():
             sql_data.execute(sql, sql_value)
             instructor_detail = sql_data.fetchall()[0]
             sql_data.close()
-            return render_template('instructor/instructor_change_information.html', instructor_detail=instructor_detail, msg=msg, title_list=title_list, permissions=check_permissions())
+            return render_template('instructor/change_information.html', instructor_detail=instructor_detail, msg=msg, title_list=title_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
@@ -113,7 +113,7 @@ def instructor_timetable():
             sql_data.execute("SELECT user_id, date, start_time, end_time FROM available_time WHERE (date BETWEEN %s AND %s) AND (user_id=%s);", (week_list[1][0], week_list[-1][0], user_id,))
             lock_list = sql_data.fetchall()
             for i in range(len(lock_list)):
-                time = int(((lock_list[i][2].total_seconds() / 3600) - 9) * 2)
+                time = int(((lock_list[i][2].total_seconds() / 3600) - 5) * 2)
                 continuance = int(((lock_list[i][3] - lock_list[i][2]).total_seconds() / 3600) * 2)
                 lock_list[i] = list(lock_list[i])
                 lock_list[i][1] = str(lock_list[i][1].weekday() + 1)
@@ -123,7 +123,7 @@ def instructor_timetable():
                 week_list[i][0] = week_list[i][0][5:]
             all_details = []
             for item in all_details_sql:
-                time = int(((item[10].total_seconds() / 3600) - 9) * 2)
+                time = int(((item[10].total_seconds() / 3600) - 5) * 2)
                 continuance = int(((item[11] - item[10]).total_seconds() / 3600) * 2)
                 all_details.append({
                     "x": str(item[9].weekday() + 1),
@@ -142,7 +142,7 @@ def instructor_timetable():
             for i in range(len(member_count)):
                 member_count[i] = list(member_count[i])
             member_count = {item[0]: item[1] for item in member_count}
-            return render_template('instructor/instructor_timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_id=instructor_id,
+            return render_template('instructor/timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_id=instructor_id,
                                    all_details=all_details, member_count=member_count, lock_list=lock_list, link=url_for('instructor_timetable'), permissions=check_permissions())
         else:
             return redirect(url_for('index'))
@@ -173,14 +173,14 @@ def schedule_time():
                 check_list = sql_data.fetchall()
                 if start_time >= end_time:
                     error_msg = "End time cannot be earlier or equal to start time"
-                    return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
+                    return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
                 for check in check_list:
                     if check[0] == available_date and start_time >= check[1] and start_time < check[2]:
                         error_msg = "Invalid start time or end time"
-                        return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
+                        return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
                     elif check[0] == available_date and end_time > check[1] and end_time <= check[2]:
                         error_msg = "Invalid start time or end time"
-                        return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
+                        return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list, today=today, permissions=check_permissions())
                 sql = """INSERT INTO available_time VALUES (NULL,%s,%s,%s,%s);"""
                 sql_value = (user_id,available_date,start_time,end_time)
                 sql_data.execute(sql, sql_value)
@@ -190,7 +190,7 @@ def schedule_time():
             sql_data.execute(sql, sql_value)
             date_list = sql_data.fetchall()
             sql_data.close()
-            return render_template('instructor/instructor_schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=date_list, today=today, permissions=check_permissions())
+            return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=date_list, today=today, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
