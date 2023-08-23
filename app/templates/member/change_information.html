@@ -17,8 +17,9 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container" style="max-width: 800px">
-        <h5 class="msg py-3">{{ msg }}</h5>
+    <div class="container" style="max-width: 800px; min-height: 900px">
+        <h2 class="py-4">My information</h2>
+        <h5 class="msg py-1">{{ msg }}</h5>
         <form action="/member_change_information" class="row" method="post" onsubmit="return validateForm()">
             <div class="col-md-6">
                 <div class="input-group mb-3">

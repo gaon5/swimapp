@@ -138,7 +138,7 @@ def view_class():
                     "instructor_phone": item[7]
                 })
             all_details = {item['id']: item for item in all_details}
-            return render_template('instructor/timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list,
+            return render_template('member/timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list,
                                    member_count=member_count, instructor_list=instructor_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
@@ -146,47 +146,4 @@ def view_class():
         return redirect(url_for('login'))
 
 
-@app.route('/class_details', methods=['GET', 'POST'])
-def class_details():
-    if 'loggedIn' in session:
-        if request.method == 'POST':
-            if check_permissions():
-                class_id = request.form.get('class_id')
-                instructor_id = request.form.get('instructor_id')
-                sql_data = get_cursor()
-                sql = """SELECT b.book_class_id,p.pool_name,c.class_name,b.class_date,b.start_time,b.end_time,b.detailed_information,b.is_individual,
-                        CONCAT(t.title, " ", i.first_name, " ", i.last_name) AS instructor_name,i.phone_number,i.detailed_information,i.state
-                        FROM book_class_list AS b 
-                        LEFT JOIN class_list AS c ON c.class_id=b.class_id
-                        LEFT JOIN pool AS p ON b.pool_id=p.pool_id
-                        LEFT JOIN instructor AS i ON b.instructor_id=i.instructor_id
-                        LEFT JOIN title AS t ON i.title_id=t.title_id
-                        WHERE b.class_id=%s AND i.state=1;"""
-                sql_value = (class_id,)
-                sql_data.execute(sql, sql_value)
-                class_detail = sql_data.fetchall()[0]
-                information = list(class_detail)
-                information[4] = str(information[4])
-                information[5] = str(information[5])
-                sql = """SELECT class_id, COUNT(member_id) AS member_count
-                            FROM book_list
-                            WHERE class_id=%s;"""
-                sql_value = (class_id,)
-                sql_data.execute(sql, sql_value)
-                member_count = sql_data.fetchall()[0]
-                member_list = []
-                if member_count[1]:
-                    sql = """SELECT t.title,m.first_name,m.last_name,m.phone_number,m.detailed_information,m.health_information FROM book_list AS b
-                                RIGHT JOIN member AS m ON m.member_id=b.member_id
-                                LEFT JOIN title AS t ON m.title_id=t.title_id
-                                where b.class_id=%s;"""
-                    sql_value = (class_id,)
-                    sql_data.execute(sql, sql_value)
-                    member_list = sql_data.fetchall()
-                return render_template('member/class_details.html', information=information, member_count=member_count, member_list=member_list, permissions=check_permissions())
-            else:
-                return redirect(url_for('index'))
-        else:
-            return redirect(url_for('index'))
-    else:
-        return redirect(url_for('login'))
+

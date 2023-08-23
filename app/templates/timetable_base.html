@@ -12,10 +12,12 @@
         }
         .little_box:hover {
             background-color: #dbe3e8;
+            border-radius: 15px;
         }
         th {
             height: 40px;
             width: 120px;
+            border-radius: 5px;
         }
         th a{
             font-size: 15px;
@@ -36,6 +38,7 @@
                     {% endfor %}
                 </select>
             </div>
+            {% if permissions != 1 %}
             <div class="col-md-3">
                 <select name="class_type" class="form-select" id="class_type">
                     <option value="" disabled selected>-- select a class type --</option>
@@ -43,6 +46,9 @@
                     <option value="2">Individual Lesson</option>
                 </select>
             </div>
+            {% else %}
+                <input type="hidden" name="class_type" id="class_type">
+            {% endif %}
             {% if permissions != 2 %}
                 <div class="col-md-3">
                     <select name="instructor" class="form-select" id="instructor">
@@ -61,14 +67,14 @@
             </div>
         </div>
     </div>
-    <div class="container mt-3">
+    <div class="container my-3">
         <div class="row" style="min-width: 960px">
-            <form action="{{ link }}" method="post" id="this_week">
+            <form action="{{ link }}" method="post" id="this_week" class="mb-3">
                 <input type="hidden" id="day" name="day">
                 <div id="navigation-container">
-                    <button type="button" class="btn btn-secondary mx-5 px-2" onclick="previous_week()">&larr;</button>
+                    <button type="button" class="btn btn-dark mx-5 px-4" onclick="previous_week()">&larr;</button>
                     <p id="info" class="px-5">2023</p>
-                    <button type="button" class="btn btn-secondary mx-5 px-2" onclick="next_week()">&rarr;</button>
+                    <button type="button" class="btn btn-dark mx-5 px-4" onclick="next_week()">&rarr;</button>
                 </div>
             </form>
             <table class="table table-bordered">
@@ -77,10 +83,10 @@
                         <th class="table-dark">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</th>
                     {% endfor %}
                 </tr>
-                {% for i in range(1,31,1) %}
+                {% for i in range(1,29,1) %}
                     <tr>
                         {% if i%2 == 1 %}
-                            <th rowspan="2">{{ (i + 1)//2 + 5 }}:00</th>
+                            <th rowspan="2" style="text-align: center;">{{ (i + 1)//2 + 5 }}:00</th>
                         {% endif %}
                         {% for j in range(1,8,1) %}
                             <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>
@@ -264,9 +270,9 @@
                 for (let u=1;u<lock_list[i][3];u++){
                     let id5 = lock_list[i][1] + String(Number(lock_list[i][2]) + u);
                     const box4 = document.getElementById(id5);
-                    box4.style.backgroundColor = "#5e5e5e";
+                    box4.style.backgroundColor = "#868686";
                 }
-                box3.style.backgroundColor = "#5e5e5e";
+                box3.style.backgroundColor = "#868686";
             }
         {% endif %}
 
@@ -303,7 +309,6 @@
             document.getElementById("pool_name").value = class_list[id]["pool_name"];
             document.getElementById("instructor_name").value = class_list[id]["instructor_name"];
             document.getElementById("instructor_phone").value = class_list[id]["instructor_phone"];
-            document.getElementById("instructor_id").value = class_list[id]["instructor_id"];
             document.getElementById("class_id").value = id;
             if (member_count[id]) {
                 document.getElementById("class_number").value = member_count[id];
@@ -312,8 +317,8 @@
             }
         }
 
+        const week_dat = JSON.parse('{{ week_list|tojson }}');
         function showLink(x, y) {
-            const week_dat = JSON.parse('{{ week_list|tojson }}');
             const time = ['06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
                 '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
             document.getElementById("send_day").value = week_dat[x][0];

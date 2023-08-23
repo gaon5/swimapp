@@ -8,40 +8,38 @@
     </div>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <div class="card mt-5">
                     <div class="card-body">
                         <h5 class="card-title text-center">Select a date, start time and end time below:</h5><br>
                         <form action="{{ url_for('schedule_time') }}" method="post" onsubmit="return validateForm()">
                             <div class="input-group mb-3">
                                 <div class="input-group mb-3">
-                                    <label for="available_date" class="input-group-text">Date:</label>
+                                    <label for="available_date" class="input-group-text">Date <span style="color: red">*</span>:</label>
                                     <input type="date" class="form-control" name="available_date" id="available_date" min={{ today }} max="2024-01-01" required>
                                 </div>
                                 <div class="input-group mb-3">
-                                    <label for="start_time" class="input-group-text">Start Time:</label>
+                                    <label for="start_time" class="input-group-text">Start Time <span style="color: red">*</span>:</label>
                                     <select class="form-control" name="start_time" id="start_time" required>
                                         <option value="" selected="selected" disabled>---Choose a time---</option>
-                                        {% for i in range(10,19,1) %}
+                                        {% for i in range(6,20,1) %}
                                             {% if i == 18 %}
                                                 <option value="{{ i }}:00:00">{{ i }}:00</option>
                                             {% else %}
                                                 <option value="{{ i }}:00:00">{{ i }}:00</option>
-                                                <option value="{{ i }}:30:00">{{ i }}:30</option>
                                             {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="input-group mb-3">
-                                    <label for="end_time" class="input-group-text">End Time:</label>
+                                    <label for="end_time" class="input-group-text">End Time <span style="color: red">*</span>:</label>
                                     <select class="form-control" name="end_time" id="end_time" required>
                                         <option value="" selected="selected" disabled>---Choose a time---</option>
-                                        {% for i in range(10,19,1) %}
+                                        {% for i in range(7,21,1) %}
                                             {% if i == 18 %}
                                                 <option value="{{ i }}:00:00">{{ i }}:00</option>
                                             {% else %}
                                                 <option value="{{ i }}:00:00">{{ i }}:00</option>
-                                                <option value="{{ i }}:30:00">{{ i }}:30</option>
                                             {% endif %}
                                         {% endfor %}
                                     </select>
@@ -52,9 +50,9 @@
                             </div>
                         </form>
                         {% if error_msg %}
-                        <div class="alert alert-danger">
-                            {{ error_msg }}
-                        </div>
+                            <div class="alert alert-danger">
+                                {{ error_msg }}
+                            </div>
                         {% elif success_msg %}
                             <div class="alert alert-success">
                                 {{ success_msg }}
@@ -66,9 +64,9 @@
         </div>
     </div>
     {% if date_list %}
-        <div class="container">
+        <div class="container mb-5">
             <div class="row justify-content-center">
-                <div class="col-md-5">
+                <div class="col-md-6">
                     <div class="card mt-5">
                         <div class="card-body">
                             <h5 class="card-title text-center">My available schedule for individual lessons</h5><br>

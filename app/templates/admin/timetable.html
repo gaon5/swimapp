@@ -42,7 +42,6 @@
 {% block myOwnModalLabel2 %}
     <form action="javascript:void(0);" id="manage_class">
         <input type="hidden" id="class_id" name="class_id">
-        <input type="hidden" id="instructor_id" name="instructor_id">
         <button type="button" class="btn btn-primary my-1" onclick="edit_class()">Edit this class</button>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete this class</button>
     </form>
@@ -57,7 +56,7 @@
         }
         function edit_class(){
             document.getElementById("manage_class").action = "/admin_edit_class"
-            document.getElementById("manage_class").method = "post"
+            document.getElementById("manage_class").method = "get"
             document.getElementById("manage_class").submit();
         }
         function delete_class(){
