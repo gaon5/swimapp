@@ -51,18 +51,18 @@
                                 <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="02* *** *****" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="city_id" class="input-group-text">City</label>
-                                <select class="form-control" name="city_id" id="city_id" onchange="update_city()" required>
-                                    <option value="" selected="selected" disabled>---Choose a city---</option>
-                                    {% for city in cities %}
-                                        <option value="{{ city[0] }}">{{ city[1] }}</option>
+                                <label for="region_id" class="input-group-text">Region</label>
+                                <select class="form-control" name="region_id" id="region_id" onchange="update_region()" required>
+                                    <option value="" selected="selected" disabled>---Choose a region---</option>
+                                    {% for region in cities %}
+                                        <option value="{{ region[0] }}">{{ region[1] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="region_id" class="input-group-text">Region</label>
-                                <select class="form-control" name="region_id" id="region_id" required>
-                                    <option value="" selected="selected" disabled>---Choose a region---</option>
+                                <label for="city_id" class="input-group-text">City</label>
+                                <select class="form-control" name="city_id" id="city_id" required>
+                                    <option value="" selected="selected" disabled>---Choose a city---</option>
                                 </select>
                             </div>
                             <div class="input-group mb-3">
@@ -133,18 +133,18 @@
             return i !== 1;
         }
 
-        const region_list = JSON.parse('{{ regions|tojson }}');
-        const city = document.getElementById('city_id')
+        const city_list = JSON.parse('{{ citys|tojson }}');
         const region = document.getElementById('region_id')
+        const city = document.getElementById('city_id')
 
-        function update_city() {
-            region.innerHTML = '<option value="" disabled>---Choose a region---</option>';
-            for (const j in region_list) {
-                if (String(region_list[j][1]) === city.value) {
+        function update_region() {
+            city.innerHTML = '<option value="" disabled>---Choose a city---</option>';
+            for (const j in city_list) {
+                if (String(city_list[j][1]) === region.value) {
                     const option = document.createElement('option');
-                    option.value = region_list[j][0];
-                    option.text = region_list[j][2];
-                    region.appendChild(option);
+                    option.value = city_list[j][0];
+                    option.text = city_list[j][2];
+                    city.appendChild(option);
                 }
             }
         }

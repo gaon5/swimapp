@@ -28,12 +28,12 @@ def get_cursor():
 
 
 first_select = get_cursor()
-first_select.execute("""SELECT * FROM `city`;""")
-city_list = first_select.fetchall()
-first_select.execute("""SELECT * FROM `title`;""")
-title_list = first_select.fetchall()
 first_select.execute("""SELECT * FROM `region`;""")
 region_list = first_select.fetchall()
+first_select.execute("""SELECT * FROM `title`;""")
+title_list = first_select.fetchall()
+first_select.execute("""SELECT * FROM `city`;""")
+city_list = first_select.fetchall()
 first_select.close()
 
 

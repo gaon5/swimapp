@@ -88,15 +88,16 @@ def instructor_timetable():
                 temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
                 week_list.append(temp_list)
             sql_data = get_cursor()
-            sql = """SELECT c.class_id, c.instructor_id, c.pool_id, p.pool_name, c.is_individual, c.class_name, 
+            sql = """SELECT b.book_class_id, b.instructor_id, b.pool_id, p.pool_name, b.is_individual, c.class_name, 
                         CONCAT(t.title, " ", i.first_name, " ", i.last_name) AS instructor_name, i.phone_number,
-                        i.state, c.class_date, c.start_time, c.end_time
-                        FROM class_list AS c
-                        LEFT JOIN pool AS p ON c.pool_id=p.pool_id
-                        LEFT JOIN instructor AS i ON c.instructor_id=i.instructor_id
+                        i.state, b.class_date, b.start_time, b.end_time
+                        FROM book_class_list AS b 
+                        LEFT JOIN class_list AS c ON c.class_id=b.class_id
+                        LEFT JOIN pool AS p ON b.pool_id=p.pool_id
+                        LEFT JOIN instructor AS i ON b.instructor_id=i.instructor_id
                         LEFT JOIN title AS t ON i.title_id=t.title_id
-                        WHERE (c.class_date BETWEEN %s AND %s) AND (i.state=1) AND (i.user_id=%s)
-                        ORDER BY c.start_time"""
+                        WHERE (b.class_date BETWEEN %s AND %s) AND (i.state=1) AND (i.user_id=%s)
+                        ORDER BY b.start_time"""
             sql_value = (week_list[1][0], week_list[-1][0], user_id)
             sql_data.execute(sql, sql_value)
             all_details_sql = sql_data.fetchall()

@@ -68,10 +68,10 @@
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="city" class="input-group-text">City :</label>
-                    <select name="city" class="form-select" id="city" onchange="update_city()" disabled required>
-                        <option value="" disabled>---Choose a city---</option>
-                        {% for i in city_list %}
+                    <label for="region" class="input-group-text">Region :</label>
+                    <select name="region" class="form-select" id="region" onchange="update_region()" disabled required>
+                        <option value="" disabled>---Choose a region---</option>
+                        {% for i in region_list %}
                             <option value={{ i[0] }}>{{ i[1] }}</option>
                         {% endfor %}
                     </select>
@@ -79,9 +79,9 @@
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="region" class="input-group-text">Region :</label>
-                    <select name="region" class="form-select" id="region" disabled required>
-                        <option value="" disabled>---Choose a region---</option>
+                    <label for="city" class="input-group-text">City :</label>
+                    <select name="city" class="form-select" id="city" disabled required>
+                        <option value="" disabled>---Choose a city---</option>
                     </select>
                 </div>
             </div>
@@ -106,20 +106,20 @@
 
 {% block myjs %}
     <script>
-        const region_list = JSON.parse('{{ region_list|tojson }}');
+        const city_list = JSON.parse('{{ city_list|tojson }}');
         document.getElementById('title').value = {{ member_detail[1] }};
-        const city = document.getElementById('city');
         const region = document.getElementById('region');
-        city.value = {{ member_detail[6] }};
-        for (const i in region_list) {
-            if (String(region_list[i][1]) === city.value) {
+        const city = document.getElementById('city');
+        region.value = {{ member_detail[6] }};
+        for (const i in city_list) {
+            if (String(city_list[i][1]) === region.value) {
                 const option = document.createElement('option');
-                option.value = region_list[i][0];
-                option.text = region_list[i][2];
-                region.appendChild(option);
+                option.value = city_list[i][0];
+                option.text = city_list[i][2];
+                city.appendChild(option);
             }
         }
-        region.value = {{ member_detail[7] }};
+        city.value = {{ member_detail[7] }};
 
         const Change = document.getElementById('Change');
         const Cancel = document.getElementById('Cancel');
@@ -165,14 +165,14 @@
             Submit.classList.add("btn-outline-primary");
         }
 
-        function update_city() {
-            region.innerHTML = '<option value="" disabled>---Choose a region---</option>';
-            for (const i in region_list) {
-                if (String(region_list[i][1]) === city.value) {
+        function update_region() {
+            city.innerHTML = '<option value="" disabled>---Choose a city---</option>';
+            for (const i in city_list) {
+                if (String(city_list[i][1]) === region.value) {
                     const option = document.createElement('option');
-                    option.value = region_list[i][0];
-                    option.text = region_list[i][2];
-                    region.appendChild(option);
+                    option.value = city_list[i][0];
+                    option.text = city_list[i][2];
+                    city.appendChild(option);
                 }
             }
         }

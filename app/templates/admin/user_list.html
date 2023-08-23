@@ -130,10 +130,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="input-group mb-3">
-                                        <label for="member_city" class="input-group-text">City :</label>
-                                        <select name="city" class="form-select" id="member_city" onchange="update_city()" required>
-                                            <option value="" disabled>---Choose a city---</option>
-                                            {% for i in city_list %}
+                                        <label for="member_region" class="input-group-text">Region :</label>
+                                        <select name="region" class="form-select" id="member_region" onchange="update_region()" required>
+                                            <option value="" disabled>---Choose a region---</option>
+                                            {% for i in region_list %}
                                                 <option value={{ i[0] }}>{{ i[1] }}</option>
                                             {% endfor %}
                                         </select>
@@ -141,9 +141,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="input-group mb-3">
-                                        <label for="member_region" class="input-group-text">Region :</label>
-                                        <select name="region" class="form-select" id="member_region" required>
-                                            <option value="" disabled>---Choose a region---</option>
+                                        <label for="member_city" class="input-group-text">City :</label>
+                                        <select name="city" class="form-select" id="member_city" required>
+                                            <option value="" disabled>---Choose a city---</option>
                                         </select>
                                     </div>
                                 </div>
@@ -245,17 +245,17 @@
         const modal2 = document.getElementById('myOwnModal2');
         modal2.addEventListener('shown.bs.modal', function () {
         });
-        const city = document.getElementById('member_city');
         const region = document.getElementById('member_region');
-        const region_list = JSON.parse('{{ region_list|tojson }}');
-        function update_city() {
-            region.innerHTML = '<option value="" disabled>---Choose a region---</option>';
-            for (const i in region_list) {
-                if (String(region_list[i][1]) === city.value) {
+        const city = document.getElementById('member_city');
+        const city_list = JSON.parse('{{ city_list|tojson }}');
+        function update_region() {
+            city.innerHTML = '<option value="" disabled>---Choose a city---</option>';
+            for (const i in city_list) {
+                if (String(city_list[i][1]) === region.value) {
                     const option = document.createElement('option');
-                    option.value = region_list[i][0];
-                    option.text = region_list[i][2];
-                    region.appendChild(option);
+                    option.value = city_list[i][0];
+                    option.text = city_list[i][2];
+                    city.appendChild(option);
                 }
             }
         }
@@ -269,9 +269,9 @@
             document.getElementById('member_email').value = member_list[id][6];
             document.getElementById('member_phone_number').value = member_list[id][3];
             document.getElementById('member_detailed_information').value = member_list[id][8];
-            document.getElementById('member_city').value = member_list[id][9];
-            update_city();
-            document.getElementById('member_region').value = member_list[id][10];
+            document.getElementById('member_region').value = member_list[id][9];
+            update_region();
+            document.getElementById('member_city').value = member_list[id][10];
             document.getElementById('member_street_name').value = member_list[id][11];
             document.getElementById('member_health_information').value = member_list[id][13];
             document.getElementById('member_user_id').value = member_list[id][0];

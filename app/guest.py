@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 import math
 import bcrypt
 import re
-from app import app, check_permissions, get_cursor, title_list, city_list, region_list
+from app import app, check_permissions, get_cursor, title_list, region_list, city_list
 
 
 
@@ -68,19 +68,19 @@ def login():
 @app.route('/dashboard')
 def dashboard():
     sql_data = get_cursor()
-    sql = """SELECT COUNT(instructor_id) FROM swimming_pool.instructor;"""
+    sql = """SELECT COUNT(instructor_id) FROM instructor;"""
     sql_data.execute(sql)
     instructor_count = sql_data.fetchall()
-    sql = """SELECT COUNT(member_id) FROM swimming_pool.member"""
+    sql = """SELECT COUNT(member_id) FROM member"""
     sql_data.execute(sql)
     member_count = sql_data.fetchall()
-    sql = """SELECT COUNT(user_id) FROM swimming_pool.user_account;"""
+    sql = """SELECT COUNT(user_id) FROM user_account;"""
     sql_data.execute(sql)
     user_count = sql_data.fetchall()
-    sql = """SELECT COUNT(pool_id) FROM swimming_pool.pool;"""
+    sql = """SELECT COUNT(pool_id) FROM pool;"""
     sql_data.execute(sql)
     pool_count = sql_data.fetchall()
-    sql = """SELECT COUNT(DISTINCT class_name) FROM swimming_pool.class_list;"""
+    sql = """SELECT COUNT(DISTINCT class_id) FROM book_class_list;"""
     sql_data.execute(sql)
     class_count = sql_data.fetchall()
     sql_data.close()
@@ -137,7 +137,7 @@ def register():
     Handle user registration.
     1. Setup: Establishes the /register route for GET and POST requests.
     2. Feedback Init: Initializes an empty feedback message with msg = ''.
-    3. GET Handling: On GET, retrieves titles, cities, and regions; returns the registration form.
+    3. GET Handling: On GET, retrieves titles, cities, and citys; returns the registration form.
     4. POST Handling: On POST, extracts and processes submitted form data.
     5. Validation: Checks for duplicate accounts, validates email, password, username, and birthdate formats.
     6. Data Storage: If valid, hashes password, stores user data in the database, retrieves the user's ID, and saves detailed info.
@@ -151,7 +151,7 @@ def register():
         # Define the required and optional fields for registration
         required_fields = [
             'username', 'password', 'email', 'title_id', 'first_name', 'last_name',
-            'phone_number', 'city_id', 'region_id', 'street_name', 'birth_date'
+            'phone_number', 'region_id', 'city_id', 'street_name', 'birth_date'
         ]
         optional_fields = ['detailed_information', 'health_information']
 
@@ -194,15 +194,15 @@ def register():
                 user_id = cursor.fetchone()[0]
                 # Insert the user's detailed information into the member table
                 sql = """INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, 
-                            city_id, region_id, street_name, birth_date, state)
+                            region_id, city_id, street_name, birth_date, state)
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"""
-                value = (user_id, values['title_id'], first_name, last_name, values['phone_number'], values['city_id'],
-                         values['region_id'], values['street_name'], values['birth_date'])
+                value = (user_id, values['title_id'], first_name, last_name, values['phone_number'], values['region_id'],
+                         values['city_id'], values['street_name'], values['birth_date'])
                 cursor.execute(sql, value)
                 cursor.close()
                 return redirect(url_for('payment'))
         # Return the registration template with the appropriate message
-    return render_template('guest/register.html', msg=msg, titles=title_list, cities=city_list, regions=region_list, today=today)
+    return render_template('guest/register.html', msg=msg, titles=title_list, cities=region_list, citys=city_list, today=today)
 
 
 @app.route('/monthly_payment', methods=['GET', 'POST'])
