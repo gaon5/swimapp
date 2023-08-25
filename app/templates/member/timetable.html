@@ -15,20 +15,35 @@
 {% endblock %}
 
 {% block myOwnModalLabel %}
-    <form action="javascript:void(0);" id="schedule_time">
+    <form action="javascript:void(0);" method="post"  id="schedule_time">
         <input type="hidden" id="send_day" name="send_day">
         <input type="hidden" id="send_time" name="send_time">
-        <button type="button" class="btn btn-primary my-1" onclick="lock_time()">Book Individual Lesson</button>
+        <button type="button" class="btn btn-primary my-1" onclick="book_lesson()">Book Individual Lesson</button>
     </form>
 {% endblock %}
 
 {% block myOwnModalLabel2 %}
-    <form action="javascript:void(0);" method="post">
+    <form action="javascript:void(0);" method="post" id="book_class">
         <input type="hidden" id="class_id" name="class_id">
-        <button type="submit" class="btn btn-primary my-1">View all about this class detail</button>
+        <button type="button" class="btn btn-primary my-1" onclick="class_detail()">Class detail</button>
+        <button type="button" class="btn btn-primary my-1" onclick="book_class()">Book this class</button>
     </form>
 {% endblock %}
 
 {% block timetable_js %}
+    <script>
+        function book_class(){
+            document.getElementById("book_class").action = "/member_book_class"
+            document.getElementById("book_class").submit();
+        }
+        function class_detail(){
+            document.getElementById("book_class").action = "/member_class_detail"
+            document.getElementById("book_class").submit();
+        }
+        function book_lesson(){
+            document.getElementById("schedule_time").action = "/member_book_lesson"
+            document.getElementById("schedule_time").submit();
 
+        }
+    </script>
 {% endblock %}

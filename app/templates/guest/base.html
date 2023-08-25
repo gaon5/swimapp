@@ -55,7 +55,7 @@
                                 <div class="dropdown py-2 px-2">
                                     <button class="btn dropdown-toggle selected" type="button" data-bs-toggle="dropdown"
                                             aria-expanded="false">
-                                        Hello {{ username }}!
+                                        Hello {{ session['username'] }}!
                                     </button>
                                     <ul class="dropdown-menu">
                                         {% if permissions == 4 %}
@@ -103,8 +103,8 @@
                 </div>
 
                 <div class="col-4 mb-4">
-                    <h5 class="mb-1" style="letter-spacing: 2px; color: white;">Opening hours</h5>
-                    <ul style="list-style: none;">
+                    <h5 class="mb-1" style="color: white;">Opening hours</h5>
+                    <ul style="list-style: none; padding-left: 0">
                         <li>Mon - Sun</li>
                         <li>6AM - 20PM</li>
                     </ul>
