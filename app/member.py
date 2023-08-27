@@ -226,6 +226,12 @@ def pay_successful():
         price = 44
     else:
         price = 80
+    session.pop('available_date', None)
+    session.pop('start_time', None)
+    session.pop('end_time', None)
+    session.pop('instructor', None)
+    session.pop('pool', None)
+    session.pop('hour', None)
     today = datetime.today().date()
     sql_data = get_cursor()
     sql = """SELECT member_id From member WHERE user_id=%s;"""
@@ -250,20 +256,92 @@ def pay_successful():
     return render_template('guest/jump.html', msg=msg, goUrl=goUrl, permissions=check_permissions())
 
 
-@app.route('/member_class_detail', methods=['GET', 'POST'])
+@app.route('/member_class_detail', methods=['GET'])
 def member_class_detail():
+    today = datetime.today().date()
+    user_id = int(session['user_id'])
     sql_data = get_cursor()
-    sql = """SELECT class_id, class_name, class_date, start_time, end_time, class_list.detailed_information, first_name, last_name, pool.pool_name
-                FROM swimming_pool.class_list
-                INNER JOIN instructor ON class_list.instructor_id=instructor.instructor_id
-                INNER JOIN pool ON class_list.pool_id=pool.pool_id
-                WHERE class_id=%s;"""
-    sql_data.execute(sql)
-    detail_list = sql_data.fetchone()
+    sql = """SELECT bc.class_date,bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
+                FROM book_list AS bl
+                LEFT JOIN book_class_list AS bc ON bc.book_class_id=bl.class_id
+                LEFT JOIN instructor AS i ON i.instructor_id=bl.instructor_id
+                LEFT JOIN title AS t ON t.title_id=i.title_id
+                LEFT JOIN pool AS p ON p.pool_id=bl.pool_id
+                LEFT JOIN member AS m ON m.member_id=bl.member_id
+                WHERE m.user_id=%s AND bc.class_date>%s
+                order by bc.class_date;"""
+    sql_data.execute(sql, (user_id, today,))
+    detail_list = sql_data.fetchall()
     sql_data.close()
-    return render_template('member/class_detail.html', permissions=check_permissions())
+    for i in range(len(detail_list)):
+        detail_list[i] = list(detail_list[i])
+        detail_list[i][0] = str(detail_list[i][0])
+        detail_list[i][1] = str(detail_list[i][1])
+        detail_list[i][2] = str(detail_list[i][2])
+    return render_template('member/class_detail.html', detail_list=detail_list, permissions=check_permissions())
 
 
-@app.route('/member_book_class')
+@app.route('/class_detail', methods=['POST'])
+def class_detail():
+    if 'loggedIn' in session:
+        if check_permissions():
+            class_id = request.form.get('class_id')
+            sql_data = get_cursor()
+            sql = """SELECT b.book_class_id,p.pool_name,c.class_name,b.class_date,b.start_time,b.end_time,b.detailed_information,b.is_individual,
+                        CONCAT(t.title, " ", i.first_name, " ", i.last_name) AS instructor_name,i.phone_number,i.detailed_information,i.state
+                        FROM book_class_list AS b 
+                        LEFT JOIN class_list AS c ON c.class_id=b.class_id
+                        LEFT JOIN pool AS p ON b.pool_id=p.pool_id
+                        LEFT JOIN instructor AS i ON b.instructor_id=i.instructor_id
+                        LEFT JOIN title AS t ON i.title_id=t.title_id
+                        WHERE b.book_class_id=%s AND i.state=1;"""
+            sql_value = (class_id,)
+            sql_data.execute(sql, sql_value)
+            information = sql_data.fetchall()[0]
+            information = list(information)
+            information[4] = str(information[4])
+            information[5] = str(information[5])
+            sql = """SELECT class_id, COUNT(member_id) AS member_count
+                            FROM book_list
+                            WHERE class_id=%s;"""
+            sql_value = (class_id,)
+            sql_data.execute(sql, sql_value)
+            member_count = sql_data.fetchall()[0]
+            return render_template('instructor/class_details.html', information=information, member_count=member_count, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/member_book_class', methods=['POST'])
 def member_book_class():
-    return render_template('member/book_class.html', permissions=check_permissions())
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            user_id = session['user_id']
+            class_id = request.form.get('class_id')
+            sql_data = get_cursor()
+            sql = """SELECT b.pool_id,b.instructor_id
+                        FROM book_class_list AS b 
+                        WHERE b.book_class_id=%s;"""
+            sql_data.execute(sql, (class_id,))
+            book_class_id = sql_data.fetchall()[0]
+            sql = """SELECT member_id From member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            sql = """SELECT book_id From book_list WHERE class_id=%s AND member_id=%s;"""
+            sql_data.execute(sql, (class_id, member_id,))
+            if not sql_data.fetchall():
+                sql = """INSERT INTO book_list (member_id, class_id, instructor_id, pool_id) VALUES (%s,%s,%s,%s)"""
+                value = (member_id, class_id, book_class_id[1], book_class_id[0],)
+                sql_data.execute(sql, value)
+                msg = "Book successful! Jump to my class."
+                goUrl = '/member_class_detail'
+            else:
+                msg = "You cannot book the same class twice! Jump to timetable."
+                goUrl = '/view_class'
+            return render_template('guest/jump.html', msg=msg, goUrl=goUrl, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
