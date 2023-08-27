@@ -103,7 +103,7 @@
                                     <div class="input-group mb-3">
                                         <label for="member_title" class="input-group-text">Title :</label>
                                         <select name="title" class="form-select" id="member_title" required>
-                                            <option value="" disabled>---Choose a title---</option>
+                                            <option value="" disabled>---Choose title---</option>
                                             {% for i in title_list %}
                                                 <option value={{ i[0] }}>{{ i[1] }}</option>
                                             {% endfor %}
@@ -132,7 +132,7 @@
                                     <div class="input-group mb-3">
                                         <label for="member_region" class="input-group-text">Region :</label>
                                         <select name="region" class="form-select" id="member_region" onchange="update_region()" required>
-                                            <option value="" disabled>---Choose a region---</option>
+                                            <option value="" disabled>---Choose region---</option>
                                             {% for i in region_list %}
                                                 <option value={{ i[0] }}>{{ i[1] }}</option>
                                             {% endfor %}
@@ -143,7 +143,7 @@
                                     <div class="input-group mb-3">
                                         <label for="member_city" class="input-group-text">City :</label>
                                         <select name="city" class="form-select" id="member_city" required>
-                                            <option value="" disabled>---Choose a city---</option>
+                                            <option value="" disabled>---Choose city---</option>
                                         </select>
                                     </div>
                                 </div>
@@ -205,7 +205,7 @@
                                     <div class="input-group my-2">
                                         <label for="instructor_title" class="input-group-text">Title :</label>
                                         <select name="title" class="form-select" id="instructor_title" required>
-                                            <option value="" disabled>---Choose a title---</option>
+                                            <option value="" disabled>---Choose title---</option>
                                             {% for i in title_list %}
                                                 <option value={{ i[0] }}>{{ i[1] }}</option>
                                             {% endfor %}
@@ -249,7 +249,7 @@
         const city = document.getElementById('member_city');
         const city_list = JSON.parse('{{ city_list|tojson }}');
         function update_region() {
-            city.innerHTML = '<option value="" disabled>---Choose a city---</option>';
+            city.innerHTML = '<option value="" disabled>---Choose city---</option>';
             for (const i in city_list) {
                 if (String(city_list[i][1]) === region.value) {
                     const option = document.createElement('option');

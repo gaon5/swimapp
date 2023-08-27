@@ -7,19 +7,23 @@
             align-items: center;
             justify-content: center;
         }
+
         #info {
             margin: 0 20px;
         }
+
         .little_box:hover {
             background-color: #dbe3e8;
             border-radius: 15px;
         }
+
         th {
             height: 40px;
             width: 120px;
             border-radius: 5px;
         }
-        th a{
+
+        th a {
             font-size: 15px;
         }
     </style>
@@ -32,27 +36,27 @@
         <div class="row">
             <div class="col-md-3">
                 <select name="pool_type" class="form-select" id="pool_type">
-                    <option value="" disabled selected>-- select a pool --</option>
+                    <option value="" disabled selected>-- select pool --</option>
                     {% for pool in pool_list %}
                         <option value="{{ pool[0] }}">{{ pool[1] }}</option>
                     {% endfor %}
                 </select>
             </div>
             {% if permissions != 1 %}
-            <div class="col-md-3">
-                <select name="class_type" class="form-select" id="class_type">
-                    <option value="" disabled selected>-- select a class type --</option>
-                    <option value="1">Public Lesson</option>
-                    <option value="2">Individual Lesson</option>
-                </select>
-            </div>
+                <div class="col-md-3">
+                    <select name="class_type" class="form-select" id="class_type">
+                        <option value="" disabled selected>-- select class type --</option>
+                        <option value="1">Public Lesson</option>
+                        <option value="2">Individual Lesson</option>
+                    </select>
+                </div>
             {% else %}
                 <input type="hidden" name="class_type" id="class_type">
             {% endif %}
             {% if permissions != 2 %}
                 <div class="col-md-3">
                     <select name="instructor" class="form-select" id="instructor">
-                        <option value="" disabled selected>-- select a instructor --</option>
+                        <option value="" disabled selected>-- select instructor --</option>
                         {% for instructor in instructor_list %}
                             <option value="{{ instructor[0] }}">{{ instructor[9] }} {{ instructor[3] }} {{ instructor[4] }}</option>
                         {% endfor %}
@@ -89,7 +93,7 @@
                             <th rowspan="2" style="text-align: center;">{{ (i + 1)//2 + 5 }}:00</th>
                         {% endif %}
                         {% for j in range(1,8,1) %}
-                            <th id="{{ j }}{{ i }}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{ j }}, {{ i }})"></th>
+                            <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -158,6 +162,12 @@
                                     <div class="input-group mb-3">
                                         <label for="class_number" class="input-group-text">Number of members :</label>
                                         <input type="text" class="form-control" name="class_number" id="class_number" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 is_individual">
+                                    <div class="input-group mb-3">
+                                        <label for="available_slots" class="input-group-text">Available slots :</label>
+                                        <input type="text" class="form-control" name="available_slots" id="available_slots" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -240,9 +250,9 @@
                 const box = document.getElementById(id);
                 const classElement = document.createElement("div");
                 classElement.innerHTML = `<a href="javascript:void(0);">${class_list[i]["class_name"]}</a>`;
-                if(class_list[i]["is_individual"]){
+                if (class_list[i]["is_individual"]) {
                     box.style.backgroundColor = "#f89696";
-                }else{
+                } else {
                     box.style.backgroundColor = "#89d0ff";
                 }
                 classElement.setAttribute("data-bs-toggle", "modal");
@@ -263,18 +273,18 @@
                 }
             }
 
-        {% if lock_list %}
-            for (const i in lock_list) {
-                let id4 = lock_list[i][1] + lock_list[i][2];
-                const box3 = document.getElementById(id4);
-                for (let u=1;u<lock_list[i][3];u++){
-                    let id5 = lock_list[i][1] + String(Number(lock_list[i][2]) + u);
-                    const box4 = document.getElementById(id5);
-                    box4.style.backgroundColor = "#868686";
+            {% if lock_list %}
+                for (const i in lock_list) {
+                    let id4 = lock_list[i][1] + lock_list[i][2];
+                    const box3 = document.getElementById(id4);
+                    for (let u = 1; u < lock_list[i][3]; u++) {
+                        let id5 = lock_list[i][1] + String(Number(lock_list[i][2]) + u);
+                        const box4 = document.getElementById(id5);
+                        box4.style.backgroundColor = "#868686";
+                    }
+                    box3.style.backgroundColor = "#868686";
                 }
-                box3.style.backgroundColor = "#868686";
-            }
-        {% endif %}
+            {% endif %}
 
         }
 
@@ -303,6 +313,7 @@
 
         display_timetable();
         member_count = JSON.parse('{{ member_count|tojson }}');
+
         function show_detail_base(id) {
             event.stopPropagation();
             document.getElementById("class_name").value = class_list[id]["class_name"];
@@ -312,17 +323,31 @@
             document.getElementById("class_id").value = id;
             if (member_count[id]) {
                 document.getElementById("class_number").value = member_count[id];
+                document.getElementById("available_slots").value = 30 - member_count[id];
             } else {
                 document.getElementById("class_number").value = 0;
+                document.getElementById("available_slots").value = 30;
+            }
+            if(class_list[id]["is_individual"]){
+                const individual = document.querySelectorAll(".is_individual")
+                for (let i = 0; i < individual.length; i++) {
+                individual[i].style.display = 'none';
+                }
+            }else{
+                const individual = document.querySelectorAll(".is_individual")
+                for (let i = 0; i < individual.length; i++) {
+                individual[i].style.display = 'inline';
+                }
             }
         }
 
         const week_dat = JSON.parse('{{ week_list|tojson }}');
+
         function showLink(x, y) {
             const time = ['06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
                 '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
             document.getElementById("send_day").value = week_dat[x][0];
-            document.getElementById("send_time").value = time[y-1];
+            document.getElementById("send_time").value = time[y - 1];
         }
     </script>
     {% block timetable_js %}{% endblock %}

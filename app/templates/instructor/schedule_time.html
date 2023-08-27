@@ -11,7 +11,7 @@
             <div class="col-md-6">
                 <div class="card mt-5">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Select a date, start time and end time below:</h5><br>
+                        <h5 class="card-title text-center">Select date, start time and end time below:</h5><br>
                         <form action="{{ url_for('schedule_time') }}" method="post" onsubmit="return validateForm()">
                             <div class="input-group mb-3">
                                 <div class="input-group mb-3">
@@ -21,7 +21,7 @@
                                 <div class="input-group mb-3">
                                     <label for="start_time" class="input-group-text">Start Time <span style="color: red">*</span>:</label>
                                     <select class="form-control" name="start_time" id="start_time" required>
-                                        <option value="" selected="selected" disabled>---Choose a time---</option>
+                                        <option value="" selected="selected" disabled>---Choose time---</option>
                                         {% for i in range(6,20,1) %}
                                             {% if i == 18 %}
                                                 <option value="{{ i }}:00:00">{{ i }}:00</option>
@@ -34,7 +34,7 @@
                                 <div class="input-group mb-3">
                                     <label for="end_time" class="input-group-text">End Time <span style="color: red">*</span>:</label>
                                     <select class="form-control" name="end_time" id="end_time" required>
-                                        <option value="" selected="selected" disabled>---Choose a time---</option>
+                                        <option value="" selected="selected" disabled>---Choose time---</option>
                                         {% for i in range(7,21,1) %}
                                             {% if i == 18 %}
                                                 <option value="{{ i }}:00:00">{{ i }}:00</option>

@@ -15,6 +15,23 @@
             background-position: center center;
             color: white;
         }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 
@@ -55,7 +72,7 @@
                                 <div class="dropdown py-2 px-2">
                                     <button class="btn dropdown-toggle selected" type="button" data-bs-toggle="dropdown"
                                             aria-expanded="false">
-                                        Hello {{ username }}!
+                                        Hello {{ session['username'] }}!
                                     </button>
                                     <ul class="dropdown-menu">
                                         {% if permissions == 4 %}
@@ -66,7 +83,7 @@
                                         {% elif permissions == 2 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_change_information') }}">My Detail</a></li>
                                         {% elif permissions == 1 %}
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_class') }}">View My Class</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_class_detail') }}">View My Class</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_change_information') }}">My Detail</a></li>
                                         {% endif %}
                                         <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href={{ url_for('logout') }}>Log out</a></li>
@@ -103,8 +120,8 @@
                 </div>
 
                 <div class="col-4 mb-4">
-                    <h5 class="mb-1" style="letter-spacing: 2px; color: white;">Opening hours</h5>
-                    <ul style="list-style: none;">
+                    <h5 class="mb-1" style="color: white;">Opening hours</h5>
+                    <ul style="list-style: none; padding-left: 0">
                         <li>Mon - Sun</li>
                         <li>6AM - 20PM</li>
                     </ul>

@@ -6,7 +6,6 @@ import re
 from app import app, check_permissions, get_cursor, title_list, region_list, city_list
 
 
-
 @app.route('/')
 def index():
     # Select news from database, and display.
@@ -208,8 +207,3 @@ def register():
 @app.route('/monthly_payment', methods=['GET', 'POST'])
 def monthly_payment():
     return render_template('guest/monthly_payment.html')
-
-
-@app.route('/individual_payment', methods=['GET', 'POST'])
-def individual_payment():
-    return render_template('guest/individual_payment.html')

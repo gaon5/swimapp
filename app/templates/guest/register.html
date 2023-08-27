@@ -32,7 +32,7 @@
                             <div class="input-group mb-3">
                                 <label for="title_id" class="input-group-text">Title</label>
                                 <select class="form-select" name="title_id" id="title_id" required>
-                                    <option value="" selected="selected" disabled>Choose a title</option>
+                                    <option value="" selected="selected" disabled>Choose title</option>
                                     {% for title in titles %}
                                         <option value="{{ title[0] }}">{{ title[1] }}</option>
                                     {% endfor %}
@@ -53,7 +53,7 @@
                             <div class="input-group mb-3">
                                 <label for="region_id" class="input-group-text">Region</label>
                                 <select class="form-control" name="region_id" id="region_id" onchange="update_region()" required>
-                                    <option value="" selected="selected" disabled>---Choose a region---</option>
+                                    <option value="" selected="selected" disabled>---Choose region---</option>
                                     {% for region in cities %}
                                         <option value="{{ region[0] }}">{{ region[1] }}</option>
                                     {% endfor %}
@@ -62,7 +62,7 @@
                             <div class="input-group mb-3">
                                 <label for="city_id" class="input-group-text">City</label>
                                 <select class="form-control" name="city_id" id="city_id" required>
-                                    <option value="" selected="selected" disabled>---Choose a city---</option>
+                                    <option value="" selected="selected" disabled>---Choose city---</option>
                                 </select>
                             </div>
                             <div class="input-group mb-3">
@@ -138,7 +138,7 @@
         const city = document.getElementById('city_id')
 
         function update_region() {
-            city.innerHTML = '<option value="" disabled>---Choose a city---</option>';
+            city.innerHTML = '<option value="" disabled>---Choose city---</option>';
             for (const j in city_list) {
                 if (String(city_list[j][1]) === region.value) {
                     const option = document.createElement('option');

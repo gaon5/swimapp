@@ -230,7 +230,8 @@ def admin_add_class():
             class_list = sql_data.fetchall()
             sql_data.execute("""SELECT * FROM pool;""")
             pool_list = sql_data.fetchall()
-            return render_template('admin/add_class.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list, time=str(start_time), date=complete_date_string, permissions=check_permissions())
+            return render_template('admin/add_class.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list,
+                                   time=str(start_time), date=complete_date_string, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
@@ -268,7 +269,8 @@ def admin_edit_class():
                                         LEFT JOIN title AS t ON t.title_id=i.title_id;""")
                 instructor_list = sql_data.fetchall()
                 sql_data.close()
-                return render_template('admin/add_class.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list, class_detail=class_detail, permissions=check_permissions(), edit=1)
+                return render_template('admin/add_class.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list,
+                                       class_detail=class_detail, permissions=check_permissions(), edit=1)
             else:
                 form_date = request.form.get('send_day')
                 form_time = request.form.get('send_time')

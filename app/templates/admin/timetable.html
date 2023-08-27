@@ -35,12 +35,12 @@
     <form action="javascript:void(0);" id="schedule_time">
         <input type="hidden" id="send_day" name="send_day">
         <input type="hidden" id="send_time" name="send_time">
-        <button type="button" class="btn btn-primary my-1" onclick="add_class()">Add a public class</button>
+        <button type="button" class="btn btn-primary my-1" onclick="add_class()">Add public class</button>
     </form>
 {% endblock %}
 
 {% block myOwnModalLabel2 %}
-    <form action="javascript:void(0);" id="manage_class">
+    <form action="javascript:void(0);" id="manage_class" class="is_individual">
         <input type="hidden" id="class_id" name="class_id">
         <button type="button" class="btn btn-primary my-1" onclick="edit_class()">Edit this class</button>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete this class</button>
