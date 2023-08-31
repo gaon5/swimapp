@@ -39,7 +39,7 @@
 <div class="sticky-top " style="background-color: #fff;">
     <nav class="navbar navbar-expand-lg container" style="height:85px">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}"><span class="navbar-brand mb-0 h1" id="navtitle">Waikirikiri Swim centre</span></a>
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}"><span class="navbar-brand mb-0 h1" id="navtitle">Waikirikiri Swim Centre</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -77,13 +77,16 @@
                                     <ul class="dropdown-menu">
                                         {% if permissions == 4 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('user_list') }}">User List</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}">View Payments</a></li>
                                         {% elif permissions == 3 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('user_list') }}">Manage User</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}">View Payments</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_change_information') }}">My Detail</a></li>
                                         {% elif permissions == 2 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_change_information') }}">My Detail</a></li>
                                         {% elif permissions == 1 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_class_detail') }}">View My Class</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('my_membership') }}">My membership</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_change_information') }}">My Detail</a></li>
                                         {% endif %}
                                         <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href={{ url_for('logout') }}>Log out</a></li>

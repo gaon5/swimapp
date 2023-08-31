@@ -88,4 +88,30 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="indexModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="indexModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Your membership has expired or has not been paid.</p>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-success" href="/monthly_payment">Go to pay</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Not now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        {% if notice %}
+            const indexModal = new bootstrap.Modal(document.getElementById("indexModal"));
+            indexModal.show();
+        {% endif %}
+    </script>
 {% endblock %}

@@ -16,9 +16,17 @@
             <p class="lead">You are about to book a class in <strong>{{ session['available_date'] }}</strong>, from <strong>{{ session['start_time'] }}</strong> to <strong>{{ session['end_time'] }}</strong>.</p>
             <p class="lead">The location is <strong>{{ pool_name }}</strong> and the instructor is <strong>{{ instructor_name }}</strong>.</p>
             <p class="lead">Payment amount: <strong>{% if hour == "1" %}$44{% else %}$80{% endif %}</strong></p>
-            <hr class="my-4">
-            <p class="lead">Please confirm your booking.</p>
             <form action="/pay_successful" method="post">
+                <label for="payment_method" class="form-label">Payment Method:
+                    <select class="form-select" name="payment_method">
+                        <option value="credit">Credit</option>
+                        <option value="master_card">Master Card</option>
+                        <option value="paypal">Paypal</option>
+                    </select>
+                </label>
+                <hr class="my-4">
+                <p class="lead">Please confirm your booking.</p>
+
                 <button type="submit" class="btn btn-primary btn-lg" role="button">Confirm</button>
                 <a href="/view_class" class="btn btn-primary btn-lg">Back to timetable</a>
             </form>

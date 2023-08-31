@@ -9,10 +9,24 @@ from app import app, check_permissions, get_cursor, title_list, region_list, cit
 @app.route('/')
 def index():
     # Select news from database, and display.
+    notice = False
     if 'loggedIn' in session:
-        return render_template('guest/index.html', permissions=check_permissions())
+        user_id = session["user_id"]
+        permissions = check_permissions()
+        if permissions == 1:
+            sql_data = get_cursor()
+            sql = """SELECT member_id FROM member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            sql = """SELECT start_date, end_date FROM payment_due WHERE member_id = %s AND end_date>=%s"""
+            sql_data.execute(sql, (member_id, datetime.today().date()))
+            subscription = sql_data.fetchall()
+            sql_data.close()
+            if not subscription:
+                notice = True
+        return render_template('guest/index.html', notice=notice, permissions=check_permissions())
     else:
-        return render_template('guest/index.html')
+        return render_template('guest/index.html', notice=notice)
 
 
 # http://localhost:5000/login/ - this will be the login page, we need to use both GET and POST requests
@@ -198,12 +212,20 @@ def register():
                 value = (user_id, values['title_id'], first_name, last_name, values['phone_number'], values['region_id'],
                          values['city_id'], values['street_name'], values['birth_date'])
                 cursor.execute(sql, value)
+                cursor.execute("SELECT * FROM user_account WHERE user_id = %s", (user_id,))
+                account = cursor.fetchone()
                 cursor.close()
-                return redirect(url_for('payment'))
+                session['loggedIn'] = True
+                session['user_id'] = account[0]
+                session['username'] = account[1]
+                session['is_member'] = account[4]
+                session['is_instructor'] = account[5]
+                session['is_admin'] = account[6]
+                session['is_root'] = account[7]
+                msg = "Registration success!"
+                return render_template('guest/jump.html', goUrl='/', msg=msg, permissions=check_permissions())
         # Return the registration template with the appropriate message
-    return render_template('guest/register.html', msg=msg, titles=title_list, cities=region_list, citys=city_list, today=today)
+    return render_template('guest/register.html', msg=msg, titles=title_list, regions=region_list, cities=city_list, today=today)
 
 
-@app.route('/monthly_payment', methods=['GET', 'POST'])
-def monthly_payment():
-    return render_template('guest/monthly_payment.html')
+

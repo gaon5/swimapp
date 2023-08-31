@@ -13,65 +13,65 @@
                         <form action="{{ url_for('register') }}" method="post" onsubmit="return validateForm()">
                             <div class="input-group mb-3">
                                 <label for="username" class="input-group-text">
-                                    <i class="fas fa-user"></i> Username
+                                    <i class="fas fa-user"></i> Username <span style="color:red">*</span>
                                 </label>
-                                <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
+                                <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="{{ request.form['username'] }}" required>
                             </div>
                             <div class="input-group mb-3">
                                 <label for="password" class="input-group-text">
-                                    <i class="fas fa-lock"></i> Password
+                                    <i class="fas fa-lock"></i> Password <span style="color:red">*</span>
                                 </label>
-                                <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                                <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="{{ request.form['password'] }}" required>
                             </div>
                             <div class="input-group mb-3">
                                 <label for="email" class="input-group-text">
-                                    <i class="fas fa-envelope"></i> Email
+                                    <i class="fas fa-envelope"></i> Email <span style="color:red">*</span>
                                 </label>
-                                <input type="email" class="form-control" name="email" id="email" placeholder="example@example.com" required>
+                                <input type="email" class="form-control" name="email" id="email" placeholder="example@example.com" value="{{ request.form['email'] }}" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="title_id" class="input-group-text">Title</label>
+                                <label for="title_id" class="input-group-text">Title <span style="color:red">*</span></label>
                                 <select class="form-select" name="title_id" id="title_id" required>
-                                    <option value="" selected="selected" disabled>Choose title</option>
+                                    <option value="" {% if not request.form['title_id'] %}selected="selected"{% endif %} disabled>Choose title</option>
                                     {% for title in titles %}
-                                        <option value="{{ title[0] }}">{{ title[1] }}</option>
+                                        <option value="{{ title[0] }}" {% if request.form['title_id'] == title[0] %}selected="selected"{% endif %}>{{ title[1] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="first_name" class="input-group-text"><i class="fas fa-user"></i> First Name</label>
-                                <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" required>
+                                <label for="first_name" class="input-group-text"><i class="fas fa-user"></i> First Name <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{ request.form['first_name'] }}" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="last_name" class="input-group-text"><i class="fas fa-user"></i> Last Name</label>
-                                <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" required>
+                                <label for="last_name" class="input-group-text"><i class="fas fa-user"></i> Last Name <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{ request.form['last_name'] }}" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="phone_number" class="input-group-text"><i class="fas fa-phone"></i> Phone Number</label>
-                                <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="02* *** *****" required>
+                                <label for="phone_number" class="input-group-text"><i class="fas fa-phone"></i> Phone Number <span style="color:red">*</span></label>
+                                <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="02* *** *****" value="{{ request.form['phone_number'] }}" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="region_id" class="input-group-text">Region</label>
+                                <label for="region_id" class="input-group-text">Region <span style="color:red">*</span></label>
                                 <select class="form-control" name="region_id" id="region_id" onchange="update_region()" required>
-                                    <option value="" selected="selected" disabled>---Choose region---</option>
-                                    {% for region in cities %}
-                                        <option value="{{ region[0] }}">{{ region[1] }}</option>
+                                    <option value="" {% if not request.form['region_id'] %}selected="selected"{% endif %} disabled>---Choose region---</option>
+                                    {% for region in regions %}
+                                        <option value="{{ region[0] }}" {% if request.form['region_id'] == region[0]|string %}selected="selected"{% endif %}>{{ region[1] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="city_id" class="input-group-text">City</label>
+                                <label for="city_id" class="input-group-text">City <span style="color:red">*</span></label>
                                 <select class="form-control" name="city_id" id="city_id" required>
                                     <option value="" selected="selected" disabled>---Choose city---</option>
                                 </select>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="street_name" class="input-group-text">Street Name</label>
-                                <input type="text" class="form-control" name="street_name" id="street_name" required>
+                                <label for="street_name" class="input-group-text">Street Name <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="street_name" id="street_name" value="{{ request.form['street_name'] }}" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="birth_date" class="input-group-text">Birth Date</label>
-                                <input type="date" class="form-control" name="birth_date" id="birth_date" min="1900-01-01" max={{ today }} required>
+                                <label for="birth_date" class="input-group-text">Birth Date <span style="color:red">*</span></label>
+                                <input type="date" class="form-control" name="birth_date" id="birth_date" min="1900-01-01" max={{ today }} value="{{ request.form['birth_date'] }}" required>
                             </div>
                             <div class="msg">{{ msg }}</div>
                             <div class="d-grid gap-2">
@@ -133,9 +133,10 @@
             return i !== 1;
         }
 
-        const city_list = JSON.parse('{{ citys|tojson }}');
+        const city_list = JSON.parse('{{ cities|tojson }}');
         const region = document.getElementById('region_id')
         const city = document.getElementById('city_id')
+        const prev_city = "{{ request.form['city_id'] }}";
 
         function update_region() {
             city.innerHTML = '<option value="" disabled>---Choose city---</option>';
@@ -145,8 +146,15 @@
                     option.value = city_list[j][0];
                     option.text = city_list[j][2];
                     city.appendChild(option);
+                    if (option.value === prev_city) {
+                        option.selected = true;
+                    }
                 }
             }
+        }
+
+        window.onload = function() {
+            update_region();
         }
     </script>
 {% endblock %}

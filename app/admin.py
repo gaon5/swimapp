@@ -363,3 +363,19 @@ def admin_delete_class():
             return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/view_payments', methods=['GET'])
+def view_payments():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            cursor = get_cursor()
+            sql = """SELECT * FROM payment_list ORDER BY payment_date DESC"""
+            cursor.execute(sql)
+            payments = cursor.fetchall()
+            cursor.close()
+            return render_template('admin/view_payments.html', payments=payments, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))

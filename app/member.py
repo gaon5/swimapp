@@ -13,7 +13,7 @@ def member_change_information():
     :return: change_information.html
     """
     if 'loggedIn' in session:
-        if check_permissions():
+        if check_permissions() == 1:
             user_id = session["user_id"]
             sql_data = get_cursor()
             msg = ""
@@ -68,7 +68,7 @@ def member_change_information():
 @app.route('/view_class', methods=['GET', 'POST'])
 def view_class():
     if 'loggedIn' in session:
-        if check_permissions():
+        if check_permissions() == 1:
             if request.method == 'POST':
                 today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
             else:
@@ -136,7 +136,7 @@ def view_class():
 @app.route('/member_book_lesson', methods=['POST'])
 def member_book_lesson():
     if 'loggedIn' in session:
-        if check_permissions():
+        if check_permissions() == 1:
             form_date = request.form.get('send_day')
             form_time = request.form.get('send_time')
             current_year = datetime.now().year
@@ -183,108 +183,127 @@ def member_book_lesson():
 
 @app.route('/individual_payment', methods=['POST'])
 def individual_payment():
-    available_date = request.form.get('available_date')
-    start_hour = request.form.get('start_hour')
-    start_minute = request.form.get('start_minute')
-    hour = request.form.get('hour')
-    instructor = int(request.form.get('instructor'))
-    pool = int(request.form.get('pool'))
-    start_time = str(start_hour) + ":" + str(start_minute)
-    parsed_time = datetime.strptime(start_time, '%H:%M').time()
-    start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
-    if int(hour) == 1:
-        end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            available_date = request.form.get('available_date')
+            start_hour = request.form.get('start_hour')
+            start_minute = request.form.get('start_minute')
+            hour = request.form.get('hour')
+            instructor = int(request.form.get('instructor'))
+            pool = int(request.form.get('pool'))
+            start_time = str(start_hour) + ":" + str(start_minute)
+            parsed_time = datetime.strptime(start_time, '%H:%M').time()
+            start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
+            if int(hour) == 1:
+                end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
+            else:
+                end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=60)
+            end_time = end_time.replace(second=0).strftime('%H:%M:%S')
+            session['available_date'] = available_date
+            session['start_time'] = start_time
+            session['end_time'] = end_time
+            session['instructor'] = instructor
+            session['pool'] = pool
+            session['hour'] = hour
+            sql_data = get_cursor()
+            sql_data.execute("""SELECT pool_name From pool WHERE pool_id = %s""", (pool,))
+            pool_name = sql_data.fetchall()[0][0]
+            sql = """SELECT CONCAT(t.title, " ", i.first_name, " ", i.last_name) as name From instructor AS i 
+                        LEFT JOIN title AS t ON t.title_id=i.title_id WHERE i.instructor_id = %s"""
+            sql_data.execute(sql, (pool,))
+            instructor_name = sql_data.fetchall()[0][0]
+            return render_template('member/individual_payment.html', pool_name=pool_name, instructor_name=instructor_name, hour=hour, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
     else:
-        end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=60)
-    end_time = end_time.replace(second=0).strftime('%H:%M:%S')
-    session['available_date'] = available_date
-    session['start_time'] = start_time
-    session['end_time'] = end_time
-    session['instructor'] = instructor
-    session['pool'] = pool
-    session['hour'] = hour
-    sql_data = get_cursor()
-    sql_data.execute("""SELECT pool_name From pool WHERE pool_id = %s""", (pool,))
-    pool_name = sql_data.fetchall()[0][0]
-    sql = """SELECT CONCAT(t.title, " ", i.first_name, " ", i.last_name) as name From instructor AS i 
-                LEFT JOIN title AS t ON t.title_id=i.title_id WHERE i.instructor_id = %s"""
-    sql_data.execute(sql, (pool,))
-    instructor_name = sql_data.fetchall()[0][0]
-    return render_template('member/individual_payment.html', pool_name=pool_name, instructor_name=instructor_name, hour=hour, permissions=check_permissions())
+        return redirect(url_for('login'))
 
 
 @app.route('/pay_successful', methods=['POST'])
 def pay_successful():
-    available_date = session['available_date']
-    start_time = session['start_time']
-    end_time = session['end_time']
-    instructor = int(session['instructor'])
-    pool = int(session['pool'])
-    user_id = session['user_id']
-    hour = int(session['hour'])
-    if hour == 1:
-        price = 44
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            available_date = session['available_date']
+            start_time = session['start_time']
+            end_time = session['end_time']
+            instructor = int(session['instructor'])
+            pool = int(session['pool'])
+            user_id = session['user_id']
+            hour = int(session['hour'])
+            payment_method = request.form.get('payment_method')
+            if hour == 1:
+                price = 44
+            else:
+                price = 80
+            session.pop('available_date', None)
+            session.pop('start_time', None)
+            session.pop('end_time', None)
+            session.pop('instructor', None)
+            session.pop('pool', None)
+            session.pop('hour', None)
+            today = datetime.today().date()
+            sql_data = get_cursor()
+            sql = """SELECT member_id From member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            sql = """SELECT instructor_id From instructor WHERE user_id=%s;"""
+            sql_data.execute(sql, (instructor,))
+            instructor_id = sql_data.fetchall()[0][0]
+            sql = """INSERT INTO book_class_list (instructor_id, pool_id, class_id, class_date, start_time, end_time, is_individual) VALUES (%s,%s,1,%s,%s,%s,1);"""
+            value = (instructor_id, pool, str(available_date), str(start_time), str(end_time))
+            sql_data.execute(sql, value)
+            sql_data.execute("""SET @book_class_id = LAST_INSERT_ID();""")
+            sql = """INSERT INTO payment_list (member_id, price, payment_date, payment_type, payment_method) VALUES (%s,%s,%s,'lesson',%s);"""
+            value = (member_id, price, today, payment_method)
+            sql_data.execute(sql, value)
+            sql_data.execute("""SET @payment_id = LAST_INSERT_ID();""")
+            sql = """INSERT INTO book_list (member_id, class_id, instructor_id, pool_id, payment_id) VALUES (%s,@book_class_id,%s,%s,@payment_id);"""
+            value = (member_id, instructor_id, pool)
+            sql_data.execute(sql, value)
+            msg = "Pay successful! Jump to my lesson."
+            goUrl = '/member_class_detail'
+            return render_template('guest/jump.html', msg=msg, goUrl=goUrl, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
     else:
-        price = 80
-    session.pop('available_date', None)
-    session.pop('start_time', None)
-    session.pop('end_time', None)
-    session.pop('instructor', None)
-    session.pop('pool', None)
-    session.pop('hour', None)
-    today = datetime.today().date()
-    sql_data = get_cursor()
-    sql = """SELECT member_id From member WHERE user_id=%s;"""
-    sql_data.execute(sql, (user_id,))
-    member_id = sql_data.fetchall()[0][0]
-    sql = """SELECT instructor_id From instructor WHERE user_id=%s;"""
-    sql_data.execute(sql, (instructor,))
-    instructor_id = sql_data.fetchall()[0][0]
-    sql = """INSERT INTO book_class_list (instructor_id, pool_id, class_id, class_date, start_time, end_time, is_individual) VALUES (%s,%s,1,%s,%s,%s,1);"""
-    value = (instructor_id, pool, str(available_date), str(start_time), str(end_time))
-    sql_data.execute(sql, value)
-    sql_data.execute("""SET @book_class_id = LAST_INSERT_ID();""")
-    sql = """INSERT INTO payment_list (member_id, price, payment_date) VALUES (%s,%s,%s);"""
-    value = (member_id, price, today)
-    sql_data.execute(sql, value)
-    sql_data.execute("""SET @payment_id = LAST_INSERT_ID();""")
-    sql = """INSERT INTO book_list (member_id, class_id, instructor_id, pool_id, payment_id) VALUES (%s,@book_class_id,%s,%s,@payment_id);"""
-    value = (member_id, instructor_id, pool)
-    sql_data.execute(sql, value)
-    msg = "Pay successful! Jump to my lesson."
-    goUrl = '/member_class_detail'
-    return render_template('guest/jump.html', msg=msg, goUrl=goUrl, permissions=check_permissions())
+        return redirect(url_for('login'))
 
 
 @app.route('/member_class_detail', methods=['GET'])
 def member_class_detail():
-    today = datetime.today().date()
-    user_id = int(session['user_id'])
-    sql_data = get_cursor()
-    sql = """SELECT bc.class_date,bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
-                FROM book_list AS bl
-                LEFT JOIN book_class_list AS bc ON bc.book_class_id=bl.class_id
-                LEFT JOIN instructor AS i ON i.instructor_id=bl.instructor_id
-                LEFT JOIN title AS t ON t.title_id=i.title_id
-                LEFT JOIN pool AS p ON p.pool_id=bl.pool_id
-                LEFT JOIN member AS m ON m.member_id=bl.member_id
-                WHERE m.user_id=%s AND bc.class_date>%s
-                order by bc.class_date;"""
-    sql_data.execute(sql, (user_id, today,))
-    detail_list = sql_data.fetchall()
-    sql_data.close()
-    for i in range(len(detail_list)):
-        detail_list[i] = list(detail_list[i])
-        detail_list[i][0] = str(detail_list[i][0])
-        detail_list[i][1] = str(detail_list[i][1])
-        detail_list[i][2] = str(detail_list[i][2])
-    return render_template('member/class_detail.html', detail_list=detail_list, permissions=check_permissions())
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            today = datetime.today().date()
+            user_id = int(session['user_id'])
+            sql_data = get_cursor()
+            sql = """SELECT bc.class_date,bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
+                        FROM book_list AS bl
+                        LEFT JOIN book_class_list AS bc ON bc.book_class_id=bl.class_id
+                        LEFT JOIN instructor AS i ON i.instructor_id=bl.instructor_id
+                        LEFT JOIN title AS t ON t.title_id=i.title_id
+                        LEFT JOIN pool AS p ON p.pool_id=bl.pool_id
+                        LEFT JOIN member AS m ON m.member_id=bl.member_id
+                        WHERE m.user_id=%s AND bc.class_date>%s
+                        order by bc.class_date;"""
+            sql_data.execute(sql, (user_id, today,))
+            detail_list = sql_data.fetchall()
+            sql_data.close()
+            for i in range(len(detail_list)):
+                detail_list[i] = list(detail_list[i])
+                detail_list[i][0] = str(detail_list[i][0])
+                detail_list[i][1] = str(detail_list[i][1])
+                detail_list[i][2] = str(detail_list[i][2])
+            return render_template('member/class_detail.html', detail_list=detail_list, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/class_detail', methods=['POST'])
 def class_detail():
     if 'loggedIn' in session:
-        if check_permissions():
+        if check_permissions() == 1:
             class_id = request.form.get('class_id')
             sql_data = get_cursor()
             sql = """SELECT b.book_class_id,p.pool_name,c.class_name,b.class_date,b.start_time,b.end_time,b.detailed_information,b.is_individual,
@@ -341,6 +360,94 @@ def member_book_class():
                 msg = "You cannot book the same class twice! Jump to timetable."
                 goUrl = '/view_class'
             return render_template('guest/jump.html', msg=msg, goUrl=goUrl, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/monthly_payment', methods=['GET', 'POST'])
+def monthly_payment():
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            msg = ''
+            success_msg = None  # This will hold the success message
+            user_id = session["user_id"]
+            sql_data = get_cursor()
+            sql = """SELECT member_id FROM member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            sql = """SELECT member_id, start_date, end_date FROM payment_due
+                                WHERE member_id=%s;"""
+            sql_data.execute(sql, (member_id,))
+            membership_due = sql_data.fetchall()
+            due = ''
+            if membership_due:
+                due = membership_due[0][2]
+            member_price = 70
+            if request.method == 'GET':
+                sql_data.close()
+                return render_template('member/monthly_payment.html', msg=msg, membership_due=str(due), member_price=member_price, permissions=check_permissions())
+            else:
+                subscription_duration = int(request.form.get('subscription_duration'))
+                payment_method = request.form.get('payment_method')
+                if subscription_duration == 1:
+                    month = 1
+                    price = member_price
+                elif subscription_duration == 2:
+                    month = 3
+                    price = member_price * 3 * 0.95
+                elif subscription_duration == 3:
+                    month = 6
+                    price = member_price * 6 * 0.9
+                elif subscription_duration == 4:
+                    month = 12
+                    price = member_price * 12 * 0.85
+                else:
+                    redirect(url_for('index'))
+                sql = """INSERT INTO payment_list (member_id, price, payment_date, payment_type, payment_method) 
+                        VALUES (%s, %s, %s, 'membership', %s)"""
+                value = (member_id, price, datetime.today().date(), payment_method,)
+                sql_data.execute(sql, value)
+                if membership_due:
+                    start_date = membership_due[0][2]
+                    end_date = start_date + timedelta(days=30 * month)
+                    due_sql = """UPDATE payment_due SET end_date=%s WHERE member_id=%s"""
+                    sql_data.execute(due_sql, (end_date, member_id))
+                else:
+                    start_date = datetime.today().date()
+                    end_date = start_date + timedelta(days=30 * month)
+                    due_sql = """INSERT INTO payment_due (member_id, start_date, end_date) VALUES (%s,%s,%s)"""
+                    sql_data.execute(due_sql, (member_id, start_date, end_date))
+                sql_data.close()
+                success_msg = 'Thank you for your payment.'
+                return render_template('guest/jump.html', goUrl='/', msg=success_msg, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/my_membership', methods=['GET'])
+def my_membership():
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            user_id = session["user_id"]
+            sql_data = get_cursor()
+            sql = """SELECT member_id FROM member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            sql = """SELECT start_date, end_date FROM payment_due WHERE member_id = %s"""
+            sql_data.execute(sql, (member_id,))
+            subscription = sql_data.fetchone()
+            sql_data.close()
+            if subscription:
+                start_date, end_date = subscription
+                status = "Active" if end_date >= datetime.today().date() else "Expired"
+            else:
+                start_date, end_date = None, None
+                status = "No Subscription"
+            return render_template('member/my_membership.html', status=status, start_date=start_date, end_date=end_date, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
