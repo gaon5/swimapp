@@ -96,7 +96,7 @@ def view_class():
             sql_data.execute("""SELECT * FROM pool;""")
             pool_list = sql_data.fetchall()
             sql_data.execute("""SELECT * FROM instructor AS i LEFT JOIN title AS t ON i.title_id=t.title_id WHERE i.state=1;""")
-            instructor_list = sql_data.fetchall()
+            sql_instructor_list = sql_data.fetchall()
             sql = """SELECT class_id, COUNT(member_id) AS member_count
                         FROM book_list
                         GROUP BY class_id;"""
@@ -126,7 +126,7 @@ def view_class():
                 })
             all_details = {item['id']: item for item in all_details}
             return render_template('member/timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list,
-                                   member_count=member_count, instructor_list=instructor_list, permissions=check_permissions())
+                                   member_count=member_count, instructor_list=sql_instructor_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
@@ -169,12 +169,12 @@ def member_book_lesson():
                         ) group by a.user_id;"""
             value = (complete_date_string, start_time, end_time, complete_date_string, start_time, end_time)
             sql_data.execute(sql, value)
-            instructor_list = sql_data.fetchall()
+            sql_instructor_list = sql_data.fetchall()
             sql_data.execute("SELECT * FROM class_list;")
             class_list = sql_data.fetchall()
             sql_data.execute("""SELECT * FROM pool;""")
             pool_list = sql_data.fetchall()
-            return render_template('member/book_lesson.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list, time=str(start_time), date=complete_date_string, edit=1, permissions=check_permissions())
+            return render_template('member/book_lesson.html', instructor_list=sql_instructor_list, class_list=class_list, pool_list=pool_list, time=str(start_time), date=complete_date_string, edit=1, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:

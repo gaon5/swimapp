@@ -76,10 +76,12 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         {% if permissions == 4 %}
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('user_list') }}">User List</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_list') }}">Manage Instructor</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_list') }}">Manage Member</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}">View Payments</a></li>
                                         {% elif permissions == 3 %}
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('user_list') }}">Manage User</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_list') }}">Manage Instructor</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_list') }}">Manage Member</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}">View Payments</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_change_information') }}">My Detail</a></li>
                                         {% elif permissions == 2 %}

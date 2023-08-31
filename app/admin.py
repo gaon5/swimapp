@@ -6,31 +6,207 @@ import re
 from app import app, check_permissions, get_cursor, title_list, region_list, city_list
 
 
-@app.route('/user_list', methods=['GET'])
-def user_list():
+@app.route('/member_list', methods=['GET', 'POST'])
+def member_list():
+    def check_change(old, new):
+        for i in range(len(new)):
+            if old[i + 1] != new[i]:
+                return True
+        return False
+
+    today = datetime.today().date()
+    msg = ''
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
+            sql = """SELECT count(*) FROM member WHERE state=1;"""
+            sql_data.execute(sql)
+            member_count = sql_data.fetchall()[0][0]
+            member_count = math.ceil(member_count / 10)
+            page = request.args.get('page')
+            if not page:
+                sql_page = 0
+            else:
+                page = int(page)
+                sql_page = (page - 1) * 10
+            if request.method == 'POST':
+                first_name = request.form.get('first_name')
+                last_name = request.form.get('last_name')
+                title = int(request.form.get('title'))
+                email = request.form.get('email')
+                phone_number = request.form.get('phone_number')
+                region = int(request.form.get('region'))
+                city = int(request.form.get('city'))
+                street_name = request.form.get('street_name')
+                birth_date = request.form.get('birth_date')
+                detailed_information = request.form.get('detailed_information')
+                health_information = request.form.get('health_information')
+                user_id = request.form.get('user_id')
+                if user_id:
+                    sql = """SELECT i.user_id,i.first_name,i.last_name,i.title_id,u.email,i.phone_number,i.detailed_information FROM `instructor` AS i
+                                LEFT JOIN `user_account` AS u ON i.user_id=u.user_id
+                                WHERE i.user_id=%s;"""
+                    sql_value = (user_id,)
+                    sql_data.execute(sql, sql_value)
+                    sql_instructor_list = sql_data.fetchall()[0]
+                    new_data = (first_name, last_name, title, email, phone_number, detailed_information)
+                    if check_change(sql_instructor_list, new_data):
+                        sql = """UPDATE `member` SET first_name=%s,last_name=%s,birth_date=%s,title_id=%s,phone_number=%s,region_id=%s,city_id=%s,street_name=%s,
+                                                    detailed_information=%s, health_information=%s 
+                                                    WHERE user_id=%s;"""
+                        sql_value = (first_name, last_name, birth_date, title, phone_number, region, city, street_name, detailed_information, health_information, user_id,)
+                        sql_data.execute(sql, sql_value)
+                        # check email
+                        sql_data.execute("SELECT user_id, email FROM `user_account` WHERE user_id=%s;", (user_id,))
+                        user_account_list = sql_data.fetchall()[0]
+                        if email != user_account_list[1]:
+                            sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
+                            if len(sql_data.fetchall()) > 0:
+                                msg = "This email already be used."
+                            else:
+                                sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
+                    else:
+                        msg = "no modification"
+                else:
+                    username = request.form.get('username')
+                    password = request.form.get('password')
+                    sql_data.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username,))
+                    existing_data = sql_data.fetchone()
+                    if existing_data:
+                        msg = 'An account with this email or username already exists!'
+                    else:
+                        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                        sql_data.execute("""INSERT INTO user_account (username, password, email, is_member, register_date) 
+                                                    VALUES (%s, %s, %s, 1, %s )""", (username, hashed, email, today))
+                        sql_data.execute('SELECT user_id from user_account WHERE username = %s', (username,))
+                        user_id = sql_data.fetchone()[0]
+                        sql = """INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, 
+                                    region_id, city_id, street_name, birth_date, state)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1)"""
+                        value = (user_id, title, first_name, last_name, phone_number, region, city, street_name, birth_date)
+                        sql_data.execute(sql, value)
+                        msg = "Registration success!"
             sql = """SELECT m.user_id,m.first_name,m.last_name,m.phone_number,t.title,u.username,u.email,m.title_id,
                         m.detailed_information,m.region_id,m.city_id,m.street_name,m.birth_date,m.health_information,m.state FROM member AS m
                         LEFT JOIN `user_account` AS u ON m.user_id=u.user_id
                         LEFT JOIN `title` AS t ON t.title_id=m.title_id
-                        WHERE m.state = 1;"""
-            sql_data.execute(sql)
-            member_list = sql_data.fetchall()
-            sql = """SELECT i.user_id,i.first_name,i.last_name,i.phone_number,t.title,u.username,u.email,i.title_id,i.detailed_information,i.state FROM instructor AS i
-                        LEFT JOIN `user_account` AS u ON u.user_id=i.user_id
-                        LEFT JOIN `title` AS t ON t.title_id=i.title_id
-                        WHERE i.state = 1;"""
-            sql_data.execute(sql)
-            instructor_list = sql_data.fetchall()
+                        WHERE m.state = 1
+                        LIMIT %s, 10;"""
+            sql_data.execute(sql, (sql_page,))
+            sql_member_list = sql_data.fetchall()
             sql_data.close()
-            for i in range(len(member_list)):
-                member_list[i] = list(member_list[i])
-                member_list[i][12] = str(member_list[i][12])
-            today = datetime.today().date()
-            return render_template("admin/user_list.html", member_list=member_list, instructor_list=instructor_list, title_list=title_list,
-                                   region_list=region_list, city_list=city_list, today=today, permissions=check_permissions())
+            return render_template("admin/member_list.html", member_count=member_count, member_list=sql_member_list, city_list=city_list, region_list=region_list,
+                                   title_list=title_list, msg=msg, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/instructor_list', methods=['GET', 'POST'])
+def instructor_list():
+    def check_change(old, new):
+        for i in range(len(new)):
+            if old[i + 1] != new[i]:
+                return True
+        return False
+
+    today = datetime.today().date()
+    msg = ''
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            sql_data = get_cursor()
+            sql = """SELECT count(*) FROM instructor WHERE state=1;"""
+            sql_data.execute(sql)
+            instructor_count = sql_data.fetchall()[0][0]
+            instructor_count = math.ceil(instructor_count / 10)
+            page = request.args.get('page')
+            if not page:
+                sql_page = 0
+            else:
+                page = int(page)
+                sql_page = (page - 1) * 10
+            if request.method == 'POST':
+                first_name = request.form.get('first_name')
+                last_name = request.form.get('last_name')
+                title = int(request.form.get('title'))
+                email = request.form.get('email')
+                phone_number = request.form.get('phone_number')
+                detailed_information = request.form.get('detailed_information')
+                user_id = request.form.get('user_id')
+                if user_id:
+                    sql = """SELECT i.user_id,i.first_name,i.last_name,i.title_id,u.email,i.phone_number,i.detailed_information FROM `instructor` AS i
+                                LEFT JOIN `user_account` AS u ON i.user_id=u.user_id
+                                WHERE i.user_id=%s;"""
+                    sql_value = (user_id,)
+                    sql_data.execute(sql, sql_value)
+                    sql_instructor_list = sql_data.fetchall()[0]
+                    new_data = (first_name, last_name, title, email, phone_number, detailed_information)
+                    if check_change(sql_instructor_list, new_data):
+                        sql = """UPDATE `instructor` SET first_name=%s,last_name=%s,title_id=%s,phone_number=%s,detailed_information=%s WHERE user_id=%s;"""
+                        sql_value = (first_name, last_name, title, phone_number, detailed_information, user_id,)
+                        sql_data.execute(sql, sql_value)
+                        # check email
+                        sql_data.execute("SELECT user_id, email FROM `user_account` WHERE user_id=%s;", (user_id,))
+                        user_account_list = sql_data.fetchall()[0]
+                        if email != user_account_list[1]:
+                            sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
+                            if len(sql_data.fetchall()) > 0:
+                                msg = "This email already be used."
+                            else:
+                                sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
+                    else:
+                        msg = "no modification"
+                else:
+                    username = request.form.get('username')
+                    password = request.form.get('password')
+                    sql_data.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username,))
+                    existing_data = sql_data.fetchone()
+                    if existing_data:
+                        msg = 'An account with this email or username already exists!'
+                    else:
+                        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                        sql_data.execute("""INSERT INTO user_account (username, password, email, is_instructor, register_date) 
+                                                    VALUES (%s, %s, %s, 1, %s )""", (username, hashed, email, today))
+                        sql_data.execute('SELECT user_id from user_account WHERE username = %s', (username,))
+                        user_id = sql_data.fetchone()[0]
+                        sql = """INSERT INTO instructor (user_id, title_id, first_name, last_name, phone_number, state) 
+                                    VALUES (%s,%s,%s,%s,%s,1)"""
+                        value = (user_id, title, first_name, last_name, phone_number)
+                        sql_data.execute(sql, value)
+                        msg = "Registration success!"
+            sql = """SELECT i.user_id,i.first_name,i.last_name,i.phone_number,t.title,u.username,u.email,i.title_id,i.detailed_information,i.state FROM instructor AS i
+                                                LEFT JOIN `user_account` AS u ON u.user_id=i.user_id
+                                                LEFT JOIN `title` AS t ON t.title_id=i.title_id
+                                                WHERE i.state = 1
+                                                LIMIT %s, 10;"""
+            sql_data.execute(sql, (sql_page,))
+            sql_instructor_list = sql_data.fetchall()
+            sql_data.close()
+            return render_template("admin/instructor_list.html", instructor_count=instructor_count, instructor_list=sql_instructor_list, title_list=title_list, msg=msg, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/delete_user')
+def delete_user():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            is_member = request.args.get('is_member')
+            user_id = request.args.get('user_id')
+            sql_data = get_cursor()
+            if is_member == '1':
+                sql = """UPDATE member SET state=0 Where user_id=%s"""
+                sql_data.execute(sql, (user_id,))
+                sql_data.close()
+                return redirect(url_for('member_list'))
+            else:
+                sql = """UPDATE instructor SET state=0 Where user_id=%s"""
+                sql_data.execute(sql, (user_id,))
+                sql_data.close()
+                return redirect(url_for('instructor_list'))
         else:
             return redirect(url_for('index'))
     else:
@@ -99,27 +275,6 @@ def admin_change_information():
         return redirect(url_for('login'))
 
 
-@app.route('/delete_user')
-def delete_user():
-    if 'loggedIn' in session:
-        if check_permissions() > 2:
-            is_member = request.args.get('is_member')
-            user_id = request.args.get('user_id')
-            sql_data = get_cursor()
-            if is_member == '1':
-                sql = """UPDATE member SET state=0 Where user_id=%s"""
-                sql_data.execute(sql, (user_id,))
-            else:
-                sql = """UPDATE instructor SET state=0 Where user_id=%s"""
-                sql_data.execute(sql, (user_id,))
-            sql_data.close()
-            return redirect(url_for('user_list'))
-        else:
-            return redirect(url_for('index'))
-    else:
-        return redirect(url_for('login'))
-
-
 @app.route('/admin_timetable', methods=['GET', 'POST'])
 def admin_timetable():
     if 'loggedIn' in session:
@@ -157,7 +312,7 @@ def admin_timetable():
             sql_data.execute(sql)
             member_count = sql_data.fetchall()
             sql_data.execute("SELECT * FROM instructor AS i LEFT JOIN title AS t ON i.title_id=t.title_id WHERE i.state=1;")
-            instructor_list = sql_data.fetchall()
+            sql_instructor_list = sql_data.fetchall()
             for i in range(1, len(week_list), 1):
                 week_list[i][0] = week_list[i][0][5:]
             all_details = []
@@ -181,7 +336,7 @@ def admin_timetable():
             for i in range(len(member_count)):
                 member_count[i] = list(member_count[i])
             member_count = {item[0]: item[1] for item in member_count}
-            return render_template('admin/timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_list=instructor_list,
+            return render_template('admin/timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_list=sql_instructor_list,
                                    all_details=all_details, member_count=member_count, link=url_for('admin_timetable'), permissions=check_permissions())
         else:
             return redirect(url_for('index'))
@@ -225,12 +380,12 @@ def admin_add_class():
                         ) group by a.user_id;"""
             value = (complete_date_string, start_time, end_time, complete_date_string, start_time, end_time)
             sql_data.execute(sql, value)
-            instructor_list = sql_data.fetchall()
+            sql_instructor_list = sql_data.fetchall()
             sql_data.execute("SELECT * FROM class_list;")
             class_list = sql_data.fetchall()
             sql_data.execute("""SELECT * FROM pool;""")
             pool_list = sql_data.fetchall()
-            return render_template('admin/add_class.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list,
+            return render_template('admin/add_class.html', instructor_list=sql_instructor_list, class_list=class_list, pool_list=pool_list,
                                    time=str(start_time), date=complete_date_string, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
@@ -267,9 +422,9 @@ def admin_edit_class():
                 sql_data.execute("""SELECT i.user_id, i.first_name, i.last_name, t.title 
                                         FROM instructor AS i
                                         LEFT JOIN title AS t ON t.title_id=i.title_id;""")
-                instructor_list = sql_data.fetchall()
+                sql_instructor_list = sql_data.fetchall()
                 sql_data.close()
-                return render_template('admin/add_class.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list,
+                return render_template('admin/add_class.html', instructor_list=sql_instructor_list, class_list=class_list, pool_list=pool_list,
                                        class_detail=class_detail, permissions=check_permissions(), edit=1)
             else:
                 form_date = request.form.get('send_day')
@@ -306,13 +461,13 @@ def admin_edit_class():
                                             ) group by a.user_id;"""
                     value = (complete_date_string, start_time, end_time, complete_date_string, start_time, end_time)
                     sql_data.execute(sql, value)
-                    instructor_list = sql_data.fetchall()
+                    sql_instructor_list = sql_data.fetchall()
                     sql_data.execute("SELECT * FROM class_list;")
                     class_list = sql_data.fetchall()
                     sql_data.execute("""SELECT * FROM pool;""")
                     pool_list = sql_data.fetchall()
                     sql_data.close()
-                    return render_template('admin/add_class.html', instructor_list=instructor_list, class_list=class_list, pool_list=pool_list,
+                    return render_template('admin/add_class.html', instructor_list=sql_instructor_list, class_list=class_list, pool_list=pool_list,
                                            time=str(start_time), date=complete_date_string, permissions=check_permissions(), edit=1, class_id=class_id)
                 else:
                     available_date = request.form.get('available_date')

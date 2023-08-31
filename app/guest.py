@@ -208,7 +208,7 @@ def register():
                 # Insert the user's detailed information into the member table
                 sql = """INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, 
                             region_id, city_id, street_name, birth_date, state)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"""
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1)"""
                 value = (user_id, values['title_id'], first_name, last_name, values['phone_number'], values['region_id'],
                          values['city_id'], values['street_name'], values['birth_date'])
                 cursor.execute(sql, value)
@@ -228,4 +228,12 @@ def register():
     return render_template('guest/register.html', msg=msg, titles=title_list, regions=region_list, cities=city_list, today=today)
 
 
-
+# @app.errorhandler(Exception)
+# def handle_error(error):
+#     """
+#     Receive all unexpected errors
+#     :param error:
+#     :return: error.html
+#     """
+#     print(error)
+#     return render_template('guest/error.html', permissions=check_permissions())

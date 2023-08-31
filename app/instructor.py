@@ -37,9 +37,9 @@ def instructor_change_information():
                             WHERE i.user_id=%s;"""
                 sql_value = (user_id,)
                 sql_data.execute(sql, sql_value)
-                instructor_list = sql_data.fetchall()[0]
+                sql_instructor_list = sql_data.fetchall()[0]
                 new_data = (first_name, last_name, title, email, phone_number, detailed_information)
-                if check_change(instructor_list, new_data):
+                if check_change(sql_instructor_list, new_data):
                     sql = """UPDATE `instructor` SET first_name=%s,last_name=%s,title_id=%s,phone_number=%s,detailed_information=%s WHERE user_id=%s;"""
                     sql_value = (first_name, last_name, title, phone_number, detailed_information, user_id,)
                     sql_data.execute(sql, sql_value)
@@ -54,10 +54,6 @@ def instructor_change_information():
                             sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                 else:
                     msg = "no modification"
-                previous_url = str(request.referrer)
-                urlList = [x for x in previous_url.split('/') if x != '']
-                if urlList[-1] == 'user_list':
-                    return redirect(url_for('user_list'))
             sql = """SELECT i.user_id,i.title_id,i.first_name,i.last_name,i.phone_number,i.detailed_information,u.email FROM `instructor` AS i
                         LEFT JOIN `user_account` AS u ON i.user_id=u.user_id
                         WHERE i.user_id=%s;"""
