@@ -23,25 +23,25 @@
         <form action="/member_change_information" class="row" method="post" onsubmit="return validateForm()">
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="first_name" class="input-group-text">First name :</label>
+                    <label for="first_name" class="input-group-text">First name :<span style="color:red">*</span></label>
                     <input type="text" class="form-control" name="first_name" id="first_name" value="{{ member_detail[2] }}" disabled required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="last_name" class="input-group-text">Last name :</label>
+                    <label for="last_name" class="input-group-text">Last name :<span style="color:red">*</span></label>
                     <input type="text" class="form-control" name="last_name" id="last_name" value="{{ member_detail[3] }}" disabled required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="birth_date" class="input-group-text">Birth date :</label>
+                    <label for="birth_date" class="input-group-text">Birth date :<span style="color:red">*</span></label>
                     <input type="date" class="form-control" name="birth_date" id="birth_date" value="{{ member_detail[9] }}" disabled required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="title" class="input-group-text">Title :</label>
+                    <label for="title" class="input-group-text">Title :<span style="color:red">*</span></label>
                     <select name="title" class="form-select" id="title" disabled required>
                         <option value="" disabled>---Choose title---</option>
                         {% for i in title_list %}
@@ -52,13 +52,13 @@
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="email" class="input-group-text">Email :</label>
+                    <label for="email" class="input-group-text">Email :<span style="color:red">*</span></label>
                     <input type="email" class="form-control" name="email" id="email" value="{{ member_detail[11] }}" disabled required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="phone_number" class="input-group-text">Phone number :</label>
+                    <label for="phone_number" class="input-group-text">Phone number :<span style="color:red">*</span></label>
                     <input type="tel" class="form-control" name="phone_number" id="phone_number" value="{{ member_detail[4] }}" disabled required>
                 </div>
             </div>
@@ -69,7 +69,7 @@
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="region" class="input-group-text">Region :</label>
+                    <label for="region" class="input-group-text">Region :<span style="color:red">*</span></label>
                     <select name="region" class="form-select" id="region" onchange="update_region()" disabled required>
                         <option value="" disabled>---Choose region---</option>
                         {% for i in region_list %}
@@ -80,7 +80,7 @@
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3">
-                    <label for="city" class="input-group-text">City :</label>
+                    <label for="city" class="input-group-text">City :<span style="color:red">*</span></label>
                     <select name="city" class="form-select" id="city" disabled required>
                         <option value="" disabled>---Choose city---</option>
                     </select>
@@ -88,7 +88,7 @@
             </div>
             <div class="col-md-12">
                 <div class="input-group mb-3">
-                    <label for="street_name" class="input-group-text">Street name :</label>
+                    <label for="street_name" class="input-group-text">Street name :<span style="color:red">*</span></label>
                     <input type="text" class="form-control" name="street_name" id="street_name" value="{{ member_detail[8] }}" disabled required>
                 </div>
             </div>
@@ -150,7 +150,7 @@
             const inputElements = document.querySelectorAll('input');
             const selectElements = document.querySelectorAll('select');
             const textareaElements = document.querySelectorAll('textarea');
-            for (let i = 1; i < inputElements.length; i++) {
+            for (let i = 0; i < inputElements.length; i++) {
                 inputElements[i].disabled = true;
             }
             for (let i = 0; i < selectElements.length; i++) {

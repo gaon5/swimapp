@@ -286,9 +286,10 @@ def admin_timetable():
                 today = date.today()
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-            week_list = [["Time/Day", '']]
+            week_list = [["", "", "Time/Day"]]
             for i in range(7):
-                temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
+                x = (start_of_week + timedelta(days=i)).strftime('%b,%d,%Y')
+                temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
                 week_list.append(temp_list)
             sql_data = get_cursor()
             sql = """SELECT b.book_class_id, b.instructor_id, b.pool_id, p.pool_name, b.is_individual, c.class_name, 
@@ -432,7 +433,7 @@ def admin_edit_class():
                 class_id = request.form.get('class_id')
                 if form_date:
                     current_year = datetime.now().year
-                    parsed_date = datetime.strptime(form_date, '%m-%d')
+                    parsed_date = datetime.strptime(form_date, '%Y-%m-%d')
                     complete_date = parsed_date.replace(year=current_year)
                     complete_date_string = complete_date.strftime('%Y-%m-%d')
                     parsed_time = datetime.strptime(form_time, '%H:%M').time()
@@ -525,7 +526,10 @@ def view_payments():
     if 'loggedIn' in session:
         if check_permissions() > 2:
             cursor = get_cursor()
-            sql = """SELECT * FROM payment_list ORDER BY payment_date DESC"""
+            sql = """SELECT p.payment_id,p.payment_date,p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
+                        LEFT JOIN member m on p.member_id = m.member_id
+                        LEFT JOIN user_account ua on m.user_id = ua.user_id
+                        ORDER BY payment_date DESC;"""
             cursor.execute(sql)
             payments = cursor.fetchall()
             cursor.close()

@@ -179,7 +179,7 @@ def register():
             values[field] = request.form.get(field, None)
 
         # Process basic details
-        username = values['username'].capitalize()
+        username = values['username']
         password = values['password']
         email = values['email']
         first_name = values['first_name'].capitalize()

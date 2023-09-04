@@ -86,6 +86,7 @@
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_change_information') }}">My Detail</a></li>
                                         {% elif permissions == 2 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_change_information') }}">My Detail</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('schedule_time') }}">My Schedule Time</a></li>
                                         {% elif permissions == 1 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_class_detail') }}">View My Class</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('my_membership') }}">My membership</a></li>

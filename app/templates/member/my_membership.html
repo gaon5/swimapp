@@ -21,8 +21,10 @@
                     <input type="submit" value="Reactivate Subscription" class="btn btn-primary">
                 </form>
             {% endif %}
+            <a class="btn btn-success" href="/monthly_payment">Add on</a>
         {% else %}
             <p>You have no active or past subscriptions.</p>
+            <a class="btn btn-success" href="/monthly_payment">Go to pay</a>
         {% endif %}
     </div>
 {% endblock %}

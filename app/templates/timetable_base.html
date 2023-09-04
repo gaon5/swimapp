@@ -84,13 +84,13 @@
             <table class="table table-bordered">
                 <tr>
                     {% for i in range(0,8,1) %}
-                        <th class="table-dark">{{ week_list[i][0] }}<br>{{ week_list[i][1] }}</th>
+                        <th class="table-dark" style="text-align: center;">{{ week_list[i][2] }}<br>{{ week_list[i][1] }}</th>
                     {% endfor %}
                 </tr>
                 {% for i in range(1,29,1) %}
                     <tr>
                         {% if i%2 == 1 %}
-                            <th rowspan="2" style="text-align: center;">{{ (i + 1)//2 + 5 }}:00</th>
+                            <th rowspan="2" style="text-align: center; font-size: x-large;">{{ (i + 1)//2 + 5 }}:00</th>
                         {% endif %}
                         {% for j in range(1,8,1) %}
                             <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
@@ -186,7 +186,12 @@
 {% block myjs %}
     <script>
         const currentDate = new Date("{{ today }}");
-        document.getElementById('info').innerHTML = currentDate.toDateString();
+        const day = currentDate.getDate().toString().padStart(2, '0');
+        const monthIndex = currentDate.getMonth(); // 获取月份的索引
+        const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const year = currentDate.getFullYear().toString();
+        const formattedDate = `${month[monthIndex]},${day},${year}`;
+        document.getElementById('info').innerHTML = formattedDate;
 
         function previous_week() {
             currentDate.setDate(currentDate.getDate() - 7);

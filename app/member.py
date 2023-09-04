@@ -18,8 +18,8 @@ def member_change_information():
             sql_data = get_cursor()
             msg = ""
             if request.method == 'POST':
-                first_name = request.form.get('first_name')
-                last_name = request.form.get('last_name')
+                first_name = request.form.get('first_name').capitalize()
+                last_name = request.form.get('last_name').capitalize()
                 birth_date = request.form.get('birth_date')
                 title = int(request.form.get('title'))
                 email = request.form.get('email')
@@ -75,9 +75,10 @@ def view_class():
                 today = date.today()
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-            week_list = [["Time/Day", '']]
+            week_list = [["", "", "Time/Day"]]
             for i in range(7):
-                temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
+                x = (start_of_week + timedelta(days=i)).strftime('%b,%d,%Y')
+                temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
                 week_list.append(temp_list)
             sql_data = get_cursor()
             sql = """SELECT b.book_class_id, b.instructor_id, b.pool_id, p.pool_name, b.is_individual, c.class_name, 
@@ -106,7 +107,7 @@ def view_class():
                 member_count[i] = list(member_count[i])
             member_count = {item[0]: item[1] for item in member_count}
             for i in range(1, len(week_list), 1):
-                week_list[i][0] = week_list[i][0][5:]
+                week_list[i][2] = week_list[i][2][:6]
             all_details = []
             for item in all_details_sql:
                 time = int(((item[10].total_seconds() / 3600) - 5) * 2)
@@ -140,7 +141,7 @@ def member_book_lesson():
             form_date = request.form.get('send_day')
             form_time = request.form.get('send_time')
             current_year = datetime.now().year
-            parsed_date = datetime.strptime(form_date, '%m-%d')
+            parsed_date = datetime.strptime(form_date, '%Y-%m-%d')
             complete_date = parsed_date.replace(year=current_year)
             complete_date_string = complete_date.strftime('%Y-%m-%d')
             parsed_time = datetime.strptime(form_time, '%H:%M').time()
@@ -415,9 +416,10 @@ def monthly_payment():
                     due_sql = """UPDATE payment_due SET end_date=%s WHERE member_id=%s"""
                     sql_data.execute(due_sql, (end_date, member_id))
                 else:
+                    sql_data.execute("""SET @payment_id = LAST_INSERT_ID();""")
                     start_date = datetime.today().date()
                     end_date = start_date + timedelta(days=30 * month)
-                    due_sql = """INSERT INTO payment_due (member_id, start_date, end_date) VALUES (%s,%s,%s)"""
+                    due_sql = """INSERT INTO payment_due (payment_id, member_id, start_date, end_date) VALUES (@payment_id,%s,%s,%s)"""
                     sql_data.execute(due_sql, (member_id, start_date, end_date))
                 sql_data.close()
                 success_msg = 'Thank you for your payment.'

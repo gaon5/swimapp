@@ -80,9 +80,10 @@ def instructor_timetable():
                 today = date.today()
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-            week_list = [["Time/Day", '']]
+            week_list = [["", "", "Time/Day"]]
             for i in range(7):
-                temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i]]
+                x = (start_of_week + timedelta(days=i)).strftime('%b,%d,%Y')
+                temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
                 week_list.append(temp_list)
             sql_data = get_cursor()
             sql = """SELECT b.book_class_id, b.instructor_id, b.pool_id, p.pool_name, b.is_individual, c.class_name, 
@@ -159,6 +160,7 @@ def schedule_time():
             error_msg = ""
             success_msg = ""
             today = date.today() + timedelta(days=1)
+            today_ = date.today()
             if request.method == 'POST':
                 available_date = datetime.strptime(request.form.get('available_date'), '%Y-%m-%d').date()
                 start_time = datetime.strptime(request.form.get('start_time'), '%H:%M:%S')
@@ -167,8 +169,8 @@ def schedule_time():
                 end_time = datetime.strptime(request.form.get('end_time'), '%H:%M:%S')
                 total_sec = end_time.hour * 3600 + end_time.minute * 60 + end_time.second
                 end_time = timedelta(seconds=total_sec)
-                sql = """SELECT date, start_time, end_time FROM available_time WHERE user_id=%s;"""
-                sql_value = (user_id,)
+                sql = """SELECT date, start_time, end_time, available_id FROM available_time WHERE user_id=%s AND date>%s;"""
+                sql_value = (user_id, today_,)
                 sql_data.execute(sql, sql_value)
                 check_list = sql_data.fetchall()
                 if start_time >= end_time:
@@ -188,8 +190,8 @@ def schedule_time():
                 sql_value = (user_id, available_date, start_time, end_time)
                 sql_data.execute(sql, sql_value)
                 success_msg = "Schedule added successfully"
-            sql = """SELECT date, start_time, end_time FROM available_time WHERE user_id=%s;"""
-            sql_value = (user_id,)
+            sql = """SELECT date, start_time, end_time, available_id FROM available_time WHERE user_id=%s AND date>%s;"""
+            sql_value = (user_id, today_,)
             sql_data.execute(sql, sql_value)
             date_list = sql_data.fetchall()
             sql_data.close()
@@ -199,6 +201,18 @@ def schedule_time():
             return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/lock_delete', methods=['POST'])
+def lock_delete():
+    if check_permissions() == 2:
+        lock_id = request.form.get('lock_id')
+        sql_data = get_cursor()
+        sql_data.execute("DELETE FROM available_time WHERE available_id=%s;", (lock_id,))
+        sql_data.close()
+        return redirect(url_for('schedule_time'))
+    else:
+        return redirect(url_for('index'))
 
 
 @app.route('/instructor_class_details', methods=['GET', 'POST'])

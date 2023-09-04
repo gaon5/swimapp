@@ -123,7 +123,22 @@
         {% endif %}
         function submit_form(){
             document.getElementById("class_form").action = "/individual_payment";
-            document.getElementById("class_form").submit();
+            const select_instructor = document.getElementById('instructor');
+            const select_pool = document.getElementById('pool');
+            if (select_instructor.value === "" || select_pool.value === ""){
+                if (select_instructor.value === "" )
+                    select_instructor.classList.add("is-invalid")
+                else
+                    select_instructor.classList.remove("is-invalid")
+                if (select_pool.value === "" )
+                    select_pool.classList.add("is-invalid")
+                else
+                    select_pool.classList.remove("is-invalid")
+            }else{
+                select_instructor.classList.remove("is-invalid")
+                select_pool.classList.remove("is-invalid")
+                document.getElementById("class_form").submit();
+            }
         }
         function check_time(){
             document.getElementById("send_day").value = document.getElementById("available_date").value.substring(5, 10);
