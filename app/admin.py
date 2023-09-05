@@ -538,3 +538,64 @@ def view_payments():
             return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/subscriptions_due_date')
+def subscriptions_due_date():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            msg = ''
+            sql_data = get_cursor()
+            today = datetime.today().date()
+            sql = """SELECT m.first_name,m.last_name, p.payment_date, pa.start_date,pa.end_date,m.phone_number, u.email, m.member_id
+                        FROM member AS m
+                        INNER JOIN payment_list AS p on m.member_id = p.member_id
+                        INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
+                        INNER JOIN user_account AS u on m.user_id = u.user_id
+                        WHERE pa.end_date < %s AND m.state=1;"""
+            value = (today,)
+            sql_data.execute(sql, value)
+            Due_List = sql_data.fetchall()
+            sql = """SELECT m.first_name,m.last_name, p.payment_date, pa.start_date,pa.end_date,m.phone_number, u.email 
+                        FROM member AS m
+                        INNER JOIN payment_list AS p on m.member_id = p.member_id
+                        INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
+                        INNER JOIN user_account AS u on m.user_id = u.user_id
+                        WHERE (%s <= pa.end_date) AND (pa.end_date <= DATE_ADD( %s, INTERVAL 7 DAY)) AND m.state=1;"""
+            value = (today, today,)
+            sql_data.execute(sql, value)
+            About_to_due_list = sql_data.fetchall()
+            sql = """SELECT m.first_name,m.last_name, p.payment_date, pa.start_date,pa.end_date,m.phone_number, u.email 
+                        FROM member AS m
+                        INNER JOIN payment_list AS p on m.member_id = p.member_id
+                        INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
+                        INNER JOIN user_account AS u on m.user_id = u.user_id
+                        WHERE pa.end_date > %s AND m.state=1;"""
+            value = (today,)
+            sql_data.execute(sql, value)
+            Active_List = sql_data.fetchall()
+            sql_data.close()
+            return render_template('admin/subscriptions_due.html', permissions=check_permissions(), Due_List=Due_List, About_to_due_list=About_to_due_list,
+                                   Active_List=Active_List, msg=msg)
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/admin_delete_member', methods=['POST'])
+def admin_delete_member():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            member_id = request.form['member_id']
+            sql_data = get_cursor()
+            sql = """UPDATE member SET state=0 Where member_id=%s"""
+            value = (member_id,)
+            sql_data.execute(sql, value)
+            msg = 'Delete Successfully'
+            sql_data.close()
+            return render_template('guest/jump.html', permissions=check_permissions(), goUrl='/subscriptions_due_date', msg=msg)
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))

@@ -75,27 +75,27 @@
                             <form action="/member_list" id="change_information" class="row" method="post" onsubmit="return validateForm(0)">
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_first_name" class="input-group-text">First name :</label>
+                                        <label for="member_first_name" class="input-group-text">First name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="first_name" id="member_first_name" required>
                                     </div>
                                     <p id="member_first_name_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_last_name" class="input-group-text">Last name :</label>
+                                        <label for="member_last_name" class="input-group-text">Last name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="last_name" id="member_last_name" required>
                                     </div>
                                     <p id="member_last_name_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_birth_date" class="input-group-text">Birth date :</label>
+                                        <label for="member_birth_date" class="input-group-text">Birth date <span style="color: red">*</span>:</label>
                                         <input type="date" class="form-control" name="birth_date" id="member_birth_date" max="{{ today }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_title" class="input-group-text">Title :</label>
+                                        <label for="member_title" class="input-group-text">Title <span style="color: red">*</span>:</label>
                                         <select name="title" class="form-select" id="member_title" required>
                                             <option value="" disabled>---Choose title---</option>
                                             {% for i in title_list %}
@@ -106,14 +106,14 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_email" class="input-group-text">Email :</label>
+                                        <label for="member_email" class="input-group-text">Email <span style="color: red">*</span>:</label>
                                         <input type="email" class="form-control" name="email" id="member_email" required>
                                     </div>
                                     <p id="member_email_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_phone_number" class="input-group-text">Phone number :</label>
+                                        <label for="member_phone_number" class="input-group-text">Phone number <span style="color: red">*</span>:</label>
                                         <input type="tel" class="form-control" name="phone_number" id="member_phone_number" required>
                                     </div>
                                     <p id="member_phone_number_msg" style="color: red"></p>
@@ -124,7 +124,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_region" class="input-group-text">Region :</label>
+                                        <label for="member_region" class="input-group-text">Region <span style="color: red">*</span>:</label>
                                         <select name="region" class="form-select" id="member_region" onchange="update_region()" required>
                                             <option value="" disabled>---Choose region---</option>
                                             {% for i in region_list %}
@@ -135,7 +135,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_city" class="input-group-text">City :</label>
+                                        <label for="member_city" class="input-group-text">City <span style="color: red">*</span>:</label>
                                         <select name="city" class="form-select" id="member_city" required>
                                             <option value="" disabled>---Choose city---</option>
                                         </select>
@@ -143,7 +143,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_street_name" class="input-group-text">Street name :</label>
+                                        <label for="member_street_name" class="input-group-text">Street name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="street_name" id="member_street_name" required>
                                     </div>
                                 </div>
@@ -177,40 +177,40 @@
                             <form action="/member_list" class="row" method="post" onsubmit="return validateForm(1)">
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="username" class="input-group-text">Username :</label>
+                                        <label for="username" class="input-group-text">Username <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="username" id="username" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="password" class="input-group-text">Password :</label>
+                                        <label for="password" class="input-group-text">Password <span style="color: red">*</span>:</label>
                                         <input type="password" class="form-control" name="password" id="password" required>
                                     </div>
                                     <p id="member_password_msg_" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_first_name" class="input-group-text">First name :</label>
+                                        <label for="member_first_name" class="input-group-text">First name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="first_name" id="member_first_name_" required>
                                     </div>
                                     <p id="member_first_name_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_last_name" class="input-group-text">Last name :</label>
+                                        <label for="member_last_name" class="input-group-text">Last name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="last_name" id="member_last_name_" required>
                                     </div>
                                     <p id="member_last_name_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_birth_date" class="input-group-text">Birth date :</label>
+                                        <label for="member_birth_date" class="input-group-text">Birth date <span style="color: red">*</span>:</label>
                                         <input type="date" class="form-control" name="birth_date" id="member_birth_date_" max="{{ today }}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_title" class="input-group-text">Title :</label>
+                                        <label for="member_title" class="input-group-text">Title <span style="color: red">*</span>:</label>
                                         <select name="title" class="form-select" id="member_title_" required>
                                             <option value="" disabled>---Choose title---</option>
                                             {% for i in title_list %}
@@ -221,21 +221,21 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_email" class="input-group-text">Email :</label>
+                                        <label for="member_email" class="input-group-text">Email <span style="color: red">*</span>:</label>
                                         <input type="email" class="form-control" name="email" id="member_email_" required>
                                     </div>
                                     <p id="member_email_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_phone_number" class="input-group-text">Phone number :</label>
+                                        <label for="member_phone_number" class="input-group-text">Phone number <span style="color: red">*</span>:</label>
                                         <input type="tel" class="form-control" name="phone_number" id="member_phone_number_" required>
                                     </div>
                                     <p id="member_phone_number_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_region" class="input-group-text">Region :</label>
+                                        <label for="member_region" class="input-group-text">Region <span style="color: red">*</span>:</label>
                                         <select name="region" class="form-select" id="member_region_" onchange="update_region2()" required>
                                             <option value="" disabled>---Choose region---</option>
                                             {% for i in region_list %}
@@ -246,7 +246,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_city" class="input-group-text">City :</label>
+                                        <label for="member_city" class="input-group-text">City <span style="color: red">*</span>:</label>
                                         <select name="city" class="form-select" id="member_city_" required>
                                             <option value="" disabled>---Choose city---</option>
                                         </select>
@@ -254,7 +254,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group mb-3">
-                                        <label for="member_street_name" class="input-group-text">Street name :</label>
+                                        <label for="member_street_name" class="input-group-text">Street name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="street_name" id="member_street_name_" required>
                                     </div>
                                 </div>

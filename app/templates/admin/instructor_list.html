@@ -75,28 +75,28 @@
                             <form action="/instructor_list" id="change_information" class="row" method="post" onsubmit="return validateForm(0)">
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_first_name" class="input-group-text">First name :</label>
+                                        <label for="instructor_first_name" class="input-group-text">First name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="first_name" id="instructor_first_name" required>
                                     </div>
                                     <p id="instructor_first_name_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_last_name" class="input-group-text">Last name :</label>
+                                        <label for="instructor_last_name" class="input-group-text">Last name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="last_name" id="instructor_last_name" required>
                                     </div>
                                     <p id="instructor_last_name_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_email" class="input-group-text">Email :</label>
+                                        <label for="instructor_email" class="input-group-text">Email <span style="color: red">*</span>:</label>
                                         <input type="email" class="form-control" name="email" id="instructor_email" required>
                                     </div>
                                     <p id="instructor_email_msg" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_title" class="input-group-text">Title :</label>
+                                        <label for="instructor_title" class="input-group-text">Title <span style="color: red">*</span>:</label>
                                         <select name="title" class="form-select" id="instructor_title" required>
                                             <option value="" disabled>---Choose title---</option>
                                             {% for i in title_list %}
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_phone_number" class="input-group-text">Phone number :</label>
+                                        <label for="instructor_phone_number" class="input-group-text">Phone number <span style="color: red">*</span>:</label>
                                         <input type="tel" class="form-control" name="phone_number" id="instructor_phone_number" required>
                                     </div>
                                     <p id="instructor_phone_number_msg" style="color: red"></p>
@@ -142,42 +142,42 @@
                             <form action="/instructor_list" class="row" method="post" onsubmit="return validateForm(1)">
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="username" class="input-group-text">Username :</label>
+                                        <label for="username" class="input-group-text">Username <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="username" id="username" required>
                                     </div>
                                     <p id="instructor_username_msg_" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="password" class="input-group-text">Password :</label>
+                                        <label for="password" class="input-group-text">Password <span style="color: red">*</span>:</label>
                                         <input type="password" class="form-control" name="password" id="password" required>
                                     </div>
                                     <p id="instructor_password_msg_" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_first_name" class="input-group-text">First name :</label>
+                                        <label for="instructor_first_name" class="input-group-text">First name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="first_name" id="instructor_first_name_" required>
                                     </div>
                                     <p id="instructor_first_name_msg_" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_last_name" class="input-group-text">Last name :</label>
+                                        <label for="instructor_last_name" class="input-group-text">Last name <span style="color: red">*</span>:</label>
                                         <input type="text" class="form-control" name="last_name" id="instructor_last_name_" required>
                                     </div>
                                     <p id="instructor_last_name_msg_" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_email" class="input-group-text">Email :</label>
+                                        <label for="instructor_email" class="input-group-text">Email <span style="color: red">*</span>:</label>
                                         <input type="email" class="form-control" name="email" id="instructor_email_" required>
                                     </div>
                                     <p id="instructor_email_msg_" style="color: red"></p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_title" class="input-group-text">Title :</label>
+                                        <label for="instructor_title" class="input-group-text">Title <span style="color: red">*</span>:</label>
                                         <select name="title" class="form-select" id="instructor_title_" required>
                                             <option value="" disabled>---Choose title---</option>
                                             {% for i in title_list %}
@@ -188,7 +188,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group my-2">
-                                        <label for="instructor_phone_number" class="input-group-text">Phone number :</label>
+                                        <label for="instructor_phone_number" class="input-group-text">Phone number <span style="color: red">*</span>:</label>
                                         <input type="tel" class="form-control" name="phone_number" id="instructor_phone_number_" required>
                                     </div>
                                     <p id="instructor_phone_number_msg_" style="color: red"></p>
