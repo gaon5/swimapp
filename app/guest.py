@@ -8,13 +8,15 @@ from app import app, check_permissions, get_cursor, title_list, region_list, cit
 
 @app.route('/')
 def index():
-    # Select news from database, and display.
     notice = False
     if 'loggedIn' in session:
         user_id = session["user_id"]
         permissions = check_permissions()
+        sql_data = get_cursor()
+        sql = """SELECT * FROM news ORDER BY time DESC LIMIT 3;"""
+        sql_data.execute(sql)
+        posted_news = sql_data.fetchall()
         if permissions == 1:
-            sql_data = get_cursor()
             sql = """SELECT member_id FROM member WHERE user_id=%s;"""
             sql_data.execute(sql, (user_id,))
             member_id = sql_data.fetchall()[0][0]
@@ -24,7 +26,7 @@ def index():
             sql_data.close()
             if not subscription:
                 notice = True
-        return render_template('guest/index.html', notice=notice, permissions=check_permissions())
+        return render_template('guest/index.html', notice=notice, posted_news=posted_news, permissions=check_permissions())
     else:
         return render_template('guest/index.html', notice=notice)
 
@@ -81,30 +83,44 @@ def login():
 @app.route('/dashboard')
 def dashboard():
     sql_data = get_cursor()
-    sql = """SELECT COUNT(instructor_id) FROM instructor;"""
-    sql_data.execute(sql)
+    sql_data.execute("""SELECT COUNT(instructor_id) FROM instructor;""")
     instructor_count = sql_data.fetchall()
-    sql = """SELECT COUNT(member_id) FROM member"""
-    sql_data.execute(sql)
+    sql_data.execute("""SELECT COUNT(member_id) FROM member""")
     member_count = sql_data.fetchall()
-    sql = """SELECT COUNT(user_id) FROM user_account;"""
-    sql_data.execute(sql)
+    sql_data.execute("""SELECT COUNT(user_id) FROM user_account;""")
     user_count = sql_data.fetchall()
-    sql = """SELECT COUNT(pool_id) FROM pool;"""
-    sql_data.execute(sql)
+    sql_data.execute("""SELECT COUNT(pool_id) FROM pool;""")
     pool_count = sql_data.fetchall()
-    sql = """SELECT COUNT(DISTINCT class_id) FROM book_class_list;"""
-    sql_data.execute(sql)
+    sql_data.execute("""SELECT COUNT(DISTINCT class_id) FROM book_class_list;""")
     class_count = sql_data.fetchall()
+    sql_data.execute("""SELECT * FROM news ORDER BY time DESC LIMIT 3;""")
+    posted_news = sql_data.fetchall()
+    sql_data.execute("""SELECT * FROM class_list;""")
+    class_list = sql_data.fetchall()
+    sql = """SELECT a.log_id, a.attendance_date, CONCAT(m.first_name, ' ', m.last_name) AS name, cl.class_name, p.pool_name
+                FROM attendance_log AS a
+                INNER JOIN member AS m ON m.member_id = a.member_id
+                INNER JOIN pool AS p ON p.pool_id = a.pool_id
+                LEFT JOIN book_class_list AS bc ON bc.book_class_id = a.class_id
+                LEFT JOIN class_list AS cl ON cl.class_id = bc.class_id
+                ORDER BY class_name;"""
+    sql_data.execute(sql)
+    attendance = sql_data.fetchall()
+    sql = """SELECT m.member_id, CONCAT(m.first_name, ' ', m.last_name) AS name, DATE_FORMAT(a.attendance_date, '%Y-%m') AS Month, 
+                COUNT(*) AS Monthly_Count, week(a.attendance_date, 1) AS Week, COUNT(*) AS Weekly_Count
+                FROM member AS m
+                INNER JOIN attendance_log AS a ON m.member_id = a.member_id
+                GROUP BY m.member_id, Month, Week ORDER BY name;"""
+    sql_data.execute(sql)
+    visit = sql_data.fetchall()
     sql_data.close()
     if 'loggedIn' in session:
         if session['is_instructor'] == 1:
-            return render_template('instructor/dashboard.html', instructor_count=instructor_count, member_count=member_count,
-                                   user_count=user_count,
+            return render_template('instructor/dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
                                    pool_count=pool_count, class_count=class_count, permissions=check_permissions())
         elif session['is_admin'] == 1:
             return render_template('admin/dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
-                                   pool_count=pool_count, class_count=class_count, permissions=check_permissions())
+                                   pool_count=pool_count, class_count=class_count, permissions=check_permissions(), attendance=attendance, posted_news=posted_news, visit=visit, class_list=class_list)
         elif session['is_root'] == 1:
             return render_template('root/dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
                                    pool_count=pool_count, class_count=class_count, permissions=check_permissions())

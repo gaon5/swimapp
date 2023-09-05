@@ -42,7 +42,7 @@ def member_change_information():
                 if email != user_account_list[1]:
                     sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
                     if len(sql_data.fetchall()) > 0:
-                        msg = "This email already be used."
+                        msg = "This email is already in use."
                     else:
                         sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                 previous_url = str(request.referrer)
@@ -261,7 +261,7 @@ def pay_successful():
             sql = """INSERT INTO book_list (member_id, class_id, instructor_id, pool_id, payment_id) VALUES (%s,@book_class_id,%s,%s,@payment_id);"""
             value = (member_id, instructor_id, pool)
             sql_data.execute(sql, value)
-            msg = "Pay successful! Jump to my lesson."
+            msg = "Payment was successful! Jump to my lesson."
             goUrl = '/member_class_detail'
             return render_template('guest/jump.html', msg=msg, goUrl=goUrl, permissions=check_permissions())
         else:
@@ -355,7 +355,7 @@ def member_book_class():
                 sql = """INSERT INTO book_list (member_id, class_id, instructor_id, pool_id) VALUES (%s,%s,%s,%s)"""
                 value = (member_id, class_id, book_class_id[1], book_class_id[0],)
                 sql_data.execute(sql, value)
-                msg = "Book successful! Jump to my class."
+                msg = "Booking was successful! Jump to my class."
                 goUrl = '/member_class_detail'
             else:
                 msg = "You cannot book the same class twice! Jump to timetable."

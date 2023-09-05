@@ -62,11 +62,11 @@ def member_list():
                         if email != user_account_list[1]:
                             sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
                             if len(sql_data.fetchall()) > 0:
-                                msg = "This email already be used."
+                                msg = "This email is already in use."
                             else:
                                 sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                     else:
-                        msg = "no modification"
+                        msg = "No modification"
                 else:
                     username = request.form.get('username')
                     password = request.form.get('password')
@@ -152,11 +152,11 @@ def instructor_list():
                         if email != user_account_list[1]:
                             sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
                             if len(sql_data.fetchall()) > 0:
-                                msg = "This email already be used."
+                                msg = "This email is already in use."
                             else:
                                 sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                     else:
-                        msg = "no modification"
+                        msg = "No modification"
                 else:
                     username = request.form.get('username')
                     password = request.form.get('password')
@@ -256,7 +256,7 @@ def admin_change_information():
                     if email != user_account_list[1]:
                         sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
                         if len(sql_data.fetchall()) > 0:
-                            msg = "This email already be used."
+                            msg = "This email is already in use."
                         else:
                             sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                 else:
@@ -599,3 +599,30 @@ def admin_delete_member():
             return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/add_news', methods=['POST'])
+def add_news():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            now = datetime.now()
+            news = request.form['news']
+            sql_data = get_cursor()
+            sql = """INSERT INTO news (news,time) VALUE (%s,%s);"""
+            sql_value = (news, now,)
+            sql_data.execute(sql, sql_value)
+            return redirect(url_for('dashboard'))
+    else:
+        return redirect(url_for('index'))
+
+
+@app.route('/delete_news/<int:news_id>')
+def delete_news(news_id):
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            sql_data = get_cursor()
+            sql_data.execute("""DELETE FROM news WHERE news_id=%s""", (news_id,))
+            sql_data.close()
+        return redirect(url_for('dashboard'))
+    else:
+        return redirect(url_for('index'))

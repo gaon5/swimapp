@@ -49,11 +49,11 @@ def instructor_change_information():
                     if email != user_account_list[1]:
                         sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
                         if len(sql_data.fetchall()) > 0:
-                            msg = "This email already be used."
+                            msg = "This email is already in use."
                         else:
                             sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                 else:
-                    msg = "no modification"
+                    msg = "No modification"
             sql = """SELECT i.user_id,i.title_id,i.first_name,i.last_name,i.phone_number,i.detailed_information,u.email FROM `instructor` AS i
                         LEFT JOIN `user_account` AS u ON i.user_id=u.user_id
                         WHERE i.user_id=%s;"""

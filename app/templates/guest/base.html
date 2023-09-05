@@ -70,8 +70,7 @@
                         {% else %}
                             <li class="nav-item mx-2 li_hon">
                                 <div class="dropdown py-2 px-2">
-                                    <button class="btn dropdown-toggle selected" type="button" data-bs-toggle="dropdown"
-                                            aria-expanded="false">
+                                    <button class="btn dropdown-toggle selected" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Hello {{ session['username'] }}!
                                     </button>
                                     <ul class="dropdown-menu">
@@ -81,8 +80,6 @@
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}">View Payments</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('subscriptions_due_date') }}">Subscriptions Details</a></li>
                                         {% elif permissions == 3 %}
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_list') }}">Manage Instructor</a></li>
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_list') }}">Manage Member</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}">View Payments</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('subscriptions_due_date') }}">Subscriptions Details</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_change_information') }}">My Detail</a></li>
@@ -131,7 +128,7 @@
                     <h5 class="mb-1" style="color: white;">Opening hours</h5>
                     <ul style="list-style: none; padding-left: 0">
                         <li>Mon - Sun</li>
-                        <li>6AM - 20PM</li>
+                        <li>6AM - 8PM</li>
                     </ul>
                 </div>
             </div>
