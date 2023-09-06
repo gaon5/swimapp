@@ -1,0 +1,44 @@
+{% extends "guest/base.html" %}
+
+
+{% block title %}
+    Attendance Report
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container py-3" style="max-width: 1200px;min-height: 800px">
+        <h1>Attendance</h1>
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <table class="table table-bordered table-light">
+                <tr class="table-dark">
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Attendance</th>
+                </tr>
+                {% for i in range(attendance_detail|length) %}
+                    <tr>
+                        <td>{{ attendance_detail[i][1] }}</td>
+                        <td>{{ attendance_detail[i][2] }} {{ attendance_detail[i][3] }}</td>
+                        <td>
+                            <form action="/attendance" method="post" id="attendance{{ attendance_detail[i][0] }}">
+                                <input type="checkbox" onchange="document.getElementById('attendance{{ attendance_detail[i][0] }}').submit();"
+                                       {% if attendance_detail[i][4] == 1 %}checked{% endif %}>
+                                <input type="hidden" id="book_class_id" name="book_class_id" value="{{ class_id }}">
+                                <input type="hidden" id="member_id" name="member_id" value="{{ attendance_detail[i][0] }}">
+                            </form>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}

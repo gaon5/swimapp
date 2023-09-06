@@ -148,6 +148,17 @@ def member_book_lesson():
             start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
             end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
             sql_data = get_cursor()
+
+            user_id = session['user_id']
+            sql = """SELECT member_id From member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            sql = """SELECT start_date, end_date FROM payment_due WHERE member_id = %s AND end_date>=%s"""
+            sql_data.execute(sql, (member_id, datetime.today().date()))
+            subscription = sql_data.fetchall()
+            if not subscription:
+                return redirect(url_for('index'))
+
             sql = """SELECT i.user_id, i.first_name, i.last_name, t.title
                         FROM instructor AS i
                         LEFT JOIN available_time AS a ON i.user_id = a.user_id
@@ -349,6 +360,13 @@ def member_book_class():
             sql = """SELECT member_id From member WHERE user_id=%s;"""
             sql_data.execute(sql, (user_id,))
             member_id = sql_data.fetchall()[0][0]
+
+            sql = """SELECT start_date, end_date FROM payment_due WHERE member_id = %s AND end_date>=%s"""
+            sql_data.execute(sql, (member_id, datetime.today().date()))
+            subscription = sql_data.fetchall()
+            if not subscription:
+                return redirect(url_for('index'))
+
             sql = """SELECT book_id From book_list WHERE class_id=%s AND member_id=%s;"""
             sql_data.execute(sql, (class_id, member_id,))
             if not sql_data.fetchall():
@@ -405,7 +423,7 @@ def monthly_payment():
                     month = 12
                     price = member_price * 12 * 0.85
                 else:
-                    redirect(url_for('index'))
+                    return redirect(url_for('index'))
                 sql = """INSERT INTO payment_list (member_id, price, payment_date, payment_type, payment_method) 
                         VALUES (%s, %s, %s, 'membership', %s)"""
                 value = (member_id, price, datetime.today().date(), payment_method,)

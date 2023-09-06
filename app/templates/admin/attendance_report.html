@@ -1,0 +1,42 @@
+{% extends "guest/base.html" %}
+
+
+{% block title %}
+    Attendance Report
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container py-3" style="max-width: 1200px;min-height: 800px">
+        <h1>Attendance Report</h1>
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <form action="/admin_delete_member" method="post">
+                <table class="table table-bordered table-light">
+                    <tr class="table-dark">
+                        <th>Time</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Class Name</th>
+                        <th>Subscribers Number</th>
+                        <th>Attendance</th>
+                        <th>Attendance Rate</th>
+                    </tr>
+                    {% for i in range(attendance|length) %}
+                        <tr>
+                            <td>{{ attendance[i][1] }}</td>
+                            <td>{{ attendance[i][2] }}</td>
+                            <td>{{ attendance[i][3] }}</td>
+                            <td>{{ attendance[i][4] }}</td>
+                            <td>{{ attendance[i][5] }}</td>
+                            <td>{{ attendance[i][6] }}</td>
+                            <td>{{ attendance[i][7] }} %</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </form>
+        </div>
+    </div>
+{% endblock %}

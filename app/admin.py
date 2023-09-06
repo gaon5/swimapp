@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 import math
 import bcrypt
 import re
+import calendar
 from app import app, check_permissions, get_cursor, title_list, region_list, city_list
 
 
@@ -623,6 +624,209 @@ def delete_news(news_id):
             sql_data = get_cursor()
             sql_data.execute("""DELETE FROM news WHERE news_id=%s""", (news_id,))
             sql_data.close()
-        return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard'))
+        else:
+            return redirect(url_for('index'))
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
+
+
+@app.route('/attendance_report')
+def attendance_report():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            sql_data = get_cursor()
+            today = datetime.today().date()
+            sql = """SELECT  a.class_id,a.class_date,a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
+                        FROM 
+                            (SELECT bcl.book_class_id AS class_id, bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name,
+                            (SELECT COUNT(*) FROM book_list AS bl WHERE bl.class_id = bcl.book_class_id) AS group_count
+                            FROM book_class_list AS bcl
+                            LEFT JOIN class_list AS cl ON cl.class_id = bcl.class_id
+                            WHERE bcl.class_id != 1
+                            GROUP BY CONCAT(bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name)) AS a
+                        LEFT JOIN
+                            (SELECT class_id,COUNT(*) AS attendance_count
+                            FROM attendance_log
+                            GROUP BY class_id) AS b
+                        ON a.class_id = b.class_id
+                        WHERE a.class_date<=%s
+                        ORDER BY a.class_date DESC;"""
+            sql_data.execute(sql, (today,))
+            attendance = sql_data.fetchall()
+            for i in range(len(attendance)):
+                attendance[i] = list(attendance[i])
+                if attendance[i][5]:
+                    attendance[i].append(int(attendance[i][6])/int(attendance[i][5])*100)
+                    attendance[i][7] = round(attendance[i][7], 1)
+                else:
+                    attendance[i].append(0.0)
+            sql_data.close()
+            return render_template('admin/attendance_report.html', attendance=attendance, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/admin_financial_report', methods=['GET','POST'])
+def admin_financial_report():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            sql_data = get_cursor()
+            title = 'Financial activity of last 30 days'
+            year_list = []
+            payment_list = []
+            method_list = ['paypal','mastercard','bank','credit','internet']
+            count_list = []
+            income_list = []
+            month_list = False
+            month_flag = False
+            year_flag = False
+            lesson = 0
+            membership = 0
+            lesson_float = 0.0
+            membership_float = 0.0
+            total_float = 0.0
+            if request.form.get('report_type'):
+                report_type = request.form.get('report_type')
+                if report_type == 'month':
+                    month_flag = True
+                else:
+                    year_flag = True
+                    for i in range(2000,2025):
+                        year_list.append(i)
+                return render_template('admin/financial_report.html', title=title, month_flag=month_flag, year_flag=year_flag, year_list=year_list, payment_list=payment_list, lesson_float=lesson_float, membership_float=membership_float, total_float=total_float, method_list=method_list, count_list=count_list, month_list=month_list, income_list=income_list, permissions=check_permissions())
+            elif request.form.get('month'):
+                start_date = request.form.get('month') + '-01'
+                sql = """SELECT * FROM swimming.payment_list
+                        WHERE payment_date >= %s
+                        AND payment_date < DATE_ADD(%s, INTERVAL 1 MONTH)
+                        ORDER BY payment_date;"""
+                sql_value = (start_date,start_date)
+                month_num = int(request.form.get('month')[5:])
+                year_num = request.form.get('month')[:4]
+                title = 'Monthly report on {} {}'.format(calendar.month_name[month_num],year_num)
+            elif request.form.get('year'):
+                financial_date = request.form.get('year') + '-03-31'
+                sql = """SELECT * FROM swimming.payment_list
+                        WHERE payment_date > DATE_SUB(%s, INTERVAL 1 YEAR)
+                        AND payment_date <= %s
+                        ORDER BY payment_date;"""
+                sql_value = (financial_date,financial_date)
+                title = 'Annual report between 01/04/{} and 31/03/{}'.format(int(request.form.get('year'))-1,request.form.get('year'))
+                month_list = ['04','05','06','07','08','09','10','11','12','01','02','03']
+            else:
+                today_date = date.today()
+                sql = """SELECT * FROM swimming.payment_list
+                        WHERE payment_date >= DATE_SUB(%s, INTERVAL 30 DAY)
+                        AND payment_date <= %s
+                        ORDER BY payment_date;"""
+                sql_value = (today_date,today_date)
+            sql_data.execute(sql,sql_value)
+            sql_list = sql_data.fetchall()
+            # Organise sql_list and append them into payment_list
+            for sql in sql_list:
+                temp_list = list(sql)
+                temp_list[2] = format(temp_list[2], '.2f')
+                temp_list[3] = sql[3].strftime("%d/%m/%Y")
+                payment_list.append(temp_list)
+            # Calculate membership subscription and individual lesson total revenue
+            for payment in payment_list:
+                if payment[4] == 'membership':
+                    membership += float(payment[2])
+                elif payment[4] == 'lesson':
+                    lesson += float(payment[2])
+            # Calculate number of each payment method in the payment list
+            for method in method_list:
+                count = 0
+                for payment in payment_list:
+                    if payment[-1] == method:
+                        count += 1
+                count_list.append(count)
+            # If produce an annual report, calculate revenue for each month
+            if month_list:
+                for month in month_list:
+                    count = 0
+                    for payment in payment_list:
+                        if payment[3][3:5] == month:
+                            count += float(payment[2])
+                    income_list.append(format(count, '.2f'))
+                # Reconstruct month_list
+                month_list = []
+                for i in range(4,13,1):
+                    string = ''
+                    string = calendar.month_name[i] + ' ' + str(int(request.form.get('year'))-1)
+                    month_list.append(string)
+                for i in range(1,4,1):
+                    string = ''
+                    string = calendar.month_name[i] + ' ' + request.form.get('year')
+                    month_list.append(string)
+            total = lesson + membership
+            lesson_float = format(lesson, '.2f')
+            membership_float = format(membership, '.2f')
+            total_float = format(total, '.2f')
+            sql_data.close()
+            return render_template('admin/financial_report.html', title=title, month_flag=month_flag, year_flag=year_flag, year_list=year_list, payment_list=payment_list, lesson_float=lesson_float, membership_float=membership_float, total_float=total_float, method_list=method_list, count_list=count_list, month_list=month_list, income_list=income_list, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/admin_popularity_report')
+def admin_popularity_report():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            today = date.today()
+            report_list = []
+            count = 0
+            sql_data = get_cursor()
+            # Fetch a list of class details
+            sql_data.execute("""SELECT book_class_id, first_name, last_name, class_name, class_date, start_time, end_time FROM swimming.book_class_list 
+                                INNER JOIN swimming.class_list ON class_list.class_id = book_class_list.class_id
+                                INNER JOIN swimming.instructor ON instructor.instructor_id = book_class_list.instructor_id
+                                WHERE (is_individual) = 0 AND (class_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND class_date <= %s)
+                                ORDER BY book_class_id;
+                                """, (today, today))
+            sql_list = sql_data.fetchall()
+            # Reconstruct the list
+            for sql in sql_list:
+                temp_list = list(sql)
+                temp_list[4] = temp_list[4].strftime("%d/%m/%Y")
+                temp_list[5] = str(temp_list[5])[:-3]
+                temp_list[6] = str(temp_list[6])[:-3]
+                report_list.append(temp_list)
+            # Fetch a list of bookings
+            sql_data.execute("""SELECT book_id, class_id FROM swimming.book_list 
+                                WHERE payment_id IS NULL
+                                ORDER BY class_id;
+                                """)
+            book_list = sql_data.fetchall()
+            # Compare the bookings with class id and append number of booking
+            for report in report_list:
+                for book in book_list:
+                    if book[1] == report[0]:
+                        count += 1
+                report.append(count)
+                count = 0
+            # Fetch a list of attendance
+            sql_data.execute("""SELECT log_id, class_id FROM swimming.attendance_log
+                                ORDER BY class_id;
+                                """)
+            atd_list = sql_data.fetchall()
+            # Compare the attendance with class id and append number of attendance
+            for report in report_list:
+                for atd in atd_list:
+                    if atd[1] == report[0]:
+                        count += 1
+                report.append(count)
+                count = 0
+            # Sort the list by bookings first, then by attendance
+            report_list.sort(key=lambda x: (x[-2], x[-1]), reverse=True)
+            sql_data.close()
+            return render_template('admin/popularity_report.html', report_list=report_list, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))

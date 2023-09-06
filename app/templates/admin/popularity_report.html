@@ -1,0 +1,58 @@
+{% extends "guest/base.html" %}
+
+
+{% block title %}
+    Popularity Report
+{% endblock %}
+
+{% block mycss %}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <h1 style="text-align: center">Aqua Aerobics Classes Popularity Report of last 30 days</h1>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-8">
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">Instructor</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Bookings</th>
+                            <th scope="col">Attendance</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for report in report_list %}
+                            <tr>
+                                <th scope="row">{{ report[0] }}</th>
+                                <td>{{ report[3] }}</td>
+                                <td>{{ report[1] }} {{ report[2] }}</td>
+                                <td>{{ report[4] }}</td>
+                                <td>{{ report[5] }}-{{ report[6] }}</td>
+                                <td>{{ report[-2] }}</td>
+                                <td>{{ report[-1] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3"></div>
+{% endblock %}
+
+{% block myjs %}
+{% endblock %}

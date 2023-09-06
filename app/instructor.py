@@ -259,3 +259,48 @@ def instructor_class_details():
             return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/class_attendance', methods=['GET'])
+def class_attendance():
+    if 'loggedIn' in session:
+        if check_permissions() == 2:
+            class_id = request.args.get('class_id')
+            sql_data = get_cursor()
+            sql = """SELECT m.member_id,ua.username,m.first_name,m.last_name,IF(EXISTS (SELECT 1 FROM attendance_log AS a WHERE a.member_id = m.member_id AND a.class_id = %s), 1, 0) AS in_attendance_log
+                        FROM book_list AS bl
+                        LEFT JOIN book_class_list AS bcl ON bcl.book_class_id = bl.class_id
+                        LEFT JOIN member AS m ON m.member_id = bl.member_id
+                        LEFT JOIN user_account AS ua ON ua.user_id = m.user_id
+                        WHERE bcl.book_class_id = %s;"""
+            sql_value = (class_id, class_id,)
+            sql_data.execute(sql, sql_value)
+            attendance_detail = sql_data.fetchall()
+            return render_template('instructor/class_attendance.html', attendance_detail=attendance_detail, permissions=check_permissions(), class_id=class_id)
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/attendance', methods=['POST'])
+def attendance():
+    if 'loggedIn' in session:
+        if check_permissions() == 2:
+            today = date.today()
+            class_id = request.form.get('book_class_id')
+            member_id = request.form.get('member_id')
+            sql_data = get_cursor()
+            sql_data.execute("""SELECT pool_id FROM book_class_list WHERE book_class_id=%s""", (class_id,))
+            pool_id = sql_data.fetchall()[0][0]
+            sql = """SELECT * FROM attendance_log WHERE class_id=%s AND member_id=%s"""
+            sql_data.execute(sql, (class_id, member_id,))
+            if sql_data.fetchall():
+                sql_data.execute("""DELETE FROM attendance_log WHERE member_id=%s AND class_id=%s""", (member_id, class_id,))
+            else:
+                sql_data.execute("""INSERT INTO attendance_log (member_id, class_id, pool_id, attendance_date) VALUE (%s,%s,%s,%s)""", (member_id, class_id, pool_id, today))
+            return redirect(url_for('class_attendance', class_id=class_id))
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
