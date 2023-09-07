@@ -1,28 +1,13 @@
 # COMP639_group_6_project1
 
 
-    login test:
-    username:Summer123
-    password:summer123
-    
     root
-    admin/adminpassword
+    root/adminpassword
     
     admin
-    admin1/password3
+    admin1/adminpassword
     
     instructor
-    instructor1/password2
+    instructor1/instructorpassword
     
     member
-    user1/password1
-    oliver/oliver66
-    asher/ashers77
-    99/99999999
-    oliver111/oliver111
-    adam12345/adam12345
-    summer123/summer123
-    shino123/shino123
-    pepper123/pepper123
-    oliver123/oliver123
-    nickyting222/nickyting222

@@ -55,7 +55,6 @@
                         <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}">Dashboard</a></li>
                         <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_timetable') }}">Timetable</a></li>
                     {% elif permissions == 2 %}
-                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}">Dashboard</a></li>
                         <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_timetable') }}">Timetable</a></li>
                     {% elif permissions == 1 %}
                         <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_class') }}">View Public Class</a></li>

@@ -265,7 +265,7 @@ def pay_successful():
             value = (instructor_id, pool, str(available_date), str(start_time), str(end_time))
             sql_data.execute(sql, value)
             sql_data.execute("""SET @book_class_id = LAST_INSERT_ID();""")
-            sql = """INSERT INTO payment_list (member_id, price, payment_date, payment_type, payment_method) VALUES (%s,%s,%s,'lesson',%s);"""
+            sql = """INSERT INTO payment_list (member_id, price, payment_date, payment_type, payment_method) VALUES (%s,%s,%s,'Lesson',%s);"""
             value = (member_id, price, today, payment_method)
             sql_data.execute(sql, value)
             sql_data.execute("""SET @payment_id = LAST_INSERT_ID();""")
@@ -425,7 +425,7 @@ def monthly_payment():
                 else:
                     return redirect(url_for('index'))
                 sql = """INSERT INTO payment_list (member_id, price, payment_date, payment_type, payment_method) 
-                        VALUES (%s, %s, %s, 'membership', %s)"""
+                        VALUES (%s, %s, %s, 'Membership', %s)"""
                 value = (member_id, price, datetime.today().date(), payment_method,)
                 sql_data.execute(sql, value)
                 if membership_due:

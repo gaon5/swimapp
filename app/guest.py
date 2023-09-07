@@ -91,7 +91,7 @@ def dashboard():
     user_count = sql_data.fetchall()
     sql_data.execute("""SELECT COUNT(pool_id) FROM pool;""")
     pool_count = sql_data.fetchall()
-    sql_data.execute("""SELECT COUNT(DISTINCT class_id) FROM book_class_list;""")
+    sql_data.execute("""SELECT COUNT(DISTINCT class_id)-1 FROM class_list;""")
     class_count = sql_data.fetchall()
     sql_data.execute("""SELECT * FROM news ORDER BY time DESC LIMIT 3;""")
     posted_news = sql_data.fetchall()
@@ -116,8 +116,7 @@ def dashboard():
     sql_data.close()
     if 'loggedIn' in session:
         if session['is_instructor'] == 1:
-            return render_template('instructor/dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
-                                   pool_count=pool_count, class_count=class_count, permissions=check_permissions())
+            return redirect(url_for('instructor_timetable'))
         elif session['is_admin'] == 1:
             return render_template('admin/dashboard.html', instructor_count=instructor_count, member_count=member_count, user_count=user_count,
                                    pool_count=pool_count, class_count=class_count, permissions=check_permissions(), attendance=attendance, posted_news=posted_news, visit=visit, class_list=class_list)
