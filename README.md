@@ -11,3 +11,4 @@
     instructor1/instructorpassword
     
     member
+    member1/memberpassword
