@@ -17,6 +17,7 @@ def member_change_information():
             user_id = session["user_id"]
             sql_data = get_cursor()
             msg = ""
+            today = datetime.today().date()
             if request.method == 'POST':
                 first_name = request.form.get('first_name').capitalize()
                 last_name = request.form.get('last_name').capitalize()
@@ -58,7 +59,7 @@ def member_change_information():
             member_detail = sql_data.fetchall()[0]
             sql_data.close()
             return render_template('member/change_information.html', member_detail=member_detail, msg=msg, title_list=title_list,
-                                   region_list=region_list, city_list=city_list, permissions=check_permissions())
+                                   region_list=region_list, city_list=city_list, permissions=check_permissions(), today=today)
         else:
             return redirect(url_for('index'))
     else:
@@ -73,6 +74,17 @@ def view_class():
                 today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
             else:
                 today = date.today()
+            real_day = date.today()
+            if real_day == today:
+                before_day = today.weekday() + 1
+                real_time = datetime.now().time().strftime('%H')
+                before_time = int((int(real_time) - 5) * 2) - 1
+            elif real_day < today:
+                before_day = 0
+                before_time = 0
+            else:
+                before_day = 9
+                before_time = 30
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
@@ -127,7 +139,7 @@ def view_class():
                 })
             all_details = {item['id']: item for item in all_details}
             return render_template('member/timetable.html', week_list=week_list, all_details=all_details, today=today, pool_list=pool_list,
-                                   member_count=member_count, instructor_list=sql_instructor_list, permissions=check_permissions())
+                                   member_count=member_count, instructor_list=sql_instructor_list, permissions=check_permissions(), before_day=before_day, before_time=before_time)
         else:
             return redirect(url_for('index'))
     else:
@@ -159,7 +171,7 @@ def member_book_lesson():
             if not subscription:
                 return redirect(url_for('index'))
 
-            sql = """SELECT i.user_id, i.first_name, i.last_name, t.title
+            sql = """SELECT DISTINCT i.user_id, i.first_name, i.last_name, t.title
                         FROM instructor AS i
                         LEFT JOIN available_time AS a ON i.user_id = a.user_id
                         LEFT JOIN title AS t ON t.title_id=i.title_id
@@ -178,7 +190,7 @@ def member_book_lesson():
                             AND a2.date = %s
                             AND a2.start_time <= %s
                             AND a2.end_time >= %s
-                        ) group by a.user_id;"""
+                        );"""
             value = (complete_date_string, start_time, end_time, complete_date_string, start_time, end_time)
             sql_data.execute(sql, value)
             sql_instructor_list = sql_data.fetchall()
@@ -221,8 +233,8 @@ def individual_payment():
             sql_data.execute("""SELECT pool_name From pool WHERE pool_id = %s""", (pool,))
             pool_name = sql_data.fetchall()[0][0]
             sql = """SELECT CONCAT(t.title, " ", i.first_name, " ", i.last_name) as name From instructor AS i 
-                        LEFT JOIN title AS t ON t.title_id=i.title_id WHERE i.instructor_id = %s"""
-            sql_data.execute(sql, (pool,))
+                        LEFT JOIN title AS t ON t.title_id=i.title_id WHERE i.user_id = %s"""
+            sql_data.execute(sql, (instructor,))
             instructor_name = sql_data.fetchall()[0][0]
             return render_template('member/individual_payment.html', pool_name=pool_name, instructor_name=instructor_name, hour=hour, permissions=check_permissions())
         else:
@@ -288,7 +300,7 @@ def member_class_detail():
             today = datetime.today().date()
             user_id = int(session['user_id'])
             sql_data = get_cursor()
-            sql = """SELECT bc.class_date,bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
+            sql = """SELECT DATE_FORMAT(bc.class_date,'%b,%d,%Y'),bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
                         FROM book_list AS bl
                         LEFT JOIN book_class_list AS bc ON bc.book_class_id=bl.class_id
                         LEFT JOIN instructor AS i ON i.instructor_id=bl.instructor_id
@@ -464,6 +476,8 @@ def my_membership():
             if subscription:
                 start_date, end_date = subscription
                 status = "Active" if end_date >= datetime.today().date() else "Expired"
+                start_date = start_date.strftime('%b,%d,%Y')
+                end_date = end_date.strftime('%b,%d,%Y')
             else:
                 start_date, end_date = None, None
                 status = "No Subscription"

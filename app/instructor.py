@@ -78,6 +78,17 @@ def instructor_timetable():
                 today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
             else:
                 today = date.today()
+            real_day = date.today()
+            if real_day == today:
+                before_day = today.weekday() + 1
+                real_time = datetime.now().time().strftime('%H')
+                before_time = int((int(real_time) - 5) * 2)-1
+            elif real_day < today:
+                before_day = 0
+                before_time = 0
+            else:
+                before_day = 9
+                before_time = 30
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
@@ -144,7 +155,7 @@ def instructor_timetable():
             member_count = {item[0]: item[1] for item in member_count}
             return render_template('instructor/timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_id=instructor_id,
                                    all_details=all_details, member_count=member_count, lock_list=lock_list, link=url_for('instructor_timetable'),
-                                   permissions=check_permissions())
+                                   permissions=check_permissions(), before_day=before_day, before_time=before_time)
         else:
             return redirect(url_for('index'))
     else:
@@ -159,6 +170,14 @@ def schedule_time():
             user_id = session["user_id"]
             error_msg = ""
             success_msg = ""
+            form_date = request.args.get('send_day')
+            if form_date:
+                parsed_date = datetime.strptime(form_date, '%m-%d')
+                current_year = datetime.now().year
+                complete_date = parsed_date.replace(year=current_year)
+                complete_date_string = complete_date.strftime('%Y-%m-%d')
+            else:
+                complete_date_string = None
             today = date.today() + timedelta(days=1)
             today_ = date.today()
             if request.method == 'POST':
@@ -178,11 +197,11 @@ def schedule_time():
                     return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list,
                                            today=today, permissions=check_permissions())
                 for check in check_list:
-                    if check[0] == available_date and start_time >= check[1] and start_time < check[2]:
+                    if check[0] == available_date and check[1] <= start_time < check[2]:
                         error_msg = "Invalid start time or end time"
                         return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list,
                                                today=today, permissions=check_permissions())
-                    elif check[0] == available_date and end_time > check[1] and end_time <= check[2]:
+                    elif check[0] == available_date and check[1] < end_time <= check[2]:
                         error_msg = "Invalid start time or end time"
                         return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=check_list,
                                                today=today, permissions=check_permissions())
@@ -190,13 +209,13 @@ def schedule_time():
                 sql_value = (user_id, available_date, start_time, end_time)
                 sql_data.execute(sql, sql_value)
                 success_msg = "Schedule added successfully"
-            sql = """SELECT date, start_time, end_time, available_id FROM available_time WHERE user_id=%s AND date>%s;"""
+            sql = """SELECT DATE_FORMAT(date,'%b,%d,%Y'), start_time, end_time, available_id FROM available_time WHERE user_id=%s AND date>=%s;"""
             sql_value = (user_id, today_,)
             sql_data.execute(sql, sql_value)
             date_list = sql_data.fetchall()
             sql_data.close()
             return render_template('instructor/schedule_time.html', success_msg=success_msg, error_msg=error_msg, date_list=date_list, today=today,
-                                   permissions=check_permissions())
+                                   complete_date_string=complete_date_string, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
@@ -222,7 +241,7 @@ def instructor_class_details():
             if check_permissions():
                 class_id = request.form.get('class_id')
                 sql_data = get_cursor()
-                sql = """SELECT b.book_class_id,p.pool_name,c.class_name,b.class_date,b.start_time,b.end_time,b.detailed_information,b.is_individual,
+                sql = """SELECT b.book_class_id,p.pool_name,c.class_name,DATE_FORMAT(b.class_date,'%b,%d,%Y'),b.start_time,b.end_time,b.detailed_information,b.is_individual,
                         CONCAT(t.title, " ", i.first_name, " ", i.last_name) AS instructor_name,i.phone_number,i.detailed_information,i.state
                         FROM book_class_list AS b 
                         LEFT JOIN class_list AS c ON c.class_id=b.class_id

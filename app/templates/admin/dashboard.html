@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container">
+    <div class="container" style="min-height: 800px">
         <div class="row pt-5">
             <div class="col-md-3">
                 <div class="card text-white bg-primary">
@@ -34,7 +34,7 @@
                                     {{ count }}
                                 {% endfor %}
                             {% endfor %}
-                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="/instructor_list">Edit</a>
+                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="/instructor_list">Manage</a>
                         </p>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                                     {{ count }}
                                 {% endfor %}
                             {% endfor %}
-                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="/member_list">Edit</a>
+                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="/member_list">Manage</a>
                         </p>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                                     {{ count }}
                                 {% endfor %}
                             {% endfor %}
-                            {#                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="#">Edit</a>#}
+                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="/edit_pool">Manage</a>
                         </p>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                                     {{ count }}
                                 {% endfor %}
                             {% endfor %}
-                            {#                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="#">Edit</a>#}
+                            <a role="button" id="yellow" class="btn btn-danger btn-sm" style="float: right;" href="/edit_classes">Manage</a>
                         </p>
                     </div>
                 </div>
@@ -87,9 +87,9 @@
         </div>
 
 
-        <div class="card m-5" id="feed">
-            <div class="border border-left border-right px-0">
-                <div class="p-3 border-bottom">
+        <div class="m-5" id="feed">
+            <div class="border-left border-right px-0">
+                <div class="card p-3 border-bottom">
                     <h4 class="d-flex align-items-center mb-0">
                         News and Updates <i class="far fa-xs ms-auto text-primary"></i>
                     </h4>
@@ -103,8 +103,7 @@
                                 <div class="d-flex align-items-center w-100 ps-3">
                                     <div class="w-100">
                                         <form action="{{ url_for('add_news') }}" method="post">
-                                            <input type="text" class="form-control form-status border-0 py-1 px-0" name="news"
-                                                   placeholder="What's happening"/>
+                                            <input type="text" class="form-control form-status border-0 py-1 px-0" name="news" placeholder="What's happening"/>
                                             <div class="d-flex flex-row ps-3 pt-3">
                                                 <button type="submit" class="btn btn-primary">Submit</button>
                                                 <span class="message"><b>{{ msg }}</b></span>
@@ -115,8 +114,10 @@
                             </div>
                         </div>
                     </div>
-
+                </div>
+                <div class="card shadow-0 my-5">
                     {% for message in posted_news %}
+                        <h4 class="p-3">News List</h4>
                         <div class="d-flex p-3 border-bottom">
                             <img src="{{ url_for('static', filename='images/wsc.png') }}" class="rounded-circle"
                                  height="50" alt="Avatar" loading="lazy"/>
@@ -124,7 +125,7 @@
                                 <div>
                                     <h6 class="text-body">{{ message[2] }}
                                         <a role="button" id="delete" class="fas fa-trash-alt" href="{{ url_for('delete_news', news_id = message[0]) }}"
-                                           onclick="return confirm('Are you sure you want to delete this post?')"></a>
+                                           onclick="return confirm('Are you sure you want to inactivate this post?')"></a>
                                     </h6>
                                     <p>{{ message[1] }}</p>
                                 </div>
@@ -134,136 +135,9 @@
                 </div>
             </div>
         </div>
-
-        <div class="px-3">
-            <h1 class="display-4"> Attendance</h1>
-            <select name="dropdowns_election" id="activityFilter" class="filter" onchange="filterTable(this.value)">
-                <option value="0">All</option>
-                {% for i in class_list %}
-                    <option value="{{ i[1] }}">{{ i[1] }}</option>
-                {% endfor %}
-            </select>
-            <table class="table">
-                <thead class="table-info">
-                <tr>
-                    <th>Name</th>
-                    <th>Activity</th>
-                    <th>Check-In Date</th>
-                </tr>
-                </thead>
-                <tbody id="myTable">
-                {% for people in attendance %}
-                    <tr>
-                        <td>
-                            <div>
-                                <p class="fw-bold mb-1">{{ people[2] }}</p>
-                            </div>
-                        </td>
-                        <td>
-                            {% if people[3] == 'Individual Lesson' %}
-                                <span class="badge bg-primary">{{ people[3] }}</span>
-                            {% else %}
-                                <span class="badge bg-warning">{{ people[3] }}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <p class="fw-normal mb-1">{{ people[1] }}</p>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="p-3">
-            <h1 class="display-4">Visit Count</h1>
-            <select name="dropdowns_election" id="activityFilter2" class="filter" onchange="filterTable2(this.value)">
-                <option value="0">All</option>
-                {% for count in visit %}
-                    <option value="{{ count[1] }}">{{ count[1] }}</option>
-                {% endfor %}
-            </select>
-            <table class="table">
-                <thead class="table-info">
-                <tr>
-                    <th>Name</th>
-                    <th>Month</th>
-                    <th>Monthly Visit</th>
-                    <th>Week</th>
-                    <th>Weekly Visit</th>
-                </tr>
-                </thead>
-                <tbody id="myTable2">
-                {% for count in visit %}
-                    <tr>
-                        <td>
-                            <div><p class="fw-bold mb-1">{{ count[1] }}</p></div>
-                        </td>
-                        <td>
-                            <div><p class="fw-bold mb-1">{{ count[2] }}</p></div>
-                        </td>
-                        <td>
-                            <div><p class="fw-normal mb-1">{{ count[3] }}</p></div>
-                        </td>
-                        <td>
-                            <div><p class="fw-bold mb-1">{{ count[4] }}</p></div>
-                        </td>
-                        <td>
-                            <div><p class="fw-bold mb-1">{{ count[5] }}</p></div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
     </div>
 {% endblock %}
 
 {% block myjs %}
-    <script>
-        function filterTable(Activity) {
-            const table = document.getElementById("myTable");
-            const rows = table.getElementsByTagName("tr");
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const cell = row.getElementsByTagName("td")[1];
-                const spans = cell.getElementsByTagName("span");
-                for (let j = 0; j < spans.length; j++) {
-                    const span = spans[j];
-                    const text = span.textContent || span.innerText;
-                    if (Activity === "0") {
-                        row.removeAttribute('style');
-                    } else {
-                        if (text === Activity) {
-                            row.removeAttribute('style');
-                        } else {
-                            row.style.display = "none";
-                        }
-                    }
-                }
-            }
-        }
 
-        function filterTable2(Name) {
-            const table = document.getElementById("myTable2");
-            const rows = table.getElementsByTagName("tr");
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const cell = row.getElementsByTagName("td")[0];
-                const p = cell.getElementsByTagName("p");
-                for (let j = 0; j < p.length; j++) {
-                    const paragraph = p[j];
-                    const text = paragraph.textContent || paragraph.innerText;
-                    if (Name === "0") {
-                        row.removeAttribute('style');
-                    } else {
-                        if (text === Name) {
-                            row.removeAttribute('style');
-                        } else {
-                            row.style.display = "none";
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 {% endblock %}

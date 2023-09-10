@@ -17,7 +17,7 @@
                                 <div class="input-group mb-3">
                                     <div class="input-group mb-3">
                                         <label for="available_date" class="input-group-text">Date <span style="color: red">*</span>:</label>
-                                        <input type="date" class="form-control" name="available_date" id="available_date" min={{ today }} max="2024-01-01"
+                                        <input type="date" class="form-control" name="available_date" id="available_date" min={{ today }} max="2024-01-01" value="{{ complete_date_string }}"
                                                required>
                                     </div>
                                     <div class="input-group mb-3">
@@ -72,28 +72,28 @@
                         <div class="card mt-5">
                             <div class="card-body">
                                 <h5 class="card-title text-center">My unavailable schedule for individual lessons</h5><br>
-                                <table class="table">
+                                <table class="table table-bordered table-light table-hover">
                                     <thead>
-                                    <tr>
-                                        <th scope="col">Date</th>
-                                        <th scope="col">Start Time</th>
-                                        <th scope="col">End Time</th>
-                                        <th scope="col">Edit</th>
-                                    </tr>
+                                        <tr class="table-dark">
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Start Time</th>
+                                            <th scope="col">End Time</th>
+                                            <th scope="col">Edit</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    {% for date in date_list %}
-                                        <tr>
-                                            <th scope="row">{{ date[0] }}</th>
-                                            <td>{{ date[1] }}</td>
-                                            <td>{{ date[2] }}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                        onclick="submit_value({{ date[3] }})">Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
+                                        {% for date in date_list %}
+                                            <tr>
+                                                <th scope="row">{{ date[0] }}</th>
+                                                <td>{{ date[1] }}</td>
+                                                <td>{{ date[2] }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                                            onclick="submit_value({{ date[3] }})">Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>

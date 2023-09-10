@@ -47,7 +47,7 @@
             </div>
             <div class="col-md-12">
                 <div class="input-group mb-3">
-                    <label for="hour" class="input-group-text">Course time <span style="color: red">*</span> :</label>
+                    <label for="hour" class="input-group-text">Course Time <span style="color: red">*</span> :</label>
                     <div class="btn-group" role="group">
                         <input type="radio" class="btn-check" name="hour" id="hour1" autocomplete="off" value="1">
                         <label class="btn btn-outline-primary" for="hour1">30 minutes</label>
@@ -75,7 +75,7 @@
                     <select name="instructor" class="form-select" id="instructor" required>
                         <option value="" selected="selected" disabled>---Choose instructor---</option>
                         {% for i in instructor_list %}
-                            <option value="{{ i[0] }}">{{ i[3] }} {{ i[1] }} {{ i[2][0] }}</option>
+                            <option value="{{ i[0] }}">{{ i[3] }} {{ i[1] }} {{ i[2] }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -93,7 +93,7 @@
             </div>
             <div class="col-md-12">
                 <div class="input-group mb-3">
-                    <label for="detailed_information" class="input-group-text">Class detailed information :</label>
+                    <label for="detailed_information" class="input-group-text">Class Detailed Information :</label>
                     <textarea id="detailed_information" class="form-control" name="detailed_information" rows="3" cols="33"></textarea>
                 </div>
             </div>
@@ -102,11 +102,11 @@
             <input type="hidden" id="send_time" name="send_time">
             <div class="d-grid gap-2">
                 {% if not edit %}
-                    <input type="button" class="btn btn-primary" value="Add class" onclick="submit_form()">
+                    <input type="button" class="btn btn-primary" value="Add Class" onclick="submit_form()">
                 {% else %}
                     <input type="button" class="btn btn-primary" value="Submit" onclick="submit_form()">
                 {% endif %}
-                <a href="/admin_timetable" class="btn btn-primary">Back to timetable</a>
+                <a href="/admin_timetable" class="btn btn-primary">Back To Timetable</a>
             </div>
         </form>
     </div>
@@ -157,8 +157,32 @@
             document.getElementById('class_id').value = class_detail[8];
         {% endif %}
         function submit_form(){
-            document.getElementById("class_form").action = "/admin_edit_class";
-            document.getElementById("class_form").submit();
+            let i = 1;
+            const class_name = document.getElementById('class_name');
+            if (class_name.value === ""){
+                class_name.classList.add("is-invalid");
+                i=0;
+            } else {
+                class_name.classList.remove("is-invalid");
+            }
+            const instructor = document.getElementById('instructor');
+            if (instructor.value === ""){
+                instructor.classList.add("is-invalid");
+                i=0;
+            } else {
+                instructor.classList.remove("is-invalid");
+            }
+            const pool = document.getElementById('pool');
+            if (pool.value === ""){
+                pool.classList.add("is-invalid");
+                i=0;
+            } else {
+                pool.classList.remove("is-invalid");
+            }
+            if(i){
+                document.getElementById("class_form").action = "/admin_edit_class";
+                document.getElementById("class_form").submit();
+            }
         }
         function check_time(){
             document.getElementById("send_day").value = document.getElementById("available_date").value.substring(5, 10);

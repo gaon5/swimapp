@@ -23,16 +23,18 @@
                                 </label>
                                 <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="{{ request.form['password'] }}" required>
                             </div>
+                            <p id="password_msg" style="color: red"></p>
                             <div class="input-group mb-3">
                                 <label for="email" class="input-group-text">
                                     <i class="fas fa-envelope"></i> Email <span style="color:red">*</span>
                                 </label>
                                 <input type="email" class="form-control" name="email" id="email" placeholder="example@example.com" value="{{ request.form['email'] }}" required>
                             </div>
+                            <p id="email_msg" style="color: red"></p>
                             <div class="input-group mb-3">
                                 <label for="title_id" class="input-group-text">Title <span style="color:red">*</span></label>
                                 <select class="form-select" name="title_id" id="title_id" required>
-                                    <option value="" {% if not request.form['title_id'] %}selected="selected"{% endif %} disabled>Choose title</option>
+                                    <option value="" {% if not request.form['title_id'] %}selected="selected"{% endif %} disabled>Choose Title</option>
                                     {% for title in titles %}
                                         <option value="{{ title[0] }}" {% if request.form['title_id'] == title[0] %}selected="selected"{% endif %}>{{ title[1] }}</option>
                                     {% endfor %}
@@ -42,18 +44,21 @@
                                 <label for="first_name" class="input-group-text"><i class="fas fa-user"></i> First Name <span style="color:red">*</span></label>
                                 <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{ request.form['first_name'] }}" required>
                             </div>
+                            <p id="first_name_msg" style="color: red"></p>
                             <div class="input-group mb-3">
                                 <label for="last_name" class="input-group-text"><i class="fas fa-user"></i> Last Name <span style="color:red">*</span></label>
                                 <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{ request.form['last_name'] }}" required>
                             </div>
+                            <p id="last_name_msg" style="color: red"></p>
                             <div class="input-group mb-3">
                                 <label for="phone_number" class="input-group-text"><i class="fas fa-phone"></i> Phone Number <span style="color:red">*</span></label>
                                 <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="02* *** *****" value="{{ request.form['phone_number'] }}" required>
                             </div>
+                            <p id="phone_number_msg" style="color: red"></p>
                             <div class="input-group mb-3">
                                 <label for="region_id" class="input-group-text">Region <span style="color:red">*</span></label>
                                 <select class="form-control" name="region_id" id="region_id" onchange="update_region()" required>
-                                    <option value="" {% if not request.form['region_id'] %}selected="selected"{% endif %} disabled>---Choose region---</option>
+                                    <option value="" {% if not request.form['region_id'] %}selected="selected"{% endif %} disabled>---Choose Region---</option>
                                     {% for region in regions %}
                                         <option value="{{ region[0] }}" {% if request.form['region_id'] == region[0]|string %}selected="selected"{% endif %}>{{ region[1] }}</option>
                                     {% endfor %}
@@ -90,46 +95,62 @@
 
 {% block myjs %}
     <script>
+        const first_name = document.getElementById('first_name');
+        const last_name = document.getElementById('last_name');
+        const phone_number = document.getElementById('phone_number');
+        const password = document.getElementById("password");
+        const email = document.getElementById("email");
+        const first_name_msg = document.getElementById('first_name_msg');
+        const last_name_msg = document.getElementById('last_name_msg');
+        const email_msg = document.getElementById('email_msg');
+        const phone_number_msg = document.getElementById('phone_number_msg');
+        const password_msg = document.getElementById("password_msg");
+
         function validateForm() {
-            const first_name = document.getElementById('first_name');
             const namePattern = /^[a-zA-Z]+$/;
             const phonePattern = /^\d{7,11}$/;
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
             let i = 0;
-            console.log(1)
             if (!namePattern.test(first_name.value)) {
-                alert("First name should contain only letters.");
-                first_name.classList.add("is-invalid")
+                first_name_msg.innerText = "First name should contain only letters.";
+                first_name.classList.add("is-invalid");
                 i = 1;
-                console.log(2)
             } else {
-                first_name.classList.remove("is-invalid")
-                console.log(3)
+                first_name.classList.remove("is-invalid");
+                first_name_msg.innerText = "";
             }
-            const last_name = document.getElementById('last_name');
             if (!namePattern.test(last_name.value)) {
-                alert("Last name should contain only letters.");
-                last_name.classList.add("is-invalid")
+                last_name_msg.innerText = "Last name should contain only letters.";
+                last_name.classList.add("is-invalid");
                 i = 1;
             } else {
-                last_name.classList.remove("is-invalid")
+                last_name.classList.remove("is-invalid");
+                last_name_msg.innerText = "";
             }
-            const phone_number = document.getElementById('phone_number');
             if (!phonePattern.test(phone_number.value)) {
-                phone_number.classList.add("is-invalid")
-                alert("Wrong phone number length.");
+                phone_number.classList.add("is-invalid");
+                phone_number_msg.innerText = "Wrong phone number.";
                 i = 1;
             } else {
-                phone_number.classList.remove("is-invalid")
+                phone_number.classList.remove("is-invalid");
+                phone_number_msg.innerText = "";
             }
-            const password = document.getElementById("password");
-            if (password.value.length < 6) {
-                password.classList.add("is-invalid")
-                alert("Password requires at least 6 characters.");
+            if (password.value.length < 8) {
+                password.classList.add("is-invalid");
+                password_msg.innerText = "Password is not strong enough.";
                 i = 1;
             } else {
-                password.classList.remove("is-invalid")
+                password.classList.remove("is-invalid");
+                password_msg.innerText = "";
             }
-            console.log(i)
+            if (!emailPattern.test(email.value)) {
+                email.classList.add("is-invalid");
+                email_msg.innerText = "E-mail format error.";
+                i = 1;
+            } else {
+                email.classList.remove("is-invalid");
+                email_msg.innerText = "";
+            }
             return i !== 1;
         }
 
@@ -139,7 +160,7 @@
         const prev_city = "{{ request.form['city_id'] }}";
 
         function update_region() {
-            city.innerHTML = '<option value="" disabled>---Choose city---</option>';
+            city.innerHTML = '<option value="" selected="selected" disabled>---Choose City---</option>';
             for (const j in city_list) {
                 if (String(city_list[j][1]) === region.value) {
                     const option = document.createElement('option');

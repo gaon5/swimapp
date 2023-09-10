@@ -24,7 +24,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary my-1" onclick="delete_class()">Yes</button>
+                    <button type="button" class="btn btn-danger my-1" onclick="delete_class()">Yes</button>
                 </div>
             </div>
         </div>
@@ -35,15 +35,15 @@
     <form action="javascript:void(0);" id="schedule_time">
         <input type="hidden" id="send_day" name="send_day">
         <input type="hidden" id="send_time" name="send_time">
-        <button type="button" class="btn btn-primary my-1" onclick="add_class()">Add public class</button>
+        <button type="button" class="btn btn-primary my-1" onclick="add_class()">Add Class</button>
     </form>
 {% endblock %}
 
 {% block myOwnModalLabel2 %}
     <form action="javascript:void(0);" id="manage_class" class="is_individual">
         <input type="hidden" id="class_id" name="class_id">
-        <button type="button" class="btn btn-primary my-1" onclick="edit_class()">Edit this class</button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete this class</button>
+        <button type="button" class="btn btn-primary my-1" onclick="edit_class()">Edit Class</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete Class</button>
     </form>
 {% endblock %}
 

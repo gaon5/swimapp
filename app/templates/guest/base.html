@@ -39,7 +39,7 @@
 <div class="sticky-top " style="background-color: #fff;">
     <nav class="navbar navbar-expand-lg container" style="height:85px">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}"><span class="navbar-brand mb-0 h1" id="navtitle">Waikirikiri Swim Centre</span></a>
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}"><span class="navbar-brand mb-0 h1" id="navtitle" style="font-size: x-large">Waikirikiri Swim Centre</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -47,17 +47,17 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-4" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-4" href="{{ url_for('index') }}" style="font-size: large">Home</a></li>
                     {% if permissions == 4 %}
-                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_timetable') }}">Timetable</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}" style="font-size: large">Dashboard</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_timetable') }}" style="font-size: large">Timetable</a></li>
                     {% elif permissions == 3 %}
-                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_timetable') }}">Timetable</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}" style="font-size: large">Dashboard</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_timetable') }}" style="font-size: large">Timetable</a></li>
                     {% elif permissions == 2 %}
-                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_timetable') }}">Timetable</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_timetable') }}" style="font-size: large">Timetable</a></li>
                     {% elif permissions == 1 %}
-                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_class') }}">View Public Class</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_class') }}" style="font-size: large">View Public Class</a></li>
                     {% endif %}
                 </ul>
             </div>

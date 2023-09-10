@@ -107,6 +107,7 @@
         const time = "{{ time }}";
         document.getElementById("start_hour").value = Number(time.split(':')[0]);
         document.getElementById("start_minute").value = String(time.split(':')[1]);
+
         {% if request.form.get('hour','') %}
             const value = {{ request.form.get('hour','') }};
             if (value === 1){
@@ -115,12 +116,15 @@
                 document.getElementById('hour2').checked = true;
             }
         {% endif %}
+
         {% if request.form.get('instructor','') %}
             document.getElementById('instructor').value = {{ request.form.get('instructor','') }};
         {% endif %}
+
         {% if request.form.get('pool','') %}
             document.getElementById('pool').value = {{ request.form.get('pool','') }};
         {% endif %}
+
         function submit_form(){
             document.getElementById("class_form").action = "/individual_payment";
             const select_instructor = document.getElementById('instructor');
@@ -140,6 +144,7 @@
                 document.getElementById("class_form").submit();
             }
         }
+
         function check_time(){
             document.getElementById("send_day").value = document.getElementById("available_date").value.substring(5, 10);
             const sometime = [String(document.getElementById("start_hour").value), String(document.getElementById("start_minute").value)];

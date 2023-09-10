@@ -7,22 +7,28 @@
             align-items: center;
             justify-content: center;
         }
-
         #info {
             margin: 0 20px;
         }
-
         .little_box:hover {
             background-color: #dbe3e8;
             border-radius: 15px;
         }
-
+        .little_box{
+            background-color: #ffffff;
+        }
+        .little_box2:hover {
+            background-color: #dbe3e8 !important;
+            border-radius: 15px;
+        }
+        .little_box2{
+            background-color: #f3f3f3 !important;
+        }
         th {
             height: 40px;
             width: 120px;
             border-radius: 5px;
         }
-
         th a {
             font-size: 15px;
         }
@@ -82,21 +88,35 @@
                 </div>
             </form>
             <table class="table table-bordered">
-                <tr>
-                    {% for i in range(0,8,1) %}
-                        <th class="table-dark" style="text-align: center;">{{ week_list[i][2] }}<br>{{ week_list[i][1] }}</th>
-                    {% endfor %}
-                </tr>
-                {% for i in range(1,29,1) %}
+                <thead>
                     <tr>
-                        {% if i%2 == 1 %}
-                            <th rowspan="2" style="text-align: center; font-size: x-large;">{{ (i + 1)//2 + 5 }}:00</th>
-                        {% endif %}
-                        {% for j in range(1,8,1) %}
-                            <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
+                        {% for i in range(0,8,1) %}
+                            <th class="table-dark" style="text-align: center;">{{ week_list[i][2] }}<br>{{ week_list[i][1] }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
+                </thead>
+                <tbody>
+                    {% for i in range(1,29,1) %}
+                        <tr>
+                            {% if i%2 == 1 %}
+                                <th rowspan="2" style="text-align: center; font-size: x-large;">{{ (i + 1)//2 + 5 }}:00</th>
+                            {% endif %}
+                            {% for j in range(1,8,1) %}
+                                {% if j < before_day %}
+                                    <th id="{{j}}{{i}}" class="little_box2"></th>
+                                {% elif j==before_day %}
+                                    {% if i<before_time %}
+                                        <th id="{{j}}{{i}}" class="little_box2"></th>
+                                    {% else %}
+                                        <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
+                                    {% endif %}
+                                {% else %}
+                                    <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
@@ -187,7 +207,7 @@
     <script>
         const currentDate = new Date("{{ today }}");
         const day = currentDate.getDate().toString().padStart(2, '0');
-        const monthIndex = currentDate.getMonth(); // 获取月份的索引
+        const monthIndex = currentDate.getMonth();
         const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const year = currentDate.getFullYear().toString();
         const formattedDate = `${month[monthIndex]},${day},${year}`;
@@ -213,7 +233,7 @@
 
         function clean_table() {
             for (let w = 1; w < 8; w++) {
-                for (let e = 1; e < 19; e++) {
+                for (let e = 1; e < 29; e++) {
                     let temp = String(w) + String(e);
                     const thElement = document.getElementById(temp);
 
@@ -253,6 +273,7 @@
                 }
                 let id = class_list[i]["x"] + class_list[i]["y"];
                 const box = document.getElementById(id);
+                box.removeAttribute('class')
                 const classElement = document.createElement("div");
                 classElement.innerHTML = `<a href="javascript:void(0);">${class_list[i]["class_name"]}</a>`;
                 if (class_list[i]["is_individual"]) {

@@ -93,7 +93,7 @@ def dashboard():
     pool_count = sql_data.fetchall()
     sql_data.execute("""SELECT COUNT(DISTINCT class_id)-1 FROM class_list;""")
     class_count = sql_data.fetchall()
-    sql_data.execute("""SELECT * FROM news ORDER BY time DESC LIMIT 3;""")
+    sql_data.execute("""SELECT news_id,news,DATE_FORMAT(time,'%b,%d,%Y  %H:%i:%s') FROM news ORDER BY time DESC LIMIT 3;""")
     posted_news = sql_data.fetchall()
     sql_data.execute("""SELECT * FROM class_list;""")
     class_list = sql_data.fetchall()

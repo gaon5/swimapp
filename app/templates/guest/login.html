@@ -20,8 +20,8 @@
                                 <label for="password" class="form-label"><i class="fas fa-lock"></i> Password</label>
                                 <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
                             </div>
-                            <span>{{ msg }}</span>
-                            <div class="mb-3">
+                            <span id="msg" style="color: red">{{ msg }}</span>
+                            <div class="my-3">
                                 <button type="submit" class="btn btn-primary w-100">Login</button>
                             </div>
                             <div class="text-center">
@@ -41,9 +41,10 @@
             const password = document.getElementById("password").value;
 
             if (password.length < 8) {
-                {#alert("Password requires at least 8 characters.");#}
+                document.getElementById("msg").innerText = 'Password length is incorrect.';
                 return false;
             }
+            document.getElementById("msg").innerText = '';
             return true;
         }
     </script>

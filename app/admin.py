@@ -31,8 +31,8 @@ def member_list():
                 page = int(page)
                 sql_page = (page - 1) * 10
             if request.method == 'POST':
-                first_name = request.form.get('first_name')
-                last_name = request.form.get('last_name')
+                first_name = request.form.get('first_name').capitalize()
+                last_name = request.form.get('last_name').capitalize()
                 title = int(request.form.get('title'))
                 email = request.form.get('email')
                 phone_number = request.form.get('phone_number')
@@ -44,9 +44,9 @@ def member_list():
                 health_information = request.form.get('health_information')
                 user_id = request.form.get('user_id')
                 if user_id:
-                    sql = """SELECT i.user_id,i.first_name,i.last_name,i.title_id,u.email,i.phone_number,i.detailed_information FROM `instructor` AS i
-                                LEFT JOIN `user_account` AS u ON i.user_id=u.user_id
-                                WHERE i.user_id=%s;"""
+                    sql = """SELECT m.user_id,m.first_name,m.last_name,m.title_id,u.email,m.phone_number,m.detailed_information FROM `member` AS m
+                                LEFT JOIN `user_account` AS u ON m.user_id=u.user_id
+                                WHERE m.user_id=%s;"""
                     sql_value = (user_id,)
                     sql_data.execute(sql, sql_value)
                     sql_instructor_list = sql_data.fetchall()[0]
@@ -95,9 +95,13 @@ def member_list():
                         LIMIT %s, 10;"""
             sql_data.execute(sql, (sql_page,))
             sql_member_list = sql_data.fetchall()
+            for i in range(len(sql_member_list)):
+                sql_member_list[i] = list(sql_member_list[i])
+                sql_member_list[i][12] = str(sql_member_list[i][12])
             sql_data.close()
+            today = str(today)
             return render_template("admin/member_list.html", member_count=member_count, member_list=sql_member_list, city_list=city_list, region_list=region_list,
-                                   title_list=title_list, msg=msg, permissions=check_permissions())
+                                   title_list=title_list, msg=msg, permissions=check_permissions(), today=today)
         else:
             return redirect(url_for('index'))
     else:
@@ -128,8 +132,8 @@ def instructor_list():
                 page = int(page)
                 sql_page = (page - 1) * 10
             if request.method == 'POST':
-                first_name = request.form.get('first_name')
-                last_name = request.form.get('last_name')
+                first_name = request.form.get('first_name').capitalize()
+                last_name = request.form.get('last_name').capitalize()
                 title = int(request.form.get('title'))
                 email = request.form.get('email')
                 phone_number = request.form.get('phone_number')
@@ -266,6 +270,7 @@ def admin_change_information():
                         LEFT JOIN `user_account` AS u ON a.user_id=u.user_id
                         WHERE a.user_id=%s;"""
             sql_value = (user_id,)
+            print(sql % sql_value)
             sql_data.execute(sql, sql_value)
             admin_list = sql_data.fetchall()[0]
             sql_data.close()
@@ -285,6 +290,17 @@ def admin_timetable():
                 today = datetime.strptime(request.form.get('day'), '%Y-%m-%d').date()
             else:
                 today = date.today()
+            real_day = date.today()
+            if real_day == today:
+                before_day = today.weekday() + 1
+                real_time = datetime.now().time().strftime('%H')
+                before_time = int((int(real_time) - 5) * 2) - 1
+            elif real_day < today:
+                before_day = 0
+                before_time = 0
+            else:
+                before_day = 9
+                before_time = 30
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
@@ -339,7 +355,7 @@ def admin_timetable():
                 member_count[i] = list(member_count[i])
             member_count = {item[0]: item[1] for item in member_count}
             return render_template('admin/timetable.html', week_list=week_list, pool_list=pool_list, today=today, instructor_list=sql_instructor_list,
-                                   all_details=all_details, member_count=member_count, link=url_for('admin_timetable'), permissions=check_permissions())
+                                   all_details=all_details, member_count=member_count, link=url_for('admin_timetable'), permissions=check_permissions(), before_day=before_day, before_time=before_time)
         else:
             return redirect(url_for('index'))
     else:
@@ -360,7 +376,7 @@ def admin_add_class():
             start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
             end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
             sql_data = get_cursor()
-            sql = """SELECT i.user_id, i.first_name, i.last_name, t.title
+            sql = """SELECT DISTINCT i.user_id, i.first_name, i.last_name, t.title
                         FROM instructor AS i
                         LEFT JOIN available_time AS a ON i.user_id = a.user_id
                         LEFT JOIN title AS t ON t.title_id=i.title_id
@@ -379,8 +395,9 @@ def admin_add_class():
                             AND a2.date = %s
                             AND a2.start_time <= %s
                             AND a2.end_time >= %s
-                        ) group by a.user_id;"""
+                        );"""
             value = (complete_date_string, start_time, end_time, complete_date_string, start_time, end_time)
+            print(sql % value)
             sql_data.execute(sql, value)
             sql_instructor_list = sql_data.fetchall()
             sql_data.execute("SELECT * FROM class_list;")
@@ -527,7 +544,7 @@ def view_payments():
     if 'loggedIn' in session:
         if check_permissions() > 2:
             cursor = get_cursor()
-            sql = """SELECT p.payment_id,p.payment_date,p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
+            sql = """SELECT p.payment_id,DATE_FORMAT(p.payment_date,'%b,%d,%Y'),p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
                         LEFT JOIN member m on p.member_id = m.member_id
                         LEFT JOIN user_account ua on m.user_id = ua.user_id
                         ORDER BY payment_date DESC;"""
@@ -548,7 +565,7 @@ def subscriptions_due_date():
             msg = ''
             sql_data = get_cursor()
             today = datetime.today().date()
-            sql = """SELECT m.first_name,m.last_name, p.payment_date, pa.start_date,pa.end_date,m.phone_number, u.email, m.member_id
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%b,%d,%Y'), DATE_FORMAT(pa.start_date,'%b,%d,%Y'),DATE_FORMAT(pa.end_date,'%b,%d,%Y'),m.phone_number, u.email, m.member_id
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -557,7 +574,7 @@ def subscriptions_due_date():
             value = (today,)
             sql_data.execute(sql, value)
             Due_List = sql_data.fetchall()
-            sql = """SELECT m.first_name,m.last_name, p.payment_date, pa.start_date,pa.end_date,m.phone_number, u.email 
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%b,%d,%Y'), DATE_FORMAT(pa.start_date,'%b,%d,%Y'),DATE_FORMAT(pa.end_date,'%b,%d,%Y'),m.phone_number, u.email 
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -566,7 +583,7 @@ def subscriptions_due_date():
             value = (today, today,)
             sql_data.execute(sql, value)
             About_to_due_list = sql_data.fetchall()
-            sql = """SELECT m.first_name,m.last_name, p.payment_date, pa.start_date,pa.end_date,m.phone_number, u.email 
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%b,%d,%Y'), DATE_FORMAT(pa.start_date,'%b,%d,%Y'),DATE_FORMAT(pa.end_date,'%b,%d,%Y'),m.phone_number, u.email 
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -637,7 +654,7 @@ def attendance_report():
         if check_permissions() > 2:
             sql_data = get_cursor()
             today = datetime.today().date()
-            sql = """SELECT  a.class_id,a.class_date,a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
+            sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%b,%d,%Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
                         FROM 
                             (SELECT bcl.book_class_id AS class_id, bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name,
                             (SELECT COUNT(*) FROM book_list AS bl WHERE bl.class_id = bcl.book_class_id) AS group_count
@@ -722,8 +739,8 @@ def admin_financial_report():
                         WHERE payment_date >= DATE_SUB(%s, INTERVAL 30 DAY)
                         AND payment_date <= %s
                         ORDER BY payment_date;"""
-                sql_value = (today_date,today_date)
-            sql_data.execute(sql,sql_value)
+                sql_value = (today_date, today_date)
+            sql_data.execute(sql, sql_value)
             sql_list = sql_data.fetchall()
             # Organise sql_list and append them into payment_list
             for sql in sql_list:
@@ -826,6 +843,48 @@ def admin_popularity_report():
             report_list.sort(key=lambda x: (x[-2], x[-1]), reverse=True)
             sql_data.close()
             return render_template('admin/popularity_report.html', report_list=report_list, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/edit_pool', methods=['GET', 'POST'])
+def edit_pool():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            sql_data = get_cursor()
+            if request.method == 'POST':
+                pool_id = request.form.get('pool_id')
+                pool_name = request.form.get('pool_name').capitalize()
+                if pool_id:
+                    sql_data.execute("""DELETE FROM pool WHERE pool_id=%s;""", (pool_id,))
+                else:
+                    sql_data.execute("""INSERT INTO pool (pool_name) VALUE (%s);""", (pool_name,))
+            sql_data.execute("""SELECT * FROM pool;""")
+            pool_list = sql_data.fetchall()
+            return render_template('admin/edit_pool.html', pool_list=pool_list, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/edit_classes', methods=['GET', 'POST'])
+def edit_classes():
+    if 'loggedIn' in session:
+        if check_permissions() > 2:
+            sql_data = get_cursor()
+            if request.method == 'POST':
+                classes_id = request.form.get('class_id')
+                classes_name = request.form.get('class_name').capitalize()
+                if classes_id:
+                    sql_data.execute("""DELETE FROM class_list WHERE class_id=%s;""", (classes_id,))
+                else:
+                    sql_data.execute("""INSERT INTO class_list (class_name) VALUE (%s);""", (classes_name,))
+            sql_data.execute("""SELECT * FROM class_list;""")
+            class_list = sql_data.fetchall()
+            return render_template('admin/edit_class.html', class_list=class_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
