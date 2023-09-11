@@ -760,9 +760,9 @@ def admin_financial_report():
                 payment_list.append(temp_list)
             # Calculate membership subscription and individual lesson total revenue
             for payment in payment_list:
-                if payment[4] == 'membership':
+                if payment[4] == 'Membership':
                     membership += float(payment[2])
-                elif payment[4] == 'lesson':
+                elif payment[4] == 'Lesson':
                     lesson += float(payment[2])
             # Calculate number of each payment method in the payment list
             for method in method_list:
