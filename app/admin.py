@@ -722,7 +722,7 @@ def admin_financial_report():
                 return render_template('admin/financial_report.html', title=title, month_flag=month_flag, year_flag=year_flag, year_list=year_list, payment_list=payment_list, lesson_float=lesson_float, membership_float=membership_float, total_float=total_float, method_list=method_list, count_list=count_list, month_list=month_list, income_list=income_list, permissions=check_permissions())
             elif request.form.get('month'):
                 start_date = request.form.get('month') + '-01'
-                sql = """SELECT * FROM swimming.payment_list
+                sql = """SELECT * FROM payment_list
                         WHERE payment_date >= %s
                         AND payment_date < DATE_ADD(%s, INTERVAL 1 MONTH)
                         ORDER BY payment_date;"""
@@ -732,7 +732,7 @@ def admin_financial_report():
                 title = 'Monthly report on {} {}'.format(calendar.month_name[month_num],year_num)
             elif request.form.get('year'):
                 financial_date = request.form.get('year') + '-03-31'
-                sql = """SELECT * FROM swimming.payment_list
+                sql = """SELECT * FROM payment_list
                         WHERE payment_date > DATE_SUB(%s, INTERVAL 1 YEAR)
                         AND payment_date <= %s
                         ORDER BY payment_date;"""
@@ -741,7 +741,7 @@ def admin_financial_report():
                 month_list = ['04','05','06','07','08','09','10','11','12','01','02','03']
             else:
                 today_date = date.today()
-                sql = """SELECT * FROM swimming.payment_list
+                sql = """SELECT * FROM payment_list
                         WHERE payment_date >= DATE_SUB(%s, INTERVAL 30 DAY)
                         AND payment_date <= %s
                         ORDER BY payment_date;"""
@@ -806,9 +806,9 @@ def admin_popularity_report():
             count = 0
             sql_data = get_cursor()
             # Fetch a list of class details
-            sql_data.execute("""SELECT book_class_id, first_name, last_name, class_name, class_date, start_time, end_time FROM swimming.book_class_list 
-                                INNER JOIN swimming.class_list ON class_list.class_id = book_class_list.class_id
-                                INNER JOIN swimming.instructor ON instructor.instructor_id = book_class_list.instructor_id
+            sql_data.execute("""SELECT book_class_id, first_name, last_name, class_name, class_date, start_time, end_time FROM book_class_list 
+                                INNER JOIN class_list ON class_list.class_id = book_class_list.class_id
+                                INNER JOIN instructor ON instructor.instructor_id = book_class_list.instructor_id
                                 WHERE (is_individual) = 0 AND (class_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND class_date <= %s)
                                 ORDER BY book_class_id;
                                 """, (today, today))
@@ -821,7 +821,7 @@ def admin_popularity_report():
                 temp_list[6] = str(temp_list[6])[:-3]
                 report_list.append(temp_list)
             # Fetch a list of bookings
-            sql_data.execute("""SELECT book_id, class_id FROM swimming.book_list 
+            sql_data.execute("""SELECT book_id, class_id FROM book_list 
                                 WHERE payment_id IS NULL
                                 ORDER BY class_id;
                                 """)
@@ -834,7 +834,7 @@ def admin_popularity_report():
                 report.append(count)
                 count = 0
             # Fetch a list of attendance
-            sql_data.execute("""SELECT log_id, class_id FROM swimming.attendance_log
+            sql_data.execute("""SELECT log_id, class_id FROM attendance_log
                                 ORDER BY class_id;
                                 """)
             atd_list = sql_data.fetchall()
