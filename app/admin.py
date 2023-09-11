@@ -700,7 +700,7 @@ def admin_financial_report():
             title = 'Financial activity of last 30 days'
             year_list = []
             payment_list = []
-            method_list = ['paypal','mastercard','bank','credit','internet']
+            method_list = ['Paypal','Master Card','Credit']
             count_list = []
             income_list = []
             month_list = False
@@ -711,6 +711,7 @@ def admin_financial_report():
             lesson_float = 0.0
             membership_float = 0.0
             total_float = 0.0
+            # if the user wants to choose a report type
             if request.form.get('report_type'):
                 report_type = request.form.get('report_type')
                 if report_type == 'month':
@@ -720,6 +721,7 @@ def admin_financial_report():
                     for i in range(2000,2025):
                         year_list.append(i)
                 return render_template('admin/financial_report.html', title=title, month_flag=month_flag, year_flag=year_flag, year_list=year_list, payment_list=payment_list, lesson_float=lesson_float, membership_float=membership_float, total_float=total_float, method_list=method_list, count_list=count_list, month_list=month_list, income_list=income_list, permissions=check_permissions())
+            # if the user chooses monthly report
             elif request.form.get('month'):
                 start_date = request.form.get('month') + '-01'
                 sql = """SELECT * FROM payment_list
@@ -730,6 +732,7 @@ def admin_financial_report():
                 month_num = int(request.form.get('month')[5:])
                 year_num = request.form.get('month')[:4]
                 title = 'Monthly report on {} {}'.format(calendar.month_name[month_num],year_num)
+            # if the user chooses annual report
             elif request.form.get('year'):
                 financial_date = request.form.get('year') + '-03-31'
                 sql = """SELECT * FROM payment_list
@@ -739,6 +742,7 @@ def admin_financial_report():
                 sql_value = (financial_date,financial_date)
                 title = 'Annual report between 01/04/{} and 31/03/{}'.format(int(request.form.get('year'))-1,request.form.get('year'))
                 month_list = ['04','05','06','07','08','09','10','11','12','01','02','03']
+            # default report shows activity of last 30 days
             else:
                 today_date = date.today()
                 sql = """SELECT * FROM payment_list
