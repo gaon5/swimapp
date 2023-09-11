@@ -89,7 +89,7 @@ def view_class():
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
             for i in range(7):
-                x = (start_of_week + timedelta(days=i)).strftime('%b,%d,%Y')
+                x = (start_of_week + timedelta(days=i)).strftime('%d,%b,%Y')
                 temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
                 week_list.append(temp_list)
             sql_data = get_cursor()
@@ -118,8 +118,6 @@ def view_class():
             for i in range(len(member_count)):
                 member_count[i] = list(member_count[i])
             member_count = {item[0]: item[1] for item in member_count}
-            for i in range(1, len(week_list), 1):
-                week_list[i][2] = week_list[i][2][:6]
             all_details = []
             for item in all_details_sql:
                 time = int(((item[10].total_seconds() / 3600) - 5) * 2)
@@ -300,7 +298,7 @@ def member_class_detail():
             today = datetime.today().date()
             user_id = int(session['user_id'])
             sql_data = get_cursor()
-            sql = """SELECT DATE_FORMAT(bc.class_date,'%b,%d,%Y'),bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
+            sql = """SELECT DATE_FORMAT(bc.class_date,'%d,%b,%Y'),bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
                         FROM book_list AS bl
                         LEFT JOIN book_class_list AS bc ON bc.book_class_id=bl.class_id
                         LEFT JOIN instructor AS i ON i.instructor_id=bl.instructor_id
@@ -476,8 +474,8 @@ def my_membership():
             if subscription:
                 start_date, end_date = subscription
                 status = "Active" if end_date >= datetime.today().date() else "Expired"
-                start_date = start_date.strftime('%b,%d,%Y')
-                end_date = end_date.strftime('%b,%d,%Y')
+                start_date = start_date.strftime('%d,%b,%Y')
+                end_date = end_date.strftime('%d,%b,%Y')
             else:
                 start_date, end_date = None, None
                 status = "No Subscription"

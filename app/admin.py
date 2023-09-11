@@ -305,7 +305,7 @@ def admin_timetable():
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
             for i in range(7):
-                x = (start_of_week + timedelta(days=i)).strftime('%b,%d,%Y')
+                x = (start_of_week + timedelta(days=i)).strftime('%d,%b,%Y')
                 temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
                 week_list.append(temp_list)
             sql_data = get_cursor()
@@ -544,7 +544,7 @@ def view_payments():
     if 'loggedIn' in session:
         if check_permissions() > 2:
             cursor = get_cursor()
-            sql = """SELECT p.payment_id,DATE_FORMAT(p.payment_date,'%b,%d,%Y'),p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
+            sql = """SELECT p.payment_id,DATE_FORMAT(p.payment_date,'%d,%b,%Y'),p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
                         LEFT JOIN member m on p.member_id = m.member_id
                         LEFT JOIN user_account ua on m.user_id = ua.user_id
                         ORDER BY payment_date DESC;"""
@@ -565,7 +565,7 @@ def subscriptions_due_date():
             msg = ''
             sql_data = get_cursor()
             today = datetime.today().date()
-            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%b,%d,%Y'), DATE_FORMAT(pa.start_date,'%b,%d,%Y'),DATE_FORMAT(pa.end_date,'%b,%d,%Y'),m.phone_number, u.email, m.member_id
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d,%b,%Y'), DATE_FORMAT(pa.start_date,'%d,%b,%Y'),DATE_FORMAT(pa.end_date,'%d,%b,%Y'),m.phone_number, u.email, m.member_id
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -574,7 +574,7 @@ def subscriptions_due_date():
             value = (today,)
             sql_data.execute(sql, value)
             Due_List = sql_data.fetchall()
-            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%b,%d,%Y'), DATE_FORMAT(pa.start_date,'%b,%d,%Y'),DATE_FORMAT(pa.end_date,'%b,%d,%Y'),m.phone_number, u.email 
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d,%b,%Y'), DATE_FORMAT(pa.start_date,'%d,%b,%Y'),DATE_FORMAT(pa.end_date,'%d,%b,%Y'),m.phone_number, u.email 
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -583,7 +583,7 @@ def subscriptions_due_date():
             value = (today, today,)
             sql_data.execute(sql, value)
             About_to_due_list = sql_data.fetchall()
-            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%b,%d,%Y'), DATE_FORMAT(pa.start_date,'%b,%d,%Y'),DATE_FORMAT(pa.end_date,'%b,%d,%Y'),m.phone_number, u.email 
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d,%b,%Y'), DATE_FORMAT(pa.start_date,'%d,%b,%Y'),DATE_FORMAT(pa.end_date,'%d,%b,%Y'),m.phone_number, u.email 
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -654,7 +654,7 @@ def attendance_report():
         if check_permissions() > 2:
             sql_data = get_cursor()
             today = datetime.today().date()
-            sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%b,%d,%Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
+            sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%d,%b,%Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
                         FROM 
                             (SELECT bcl.book_class_id AS class_id, bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name,
                             (SELECT COUNT(*) FROM book_list AS bl WHERE bl.class_id = bcl.book_class_id) AS group_count

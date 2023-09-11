@@ -42,7 +42,7 @@
         <div class="row">
             <div class="col-md-3">
                 <select name="pool_type" class="form-select" id="pool_type">
-                    <option value="" disabled selected>-- select pool --</option>
+                    <option value="" disabled selected>-- Select Pool --</option>
                     {% for pool in pool_list %}
                         <option value="{{ pool[0] }}">{{ pool[1] }}</option>
                     {% endfor %}
@@ -51,7 +51,7 @@
             {% if permissions != 1 %}
                 <div class="col-md-3">
                     <select name="class_type" class="form-select" id="class_type">
-                        <option value="" disabled selected>-- select class type --</option>
+                        <option value="" disabled selected>-- Select Class Type --</option>
                         <option value="1">Public Lesson</option>
                         <option value="2">Individual Lesson</option>
                     </select>
@@ -62,7 +62,7 @@
             {% if permissions != 2 %}
                 <div class="col-md-3">
                     <select name="instructor" class="form-select" id="instructor">
-                        <option value="" disabled selected>-- select instructor --</option>
+                        <option value="" disabled selected>-- Select Instructor --</option>
                         {% for instructor in instructor_list %}
                             <option value="{{ instructor[0] }}">{{ instructor[9] }} {{ instructor[3] }} {{ instructor[4] }}</option>
                         {% endfor %}
@@ -73,7 +73,7 @@
             {% endif %}
 
             <div class="col-md-3">
-                <button class="btn btn-primary my-1" onclick="reset_select()">RESET</button>
+                <button class="btn btn-primary my-1" onclick="reset_select()">Reset</button>
             </div>
         </div>
     </div>
@@ -127,7 +127,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="myOwnModalLabel">More operations</h5>
+                    <h5 class="modal-title" id="myOwnModalLabel"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -210,7 +210,7 @@
         const monthIndex = currentDate.getMonth();
         const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const year = currentDate.getFullYear().toString();
-        const formattedDate = `${month[monthIndex]},${day},${year}`;
+        const formattedDate = `${day},${month[monthIndex]},${year}`;
         document.getElementById('info').innerHTML = formattedDate;
 
         function previous_week() {
