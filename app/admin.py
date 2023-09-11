@@ -565,6 +565,12 @@ def subscriptions_due_date():
             msg = ''
             sql_data = get_cursor()
             today = datetime.today().date()
+            sql_data.execute("""SELECT m.first_name,m.last_name,m.phone_number, u.email
+                        FROM member AS m
+                        LEFT JOIN payment_due AS pa on m.member_id = pa.member_id
+                        INNER JOIN user_account AS u on m.user_id = u.user_id
+                        WHERE pa.start_date IS NULL AND pa.end_date IS NULL;""")
+            No_List = sql_data.fetchall()
             sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d,%b,%Y'), DATE_FORMAT(pa.start_date,'%d,%b,%Y'),DATE_FORMAT(pa.end_date,'%d,%b,%Y'),m.phone_number, u.email, m.member_id
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
@@ -593,7 +599,7 @@ def subscriptions_due_date():
             sql_data.execute(sql, value)
             Active_List = sql_data.fetchall()
             sql_data.close()
-            return render_template('admin/subscriptions_due.html', permissions=check_permissions(), Due_List=Due_List, About_to_due_list=About_to_due_list,
+            return render_template('admin/subscriptions_due.html', permissions=check_permissions(), No_List=No_List, Due_List=Due_List, About_to_due_list=About_to_due_list,
                                    Active_List=Active_List, msg=msg)
         else:
             return redirect(url_for('index'))
