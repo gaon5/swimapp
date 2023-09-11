@@ -243,6 +243,37 @@ def register():
     return render_template('guest/register.html', msg=msg, titles=title_list, regions=region_list, cities=city_list, today=today)
 
 
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    sql_data = get_cursor()
+    msg = ''
+    # get password from the user
+    sql = """SELECT password FROM user_account WHERE user_id=%s"""
+    sql_value = (session["user_id"],)
+    sql_data.execute(sql,sql_value)
+    sql_list = sql_data.fetchone()
+    old_password = sql_list[0].encode('utf-8')
+    # if the user submits new passwords
+    if request.method == 'POST':
+        new_password = request.form.get('newpw')
+        confirm_password = request.form.get('confirmpw')
+        # convert confirm password to bytes
+        byte_password = confirm_password.encode('utf-8')
+        # check whether the passwords are the same
+        if new_password != confirm_password:
+            msg = "Passwords do not match. Please try again."
+        elif bcrypt.checkpw(byte_password, old_password):
+            msg = "New password cannot be the same as previous password"
+        # update hashed password if validated
+        else:
+            hashed_password = bcrypt.hashpw(confirm_password.encode('utf-8'), bcrypt.gensalt())
+            sql = "UPDATE user_account SET password=%s WHERE user_id=%s"
+            sql_value = (hashed_password,session["user_id"])
+            sql_data.execute(sql,sql_value)
+            msg = "Password changed."
+    return render_template('change_password.html',permissions=check_permissions(), old_password=old_password, msg=msg)
+
+
 # @app.errorhandler(Exception)
 # def handle_error(error):
 #     """
