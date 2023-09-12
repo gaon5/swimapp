@@ -23,12 +23,12 @@
                                     <div class="input-group mb-3">
                                         <label for="start_time" class="input-group-text">Start Time <span style="color: red">*</span>:</label>
                                         <select class="form-control" name="start_time" id="start_time" required>
-                                            <option value="" selected="selected" disabled>---Choose time---</option>
+                                            <option value="" selected="selected" disabled>---Choose Time---</option>
                                             {% for i in range(6,20,1) %}
                                                 {% if i == 18 %}
-                                                    <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
                                                 {% else %}
-                                                    <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
@@ -36,12 +36,12 @@
                                     <div class="input-group mb-3">
                                         <label for="end_time" class="input-group-text">End Time <span style="color: red">*</span>:</label>
                                         <select class="form-control" name="end_time" id="end_time" required>
-                                            <option value="" selected="selected" disabled>---Choose time---</option>
+                                            <option value="" selected="selected" disabled>---Choose Time---</option>
                                             {% for i in range(7,21,1) %}
                                                 {% if i == 18 %}
-                                                    <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
                                                 {% else %}
-                                                    <option value="{{ i }}:00:00">{{ i }}:00</option>
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
@@ -88,7 +88,7 @@
                                                 <td>{{ date[1] }}</td>
                                                 <td>{{ date[2] }}</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                                                             onclick="submit_value({{ date[3] }})">Delete
                                                     </button>
                                                 </td>

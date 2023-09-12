@@ -93,7 +93,7 @@ def instructor_timetable():
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
             for i in range(7):
-                x = (start_of_week + timedelta(days=i)).strftime('%d,%b,%Y')
+                x = (start_of_week + timedelta(days=i)).strftime('%d %b %Y')
                 temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
                 week_list.append(temp_list)
             sql_data = get_cursor()
@@ -209,7 +209,7 @@ def schedule_time():
                 sql_value = (user_id, available_date, start_time, end_time)
                 sql_data.execute(sql, sql_value)
                 success_msg = "Schedule added successfully"
-            sql = """SELECT DATE_FORMAT(date,'%d,%b,%Y'), start_time, end_time, available_id FROM available_time WHERE user_id=%s AND date>=%s;"""
+            sql = """SELECT DATE_FORMAT(date,'%d %b %Y'), start_time, end_time, available_id FROM available_time WHERE user_id=%s AND date>=%s;"""
             sql_value = (user_id, today_,)
             sql_data.execute(sql, sql_value)
             date_list = sql_data.fetchall()
@@ -241,7 +241,7 @@ def instructor_class_details():
             if check_permissions():
                 class_id = request.form.get('class_id')
                 sql_data = get_cursor()
-                sql = """SELECT b.book_class_id,p.pool_name,c.class_name,DATE_FORMAT(b.class_date,'%d,%b,%Y'),b.start_time,b.end_time,b.detailed_information,b.is_individual,
+                sql = """SELECT b.book_class_id,p.pool_name,c.class_name,DATE_FORMAT(b.class_date,'%d %b %Y'),b.start_time,b.end_time,b.detailed_information,b.is_individual,
                         CONCAT(t.title, " ", i.first_name, " ", i.last_name) AS instructor_name,i.phone_number,i.detailed_information,i.state
                         FROM book_class_list AS b 
                         LEFT JOIN class_list AS c ON c.class_id=b.class_id

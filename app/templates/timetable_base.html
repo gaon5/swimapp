@@ -52,7 +52,7 @@
                 <div class="col-md-3">
                     <select name="class_type" class="form-select" id="class_type">
                         <option value="" disabled selected>-- Select Class Type --</option>
-                        <option value="1">Public Lesson</option>
+                        <option value="1">Aqua Aerobics Classes</option>
                         <option value="2">Individual Lesson</option>
                     </select>
                 </div>
@@ -210,7 +210,7 @@
         const monthIndex = currentDate.getMonth();
         const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const year = currentDate.getFullYear().toString();
-        const formattedDate = `${day},${month[monthIndex]},${year}`;
+        const formattedDate = `${day} ${month[monthIndex]} ${year}`;
         document.getElementById('info').innerHTML = formattedDate;
 
         function previous_week() {
@@ -275,7 +275,7 @@
                 const box = document.getElementById(id);
                 box.removeAttribute('class')
                 const classElement = document.createElement("div");
-                classElement.innerHTML = `<a href="javascript:void(0);">${class_list[i]["class_name"]}</a>`;
+                classElement.innerHTML = `<a href="javascript:void(0);" style="color:white;text-decoration: none">${class_list[i]["class_name"]}</a>`;
                 if (class_list[i]["is_individual"]) {
                     box.style.backgroundColor = "#f89696";
                 } else {

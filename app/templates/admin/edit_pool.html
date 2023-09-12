@@ -26,16 +26,16 @@
                     <thead>
                     <tr class="table-dark">
                         <th scope="col">Pool Name</th>
-                        <th scope="col">Delete</th>
+{#                        <th scope="col">Delete</th>#}
                     </tr>
                     </thead>
                     <tbody>
                     {% for i in range(pool_list|length) %}
                         <tr>
                             <td>{{ pool_list[i][1] }}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showLink({{ pool_list[i][0] }})">Delete</button>
-                            </td>
+{#                            <td>#}
+{#                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showLink({{ pool_list[i][0] }})">Delete</button>#}
+{#                            </td>#}
                         </tr>
                     {% endfor %}
                     </tbody>

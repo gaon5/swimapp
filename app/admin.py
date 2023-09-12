@@ -305,7 +305,7 @@ def admin_timetable():
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
             for i in range(7):
-                x = (start_of_week + timedelta(days=i)).strftime('%d,%b,%Y')
+                x = (start_of_week + timedelta(days=i)).strftime('%d %b %Y')
                 temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
                 week_list.append(temp_list)
             sql_data = get_cursor()
@@ -544,7 +544,7 @@ def view_payments():
     if 'loggedIn' in session:
         if check_permissions() > 2:
             cursor = get_cursor()
-            sql = """SELECT p.payment_id,DATE_FORMAT(p.payment_date,'%d,%b,%Y'),p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
+            sql = """SELECT p.payment_id,DATE_FORMAT(p.payment_date,'%d %b %Y'),p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
                         LEFT JOIN member m on p.member_id = m.member_id
                         LEFT JOIN user_account ua on m.user_id = ua.user_id
                         ORDER BY payment_date DESC;"""
@@ -571,7 +571,7 @@ def subscriptions_due_date():
                         INNER JOIN user_account AS u on m.user_id = u.user_id
                         WHERE pa.start_date IS NULL AND pa.end_date IS NULL;""")
             No_List = sql_data.fetchall()
-            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d,%b,%Y'), DATE_FORMAT(pa.start_date,'%d,%b,%Y'),DATE_FORMAT(pa.end_date,'%d,%b,%Y'),m.phone_number, u.email, m.member_id
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d %b %Y'), DATE_FORMAT(pa.start_date,'%d %b %Y'),DATE_FORMAT(pa.end_date,'%d %b %Y'),m.phone_number, u.email, m.member_id
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -580,7 +580,7 @@ def subscriptions_due_date():
             value = (today,)
             sql_data.execute(sql, value)
             Due_List = sql_data.fetchall()
-            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d,%b,%Y'), DATE_FORMAT(pa.start_date,'%d,%b,%Y'),DATE_FORMAT(pa.end_date,'%d,%b,%Y'),m.phone_number, u.email 
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d %b %Y'), DATE_FORMAT(pa.start_date,'%d %b %Y'),DATE_FORMAT(pa.end_date,'%d %b %Y'),m.phone_number, u.email 
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -589,7 +589,7 @@ def subscriptions_due_date():
             value = (today, today,)
             sql_data.execute(sql, value)
             About_to_due_list = sql_data.fetchall()
-            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d,%b,%Y'), DATE_FORMAT(pa.start_date,'%d,%b,%Y'),DATE_FORMAT(pa.end_date,'%d,%b,%Y'),m.phone_number, u.email 
+            sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d %b %Y'), DATE_FORMAT(pa.start_date,'%d %b %Y'),DATE_FORMAT(pa.end_date,'%d %b %Y'),m.phone_number, u.email 
                         FROM member AS m
                         INNER JOIN payment_list AS p on m.member_id = p.member_id
                         INNER JOIN payment_due AS pa on p.payment_id = pa.payment_id
@@ -660,7 +660,7 @@ def attendance_report():
         if check_permissions() > 2:
             sql_data = get_cursor()
             today = datetime.today().date()
-            sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%d,%b,%Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
+            sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%d %b %Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
                         FROM 
                             (SELECT bcl.book_class_id AS class_id, bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name,
                             (SELECT COUNT(*) FROM book_list AS bl WHERE bl.class_id = bcl.book_class_id) AS group_count
@@ -866,10 +866,10 @@ def edit_pool():
             sql_data = get_cursor()
             if request.method == 'POST':
                 pool_id = request.form.get('pool_id')
-                pool_name = request.form.get('pool_name').capitalize()
                 if pool_id:
                     sql_data.execute("""DELETE FROM pool WHERE pool_id=%s;""", (pool_id,))
                 else:
+                    pool_name = request.form.get('pool_name').capitalize()
                     sql_data.execute("""INSERT INTO pool (pool_name) VALUE (%s);""", (pool_name,))
             sql_data.execute("""SELECT * FROM pool;""")
             pool_list = sql_data.fetchall()
@@ -887,10 +887,10 @@ def edit_classes():
             sql_data = get_cursor()
             if request.method == 'POST':
                 classes_id = request.form.get('class_id')
-                classes_name = request.form.get('class_name').capitalize()
                 if classes_id:
                     sql_data.execute("""DELETE FROM class_list WHERE class_id=%s;""", (classes_id,))
                 else:
+                    classes_name = request.form.get('class_name').capitalize()
                     sql_data.execute("""INSERT INTO class_list (class_name) VALUE (%s);""", (classes_name,))
             sql_data.execute("""SELECT * FROM class_list;""")
             class_list = sql_data.fetchall()

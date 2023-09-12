@@ -26,18 +26,18 @@
                     <thead>
                     <tr class="table-dark">
                         <th scope="col">Class Name</th>
-                        <th scope="col">Edit</th>
+{#                        <th scope="col">Edit</th>#}
                     </tr>
                     </thead>
                     <tbody>
                     {% for i in range(class_list|length) %}
                         <tr>
                             <td>{{ class_list[i][1] }}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        onclick="showLink({{ class_list[i][0] }})">Delete
-                                </button>
-                            </td>
+{#                            <td>#}
+{#                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"#}
+{#                                        onclick="showLink({{ class_list[i][0] }})">Delete#}
+{#                                </button>#}
+{#                            </td>#}
                         </tr>
                     {% endfor %}
                     </tbody>
