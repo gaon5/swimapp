@@ -388,6 +388,7 @@ def admin_add_class():
                             AND b.class_date = %s
                             AND b.start_time <= %s
                             AND b.end_time >= %s
+                            AND ins.state = 1
                         ) AND NOT EXISTS (
                             SELECT 1
                             FROM available_time AS a2
@@ -440,7 +441,8 @@ def admin_edit_class():
                 pool_list = sql_data.fetchall()
                 sql_data.execute("""SELECT i.user_id, i.first_name, i.last_name, t.title 
                                         FROM instructor AS i
-                                        LEFT JOIN title AS t ON t.title_id=i.title_id;""")
+                                        LEFT JOIN title AS t ON t.title_id=i.title_id
+                                        WHERE i.state = 1;""")
                 sql_instructor_list = sql_data.fetchall()
                 sql_data.close()
                 return render_template('admin/add_class.html', instructor_list=sql_instructor_list, class_list=class_list, pool_list=pool_list,
@@ -470,6 +472,7 @@ def admin_edit_class():
                                                 AND b.class_date = %s
                                                 AND b.start_time <= %s
                                                 AND b.end_time >= %s
+                                                AND ins.state = 1
                                             ) AND NOT EXISTS (
                                                 SELECT 1
                                                 FROM available_time AS a2

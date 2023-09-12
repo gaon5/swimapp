@@ -61,9 +61,12 @@ def login():
             if bcrypt.checkpw(user_password.encode('utf-8'), password_hash.encode('utf-8')):
                 if account[4]:
                     cursor.execute("SELECT state FROM member WHERE user_id = %s", (account[0],))
+                    state = cursor.fetchone()[0]
                 elif account[5]:
                     cursor.execute("SELECT state FROM instructor WHERE user_id = %s", (account[0],))
-                state = cursor.fetchone()[0]
+                    state = cursor.fetchone()[0]
+                else:
+                    state = 1
                 if state:
                     # If the passwords match, log the user in
                     session['loggedIn'] = True
