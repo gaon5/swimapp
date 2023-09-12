@@ -195,12 +195,12 @@ def instructor_list():
         return redirect(url_for('login'))
 
 
-@app.route('/delete_user')
+@app.route('/delete_user', methods=['POST'])
 def delete_user():
     if 'loggedIn' in session:
         if check_permissions() > 2:
-            is_member = request.args.get('is_member')
-            user_id = request.args.get('user_id')
+            is_member = request.form.get('is_member')
+            user_id = request.form.get('user_id')
             sql_data = get_cursor()
             if is_member == '1':
                 sql = """UPDATE member SET state=0 Where user_id=%s"""
@@ -530,7 +530,7 @@ def admin_delete_class():
         if check_permissions() > 2:
             class_id = request.form.get('class_id')
             sql_data = get_cursor()
-            sql_data.execute("""DELETE FROM `book_class_list` WHERE book_class_id=%s""", (class_id,))
+            sql_data.execute("""DELETE FROM `book_class_list` WHERE book_class_id=%s;""", (class_id,))
             sql_data.close()
             return redirect(url_for('admin_timetable'))
         else:
@@ -640,10 +640,11 @@ def add_news():
         return redirect(url_for('index'))
 
 
-@app.route('/delete_news/<int:news_id>')
-def delete_news(news_id):
+@app.route('/delete_news', methods=['POST'])
+def delete_news():
     if 'loggedIn' in session:
         if check_permissions() > 2:
+            news_id = request.form['news_id']
             sql_data = get_cursor()
             sql_data.execute("""DELETE FROM news WHERE news_id=%s""", (news_id,))
             sql_data.close()

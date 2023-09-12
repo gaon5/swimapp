@@ -298,7 +298,7 @@ def member_class_detail():
             today = datetime.today().date()
             user_id = int(session['user_id'])
             sql_data = get_cursor()
-            sql = """SELECT DATE_FORMAT(bc.class_date,'%d %b %Y'),bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual 
+            sql = """SELECT DATE_FORMAT(bc.class_date,'%d %b %Y'),bc.start_time,bc.end_time, CONCAT(t.title, ' ', i.first_name, ' ', i.last_name) as instructor_name, i.phone_number, p.pool_name, bc.is_individual, bl.class_id
                         FROM book_list AS bl
                         LEFT JOIN book_class_list AS bc ON bc.book_class_id=bl.class_id
                         LEFT JOIN instructor AS i ON i.instructor_id=bl.instructor_id
@@ -380,11 +380,17 @@ def member_book_class():
             sql = """SELECT book_id From book_list WHERE class_id=%s AND member_id=%s;"""
             sql_data.execute(sql, (class_id, member_id,))
             if not sql_data.fetchall():
-                sql = """INSERT INTO book_list (member_id, class_id, instructor_id, pool_id) VALUES (%s,%s,%s,%s)"""
-                value = (member_id, class_id, book_class_id[1], book_class_id[0],)
-                sql_data.execute(sql, value)
-                msg = "Booking was successful! Jump to my class."
-                goUrl = '/member_class_detail'
+                sql_data.execute("""SELECT count(book_id) From book_list WHERE class_id=%s AND member_id=%s;""", (class_id, member_id,))
+                count = sql_data.fetchall()[0][0]
+                if count < 30:
+                    sql = """INSERT INTO book_list (member_id, class_id, instructor_id, pool_id) VALUES (%s,%s,%s,%s)"""
+                    value = (member_id, class_id, book_class_id[1], book_class_id[0],)
+                    sql_data.execute(sql, value)
+                    msg = "Booking was successful! Jump to my class."
+                    goUrl = '/member_class_detail'
+                else:
+                    msg = "There is no available slot for booking."
+                    goUrl = '/view_class'
             else:
                 msg = "You cannot book the same class twice! Jump to timetable."
                 goUrl = '/view_class'
@@ -480,6 +486,54 @@ def my_membership():
                 start_date, end_date = None, None
                 status = "No Subscription"
             return render_template('member/my_membership.html', status=status, start_date=start_date, end_date=end_date, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/delete_book_class', methods=['POST'])
+def delete_book_class():
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            user_id = session["user_id"]
+            sql_data = get_cursor()
+            sql = """SELECT member_id FROM member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            class_id = request.form.get('class_id')
+            sql = """DELETE FROM `book_list` WHERE class_id=%s AND member_id=%s;"""
+            sql_data.execute(sql, (class_id, member_id,))
+            msg = 'Cancel successfully.'
+            return render_template('guest/jump.html', goUrl='/member_class_detail', msg=msg, permissions=check_permissions())
+        else:
+            return redirect(url_for('index'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/delete_book_lesson', methods=['POST'])
+def delete_book_lesson():
+    if 'loggedIn' in session:
+        if check_permissions() == 1:
+            user_id = session["user_id"]
+            sql_data = get_cursor()
+            sql = """SELECT member_id FROM member WHERE user_id=%s;"""
+            sql_data.execute(sql, (user_id,))
+            member_id = sql_data.fetchall()[0][0]
+            class_id = request.form.get('class_id')
+            sql = """SELECT class_id, payment_id FROM book_list WHERE class_id=%s AND member_id=%s;"""
+            sql_data.execute(sql, (class_id, member_id,))
+            book_class_id = sql_data.fetchall()[0][0]
+            payment_id = sql_data.fetchall()[0][1]
+            sql = """DELETE FROM `book_list` WHERE class_id=%s AND member_id=%s;"""
+            sql_data.execute(sql, (class_id, member_id,))
+            sql = """DELETE FROM `payment_list` WHERE payment_id=%s;"""
+            sql_data.execute(sql, (payment_id,))
+            sql = """DELETE FROM `book_class_list` WHERE book_class_id=%s;"""
+            sql_data.execute(sql, (book_class_id,))
+            msg = 'Cancel successfully.'
+            return render_template('guest/jump.html', goUrl='/member_class_detail', msg=msg, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:

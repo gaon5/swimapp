@@ -86,7 +86,9 @@
                     <select name="pool" class="form-select" id="pool" required>
                         <option value="" selected="selected" disabled>---Choose pool---</option>
                         {% for i in pool_list %}
-                            <option value={{ i[0] }}>{{ i[1] }}</option>
+                            {% if i[0]>2 %}
+                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </div>

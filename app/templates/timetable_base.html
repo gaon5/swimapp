@@ -211,6 +211,7 @@
         const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const year = currentDate.getFullYear().toString();
         const formattedDate = `${day} ${month[monthIndex]} ${year}`;
+        member_count = JSON.parse('{{ member_count|tojson }}');
         document.getElementById('info').innerHTML = formattedDate;
 
         function previous_week() {
@@ -240,6 +241,17 @@
                     thElement.removeAttribute('style');
 
                     thElement.setAttribute('rowspan', '1');
+                    if (w < {{before_day}}) {
+                        thElement.classList.add('little_box2');
+                    } else if (w === {{before_day}}) {
+                        if (e< {{before_time}}){
+                            thElement.classList.add('little_box2');
+                        } else {
+                            thElement.classList.add('little_box');
+                        }
+                    } else {
+                        thElement.classList.add('little_box');
+                    }
                     if (thElement.hasChildNodes()) {
                         const childNodes = thElement.getElementsByTagName('div');
                         for (let i = childNodes.length - 1; i >= 0; i--) {
@@ -275,7 +287,17 @@
                 const box = document.getElementById(id);
                 box.removeAttribute('class')
                 const classElement = document.createElement("div");
-                classElement.innerHTML = `<a href="javascript:void(0);" style="color:white;text-decoration: none">${class_list[i]["class_name"]}</a>`;
+                {% if permissions == 1 %}
+                    let num_a = 0
+                    let num_b = 30
+                    if (member_count[class_list[i]["id"]]){
+                        num_a = member_count[class_list[i]["id"]]
+                        num_b = 30 - member_count[class_list[i]["id"]]
+                    }
+                    classElement.innerHTML = `<a href="javascript:void(0);" style="color:white;text-decoration: none">${class_list[i]["class_name"] + " (" + num_a + "/" + num_b + ")"}</a>`;
+                {% else %}
+                    classElement.innerHTML = `<a href="javascript:void(0);" style="color:white;text-decoration: none">${class_list[i]["class_name"]}</a>`;
+                {% endif %}
                 if (class_list[i]["is_individual"]) {
                     box.style.backgroundColor = "#f89696";
                 } else {
@@ -338,7 +360,6 @@
         }
 
         display_timetable();
-        member_count = JSON.parse('{{ member_count|tojson }}');
 
         function show_detail_base(id) {
             event.stopPropagation();

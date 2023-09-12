@@ -55,27 +55,35 @@ def login():
         cursor = get_cursor()
         cursor.execute("SELECT * FROM user_account WHERE username = %s", (username,))
         account = cursor.fetchone()
-        cursor.close()
         if account is not None:
             password_hash = account[3]
             # Check if the hashed password matches the one stored in the database
             if bcrypt.checkpw(user_password.encode('utf-8'), password_hash.encode('utf-8')):
-                # If the passwords match, log the user in
-                session['loggedIn'] = True
-                session['user_id'] = account[0]
-                session['username'] = account[1]
-                session['is_member'] = account[4]
-                session['is_instructor'] = account[5]
-                session['is_admin'] = account[6]
-                session['is_root'] = account[7]
-                # Redirect to home page
-                return redirect(url_for('dashboard'))
+                if account[4]:
+                    cursor.execute("SELECT state FROM member WHERE user_id = %s", (account[0],))
+                elif account[5]:
+                    cursor.execute("SELECT state FROM instructor WHERE user_id = %s", (account[0],))
+                state = cursor.fetchone()[0]
+                if state:
+                    # If the passwords match, log the user in
+                    session['loggedIn'] = True
+                    session['user_id'] = account[0]
+                    session['username'] = account[1]
+                    session['is_member'] = account[4]
+                    session['is_instructor'] = account[5]
+                    session['is_admin'] = account[6]
+                    session['is_root'] = account[7]
+                    # Redirect to home page
+                    return redirect(url_for('dashboard'))
+                else:
+                    msg = "The account has been Inactivated, please get in touch with the staff."
             else:
                 # Add a message to prompt the use
                 msg = "Incorrect password!"
         else:
             # Account doesn't exist or username incorrect
             msg = 'Incorrect username!'
+        cursor.close()
     # Show the login form with message (if any)
     return render_template('guest/login.html', msg=msg)
 
