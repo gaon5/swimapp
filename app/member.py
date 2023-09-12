@@ -181,6 +181,7 @@ def member_book_lesson():
                             AND b.class_date = %s
                             AND b.start_time <= %s
                             AND b.end_time >= %s
+                            AND ins.state = 1
                         ) AND NOT EXISTS (
                             SELECT 1
                             FROM available_time AS a2
