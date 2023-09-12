@@ -102,17 +102,17 @@
                                 <th rowspan="2" style="text-align: center; font-size: x-large;">{{ (i + 1)//2 + 5 }}:00</th>
                             {% endif %}
                             {% for j in range(1,8,1) %}
-                                {% if j < before_day %}
-                                    <th id="{{j}}{{i}}" class="little_box2"></th>
-                                {% elif j==before_day %}
-                                    {% if i<before_time %}
-                                        <th id="{{j}}{{i}}" class="little_box2"></th>
-                                    {% else %}
-                                        <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
-                                    {% endif %}
-                                {% else %}
+{#                                {% if j < before_day %}#}
+{#                                    <th id="{{j}}{{i}}" class="little_box2"></th>#}
+{#                                {% elif j==before_day %}#}
+{#                                    {% if i<before_time %}#}
+{#                                        <th id="{{j}}{{i}}" class="little_box2"></th>#}
+{#                                    {% else %}#}
+{#                                        <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>#}
+{#                                    {% endif %}#}
+{#                                {% else %}#}
                                     <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
-                                {% endif %}
+{#                                {% endif %}#}
                             {% endfor %}
                         </tr>
                     {% endfor %}
