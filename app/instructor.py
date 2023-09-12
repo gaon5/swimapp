@@ -209,8 +209,8 @@ def schedule_time():
                 sql_value = (user_id, available_date, start_time, end_time)
                 sql_data.execute(sql, sql_value)
                 success_msg = "Schedule added successfully"
-            sql = """SELECT DATE_FORMAT(date,'%d %b %Y'), start_time, end_time, available_id FROM available_time WHERE user_id=%s AND date>=%s;"""
-            sql_value = (user_id, today_,)
+            sql = """SELECT DATE_FORMAT(date,'%d %b %Y'), start_time, end_time, available_id FROM available_time WHERE user_id=%s ORDER BY date;"""
+            sql_value = (user_id,)
             sql_data.execute(sql, sql_value)
             date_list = sql_data.fetchall()
             sql_data.close()
