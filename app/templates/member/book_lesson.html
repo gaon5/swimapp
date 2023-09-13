@@ -76,7 +76,7 @@
                     <select name="instructor" class="form-select" id="instructor" required>
                         <option value="" selected="selected" disabled>---Choose instructor---</option>
                         {% for i in instructor_list %}
-                            <option value="{{ i[0] }}">{{ i[3] }} {{ i[1] }} {{ i[2][0] }}</option>
+                            <option value="{{ i[0] }}">{{ i[3] }} {{ i[1] }} {{ i[2] }}</option>
                         {% endfor %}
                     </select>
                 </div>

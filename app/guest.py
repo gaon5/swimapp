@@ -9,13 +9,12 @@ from app import app, check_permissions, get_cursor, title_list, region_list, cit
 @app.route('/')
 def index():
     notice = False
+    sql_data = get_cursor()
+    sql_data.execute("""SELECT news_id,news,DATE_FORMAT(time,'%d %b %Y  %H:%i:%s') FROM news ORDER BY time DESC LIMIT 3;""")
+    posted_news = sql_data.fetchall()
     if 'loggedIn' in session:
         user_id = session["user_id"]
         permissions = check_permissions()
-        sql_data = get_cursor()
-        sql = """SELECT * FROM news ORDER BY time DESC LIMIT 3;"""
-        sql_data.execute(sql)
-        posted_news = sql_data.fetchall()
         if permissions == 1:
             sql = """SELECT member_id FROM member WHERE user_id=%s;"""
             sql_data.execute(sql, (user_id,))
@@ -28,7 +27,7 @@ def index():
                 notice = True
         return render_template('guest/index.html', notice=notice, posted_news=posted_news, permissions=check_permissions())
     else:
-        return render_template('guest/index.html', notice=notice)
+        return render_template('guest/index.html', notice=notice, posted_news=posted_news)
 
 
 # http://localhost:5000/login/ - this will be the login page, we need to use both GET and POST requests
