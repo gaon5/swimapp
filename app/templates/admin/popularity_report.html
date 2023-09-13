@@ -9,50 +9,103 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container mt-3">
-        <div class="row justify-content-center">
-            <div class="col-md-7">
-                <h1 style="text-align: center">Aqua Aerobics Classes Popularity Report of last 30 days</h1>
-            </div>
-        </div>
-    </div>
-    <br>
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card mt-8">
-                <div class="card-body">
-                    <table class="table table-bordered table-light table-hover">
-                        <thead>
-                            <tr class="table-dark">
-                                <th scope="col">ID</th>
-                                <th scope="col">Class</th>
-                                <th scope="col">Instructor</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Time</th>
-                                <th scope="col">Bookings</th>
-                                <th scope="col">Attendance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for report in report_list %}
-                                <tr>
-                                    <th scope="row">{{ report[0] }}</th>
-                                    <td>{{ report[3] }}</td>
-                                    <td>{{ report[1] }} {{ report[2] }}</td>
-                                    <td>{{ report[4] }}</td>
-                                    <td>{{ report[5] }}-{{ report[6] }}</td>
-                                    <td>{{ report[-2] }}</td>
-                                    <td>{{ report[-1] }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="container mt-3">
+            <h2 style="text-align: center">Popularity Report of last 30 days</h2>
         </div>
+        <br>
+        <br>
+        <div class="col-md-5">
+            <div class="container mt-3">
+                <h3 style="text-align: center">Aqua Aerobics Class Bookings</h3>
+            </div>
+            <div class="container mt-3">
+                <canvas style="text-align: center" id="booking_chart"></canvas>
+            </div>
+            <br>
+        </div>
+        <div class="container mt-3">
+            <h3 style="text-align: center">Total bookings: {{ booking_total }} people</h3>
+        </div>
+        <br>
+        <br>
+        <div class="col-md-5">
+            <div class="container mt-3">
+                <h3 style="text-align: center">Aqua Aerobics Class Attendances</h3>
+            </div>
+            <div class="container mt-3">
+                <canvas style="text-align: center" id="attendance_chart"></canvas>
+            </div>
+            <br>
+        </div>
+        <div class="container mt-3">
+            <h3 style="text-align: center">Total attendances: {{ attendance_total }} people</h3>
+        </div>
+        <br>
     </div>
-    <div class="container mt-3"></div>
 {% endblock %}
 
 {% block myjs %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx1 = document.getElementById('booking_chart');
+        const booking_list = JSON.parse('{{ booking_list|tojson }}');
+        const booking_numbers = JSON.parse('{{ booking_numbers|tojson }}');
+
+        let myChart1 = new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: booking_list,
+                datasets: [{
+                    label: 'no. of bookings',
+                    data: booking_numbers,
+                    borderWidth: 0
+                }]
+            }
+        });
+        const ctx2 = document.getElementById('attendance_chart');
+        const attendance_list = JSON.parse('{{ attendance_list|tojson }}');
+        const attendance_numbers = JSON.parse('{{ attendance_numbers|tojson }}');
+
+        let myChart2 = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: attendance_list,
+                datasets: [{
+                    label: 'no. of attendances',
+                    data: attendance_numbers,
+                    borderWidth: 0
+                }]
+            }
+        });
+
+        function handleResize() {
+            myChart1.destroy();
+            myChart2.destroy();
+            myChart1 = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: booking_list,
+                    datasets: [{
+                        label: 'no. of bookings',
+                        data: booking_numbers,
+                        borderWidth: 0
+                    }]
+                }
+            });
+            myChart2 = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: attendance_list,
+                    datasets: [{
+                        label: 'no. of attendances',
+                        data: attendance_numbers,
+                        borderWidth: 0
+                    }]
+                }
+            });
+        }
+
+        window.addEventListener('resize', handleResize);
+    </script>
 {% endblock %}

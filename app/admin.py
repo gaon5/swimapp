@@ -663,33 +663,25 @@ def attendance_report():
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
+            total = 0
+            total_list = [0, 0, 0]
             today = datetime.today().date()
-            sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%d %b %Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
-                        FROM 
-                            (SELECT bcl.book_class_id AS class_id, bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name,
-                            (SELECT COUNT(*) FROM book_list AS bl WHERE bl.class_id = bcl.book_class_id) AS group_count
-                            FROM book_class_list AS bcl
-                            LEFT JOIN class_list AS cl ON cl.class_id = bcl.class_id
-                            WHERE bcl.class_id != 1
-                            GROUP BY CONCAT(bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name)) AS a
-                        LEFT JOIN
-                            (SELECT class_id,COUNT(*) AS attendance_count
-                            FROM attendance_log
-                            GROUP BY class_id) AS b
-                        ON a.class_id = b.class_id
-                        WHERE a.class_date<=%s
-                        ORDER BY a.class_date DESC;"""
-            sql_data.execute(sql, (today,))
-            attendance = sql_data.fetchall()
-            for i in range(len(attendance)):
-                attendance[i] = list(attendance[i])
-                if attendance[i][5]:
-                    attendance[i].append(int(attendance[i][6])/int(attendance[i][5])*100)
-                    attendance[i][7] = round(attendance[i][7], 1)
+            sql = """SELECT log_id, attendance_date, is_individual FROM attendance_log
+                            LEFT JOIN book_class_list ON book_class_list.book_class_id = attendance_log.class_id
+                            WHERE attendance_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND attendance_date <= %s;"""
+            sql_value = (today, today)
+            sql_data.execute(sql, sql_value)
+            sql_list = sql_data.fetchall()
+            for sql in sql_list:
+                if sql[-1] == 0:
+                    total_list[0] += 1
+                elif sql[-1] == 1:
+                    total_list[1] += 1
                 else:
-                    attendance[i].append(0.0)
+                    total_list[2] += 1
+                total += 1
             sql_data.close()
-            return render_template('admin/attendance_report.html', attendance=attendance, permissions=check_permissions())
+            return render_template('admin/attendance_report.html', total=total, total_list=total_list, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
@@ -810,53 +802,51 @@ def admin_popularity_report():
     if 'loggedIn' in session:
         if check_permissions() > 2:
             today = date.today()
-            report_list = []
-            count = 0
+            booking_list = []
+            booking_numbers = []
+            booking_total = 0
+            attendance_list = []
+            attendance_numbers = []
+            attendance_total = 0
             sql_data = get_cursor()
             # Fetch a list of class details
-            sql_data.execute("""SELECT book_class_id, first_name, last_name, class_name, class_date, start_time, end_time FROM book_class_list 
+            sql_data.execute("""SELECT book_class_id, class_name FROM book_class_list 
                                 INNER JOIN class_list ON class_list.class_id = book_class_list.class_id
-                                INNER JOIN instructor ON instructor.instructor_id = book_class_list.instructor_id
-                                WHERE (is_individual) = 0 AND (class_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND class_date <= %s)
-                                ORDER BY book_class_id;
+                                WHERE (is_individual) = 0 AND (class_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND class_date <= %s);
                                 """, (today, today))
             sql_list = sql_data.fetchall()
-            # Reconstruct the list
+            # build up booking_list
             for sql in sql_list:
-                temp_list = list(sql)
-                temp_list[4] = temp_list[4].strftime("%d/%m/%Y")
-                temp_list[5] = str(temp_list[5])[:-3]
-                temp_list[6] = str(temp_list[6])[:-3]
-                report_list.append(temp_list)
-            # Fetch a list of bookings
-            sql_data.execute("""SELECT book_id, class_id FROM book_list 
-                                WHERE payment_id IS NULL
-                                ORDER BY class_id;
-                                """)
-            book_list = sql_data.fetchall()
-            # Compare the bookings with class id and append number of booking
-            for report in report_list:
-                for book in book_list:
-                    if book[1] == report[0]:
-                        count += 1
-                report.append(count)
-                count = 0
-            # Fetch a list of attendance
-            sql_data.execute("""SELECT log_id, class_id FROM attendance_log
-                                ORDER BY class_id;
-                                """)
-            atd_list = sql_data.fetchall()
-            # Compare the attendance with class id and append number of attendance
-            for report in report_list:
-                for atd in atd_list:
-                    if atd[1] == report[0]:
-                        count += 1
-                report.append(count)
-                count = 0
-            # Sort the list by bookings first, then by attendance
-            report_list.sort(key=lambda x: (x[-2], x[-1]), reverse=True)
+                if sql[1] not in booking_list:
+                    booking_list.append(sql[1])
+                    booking_numbers.append(0)
+                booking_total += 1
+            # build up booking numbers
+            for i in range(0, len(booking_list), 1):
+                for sql in sql_list:
+                    if sql[1] == booking_list[i]:
+                        booking_numbers[i] += 1
+            # Fetch a list of recent attendances
+            sql_data.execute("""SELECT log_id, class_name FROM attendance_log
+                                    INNER JOIN book_class_list ON attendance_log.class_id = book_class_list.book_class_id
+                                    INNER JOIN class_list ON class_list.class_id = book_class_list.class_id
+                                    WHERE (is_individual) = 0 AND (attendance_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND attendance_date <= %s);""", (today, today))
+            sql_list = sql_data.fetchall()
+            # build up attendance_list
+            for sql in sql_list:
+                if sql[1] not in attendance_list:
+                    attendance_list.append(sql[1])
+                    attendance_numbers.append(0)
+                attendance_total += 1
+            # build up attendance numbers
+            for i in range(0, len(attendance_list), 1):
+                for sql in sql_list:
+                    if sql[1] == attendance_list[i]:
+                        attendance_numbers[i] += 1
             sql_data.close()
-            return render_template('admin/popularity_report.html', report_list=report_list, permissions=check_permissions())
+            return render_template('admin/popularity_report.html', booking_list=booking_list, booking_numbers=booking_numbers, booking_total=booking_total,
+                                   attendance_list=attendance_list, attendance_numbers=attendance_numbers, attendance_total=attendance_total,
+                                   permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
