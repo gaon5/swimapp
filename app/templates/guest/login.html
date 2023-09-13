@@ -8,16 +8,16 @@
             <div class="col-md-6">
                 <div class="card shadow-lg p-3 mb-5 rounded">
                     <div class="text-center py-4">
-                        <h4><i class="fas fa-sign-in-alt"></i> Login</h4>
+                        <h4 style="color: #06283D;"><i class="fas fa-sign-in-alt"></i> Login</h4>
                     </div>
                     <div class="card-body">
                         <form action="{{ url_for('login') }}" method="post" onsubmit="return validateForm()">
                             <div class="mb-3">
-                                <label for="username" class="form-label"><i class="fas fa-user"></i> Username</label>
+                                <label for="username" class="form-label" style="color: #06283D;"><i class="fas fa-user"></i> Username</label>
                                 <input type="text" name="username" class="form-control" id="username" placeholder="Enter your username" required>
                             </div>
                             <div class="mb-3">
-                                <label for="password" class="form-label"><i class="fas fa-lock"></i> Password</label>
+                                <label for="password" class="form-label" style="color: #06283D;"><i class="fas fa-lock"></i> Password</label>
                                 <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
                             </div>
                             <span id="msg" style="color: red">{{ msg }}</span>
