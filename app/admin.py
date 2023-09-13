@@ -659,7 +659,7 @@ def delete_news():
         return redirect(url_for('login'))
 
 
-@app.route('/attendance_report')
+@app.route('/attendance_report', methods=['GET','POST'])
 def attendance_report():
     if 'loggedIn' in session:
         if check_permissions() > 2:
@@ -681,7 +681,7 @@ def attendance_report():
                 else:
                     total_list[2] += 1
                 total += 1
-
+            today = datetime.today().date()
             sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%d %b %Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
                                     FROM 
                                         (SELECT bcl.book_class_id AS class_id, bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name,
@@ -798,9 +798,9 @@ def admin_financial_report():
                 for month in month_list:
                     count = 0
                     for payment in payment_list:
-                        if payment[3][3:5] == month:
+                        if payment[3][3:6] == calendar.month_name[int(month)][:3]:
                             count += float(payment[2])
-                    income_list.append(format(count, '.2f'))
+                    income_list.append(count)
                 # Reconstruct month_list
                 month_list = []
                 for i in range(4,13,1):
