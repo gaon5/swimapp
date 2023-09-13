@@ -8,38 +8,38 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title text-center">Hi, friend! Welcome to Waikirikiri Swim Centre!</h4><br><br>
-                        <h5 class="card-title text-center">Join us and dive right in!</h5><br>
+                        <h4 class="card-title text-center" style="color: #06283D;">Hi, friend! Welcome to Waikirikiri Swim Centre!</h4><br><br>
+                        <h5 class="card-title text-center" style="color: #06283D;">Join us and dive right in!</h5><br>
                         <form action="{{ url_for('register') }}" method="post" onsubmit="return validateForm()">
                             <div class="input-group mb-3">
-                                <label for="username" class="input-group-text">
+                                <label for="username" class="input-group-text" style="color: #06283D;">
                                     <i class="fas fa-user"></i> Username <span style="color:red">*</span>
                                 </label>
                                 <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="{{ request.form['username'] }}" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="password" class="input-group-text">
+                                <label for="password" class="input-group-text" style="color: #06283D;">
                                     <i class="fas fa-lock"></i> Password <span style="color:red">*</span>
                                 </label>
                                 <input type="password" class="form-control" name="password" id="password" placeholder="Password" value="{{ request.form['password'] }}" required>
                             </div>
                             <p id="password_msg" style="color: red"></p>
                             <div class="input-group mb-3">
-                                <label for="confirmpw" class="input-group-text">
+                                <label for="confirmpw" class="input-group-text" style="color: #06283D;">
                                     <i class="fas fa-lock"></i> Confirm Password <span style="color:red">*</span>
                                 </label>
                                 <input type="password" class="form-control" name="confirmpw" id="confirmpw" placeholder="Password" value="{{ request.form['confirmpw'] }}" required>
                             </div>
                             <p id="confirmpw_msg" style="color: red"></p>
                             <div class="input-group mb-3">
-                                <label for="email" class="input-group-text">
+                                <label for="email" class="input-group-text" style="color: #06283D;">
                                     <i class="fas fa-envelope"></i> Email <span style="color:red">*</span>
                                 </label>
                                 <input type="email" class="form-control" name="email" id="email" placeholder="example@example.com" value="{{ request.form['email'] }}" required>
                             </div>
                             <p id="email_msg" style="color: red"></p>
                             <div class="input-group mb-3">
-                                <label for="title_id" class="input-group-text">Title <span style="color:red">*</span></label>
+                                <label for="title_id" class="input-group-text" style="color: #06283D;">Title <span style="color:red">*</span></label>
                                 <select class="form-select" name="title_id" id="title_id" required>
                                     <option value="" {% if not request.form['title_id'] %}selected="selected"{% endif %} disabled>Choose Title</option>
                                     {% for title in titles %}
@@ -48,22 +48,22 @@
                                 </select>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="first_name" class="input-group-text"><i class="fas fa-user"></i> First Name <span style="color:red">*</span></label>
+                                <label for="first_name" class="input-group-text" style="color: #06283D;"><i class="fas fa-user"></i> First Name <span style="color:red">*</span></label>
                                 <input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{ request.form['first_name'] }}" required>
                             </div>
                             <p id="first_name_msg" style="color: red"></p>
                             <div class="input-group mb-3">
-                                <label for="last_name" class="input-group-text"><i class="fas fa-user"></i> Last Name <span style="color:red">*</span></label>
+                                <label for="last_name" class="input-group-text" style="color: #06283D;"><i class="fas fa-user"></i> Last Name <span style="color:red">*</span></label>
                                 <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{ request.form['last_name'] }}" required>
                             </div>
                             <p id="last_name_msg" style="color: red"></p>
                             <div class="input-group mb-3">
-                                <label for="phone_number" class="input-group-text"><i class="fas fa-phone"></i> Phone Number <span style="color:red">*</span></label>
+                                <label for="phone_number" class="input-group-text" style="color: #06283D;"><i class="fas fa-phone"></i> Phone Number <span style="color:red">*</span></label>
                                 <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="02* *** *****" value="{{ request.form['phone_number'] }}" required>
                             </div>
                             <p id="phone_number_msg" style="color: red"></p>
                             <div class="input-group mb-3">
-                                <label for="region_id" class="input-group-text">Region <span style="color:red">*</span></label>
+                                <label for="region_id" class="input-group-text" style="color: #06283D;">Region <span style="color:red">*</span></label>
                                 <select class="form-control" name="region_id" id="region_id" onchange="update_region()" required>
                                     <option value="" {% if not request.form['region_id'] %}selected="selected"{% endif %} disabled>---Choose Region---</option>
                                     {% for region in regions %}
@@ -72,17 +72,17 @@
                                 </select>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="city_id" class="input-group-text">City <span style="color:red">*</span></label>
+                                <label for="city_id" class="input-group-text" style="color: #06283D;">City <span style="color:red">*</span></label>
                                 <select class="form-control" name="city_id" id="city_id" required>
                                     <option value="" selected="selected" disabled>---Choose city---</option>
                                 </select>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="street_name" class="input-group-text">Street Name <span style="color:red">*</span></label>
+                                <label for="street_name" class="input-group-text" style="color: #06283D;">Street Name <span style="color:red">*</span></label>
                                 <input type="text" class="form-control" name="street_name" id="street_name" value="{{ request.form['street_name'] }}" required>
                             </div>
                             <div class="input-group mb-3">
-                                <label for="birth_date" class="input-group-text">Birth Date <span style="color:red">*</span></label>
+                                <label for="birth_date" class="input-group-text" style="color: #06283D;">Birth Date <span style="color:red">*</span></label>
                                 <input type="date" class="form-control" name="birth_date" id="birth_date" min="1900-01-01" max={{ today }} value="{{ request.form['birth_date'] }}" required>
                             </div>
                             <div class="msg">{{ msg }}</div>
