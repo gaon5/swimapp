@@ -45,6 +45,7 @@
                             <th scope="col">Member Full Name</th>
                             <th scope="col">Phone Number</th>
                             <th scope="col">Email</th>
+                            <th scope="col">Register Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,50 +54,42 @@
                                 <td>{{ No_List[i][0] }} {{ No_List[i][1] }} </td>
                                 <td>{{ No_List[i][2] }}</td>
                                 <td>{{ No_List[i][3] }}</td>
+                                <td>{{ No_List[i][4] }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-                <form action="/admin_delete_member" method="post">
-                    <table class="table table-bordered table-light table-hover">
-                        <thead>
-                            <tr class="table-dark">
-                                <th scope="col">Member Full Name</th>
-                                <th scope="col">Payment Date</th>
-                                <th scope="col">Subscription Start Date</th>
-                                <th scope="col">Subscription End Date</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Delete</th>
+                <table class="table table-bordered table-light table-hover">
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Member Full Name</th>
+                            <th scope="col">Subscription Start Date</th>
+                            <th scope="col">Subscription End Date</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(Due_List|length) %}
+                            <tr>
+                                <td>{{ Due_List[i][0] }} {{ Due_List[i][1] }} </td>
+                                <td>{{ Due_List[i][3] }}</td>
+                                <td>{{ Due_List[i][4] }}</td>
+                                <td>{{ Due_List[i][5] }}</td>
+                                <td>{{ Due_List[i][6] }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in range(Due_List|length) %}
-                                <tr>
-                                    <td>{{ Due_List[i][0] }} {{ Due_List[i][1] }} </td>
-                                    <td>{{ Due_List[i][2] }}</td>
-                                    <td>{{ Due_List[i][3] }}</td>
-                                    <td>{{ Due_List[i][4] }}</td>
-                                    <td>{{ Due_List[i][5] }}</td>
-                                    <td>{{ Due_List[i][6] }}</td>
-                                    <td>
-                                        <button type="submit" name = "member_id" class="btn btn-danger" value="{{ Due_List[i][7] }}">Delete</button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <span>{{ msg }}</span>
-                </form>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <span>{{ msg }}</span>
             </div>
             <div class="tab-pane fade" id="profile-tab-2-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                 <table class="table table-bordered table-light table-hover">
                     <thead>
                         <tr class="table-dark">
                             <th scope="col">Member Full Name</th>
-                            <th scope="col">Payment Date</th>
                             <th scope="col">Subscription Start Date</th>
                             <th scope="col">Subscription End Date</th>
                             <th scope="col">Phone Number</th>
@@ -107,7 +100,6 @@
                         {% for i in range(About_to_due_list|length) %}
                             <tr>
                                 <td>{{ About_to_due_list[i][0] }} {{ About_to_due_list[i][1] }} </td>
-                                <td>{{ About_to_due_list[i][2] }}</td>
                                 <td>{{ About_to_due_list[i][3] }}</td>
                                 <td>{{ About_to_due_list[i][4] }}</td>
                                 <td>{{ About_to_due_list[i][5] }}</td>
@@ -122,7 +114,6 @@
                     <thead>
                         <tr class="table-dark">
                             <th scope="col">Member Full Name</th>
-                            <th scope="col">Payment Date</th>
                             <th scope="col">Subscription Start Date</th>
                             <th scope="col">Subscription End Date</th>
                             <th scope="col">Phone Number</th>
@@ -133,7 +124,6 @@
                         {% for i in range(Active_List|length) %}
                             <tr>
                                 <td>{{ Active_List[i][0] }} {{ Active_List[i][1] }} </td>
-                                <td>{{ Active_List[i][2] }}</td>
                                 <td>{{ Active_List[i][3] }}</td>
                                 <td>{{ Active_List[i][4] }}</td>
                                 <td>{{ Active_List[i][5] }}</td>

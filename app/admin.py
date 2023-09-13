@@ -568,11 +568,12 @@ def subscriptions_due_date():
             msg = ''
             sql_data = get_cursor()
             today = datetime.today().date()
-            sql_data.execute("""SELECT m.first_name,m.last_name,m.phone_number, u.email
+            sql_data.execute("""SELECT m.first_name,m.last_name,m.phone_number, u.email, DATE_FORMAT(u.register_date,'%d %b %Y')
                         FROM member AS m
                         LEFT JOIN payment_due AS pa on m.member_id = pa.member_id
                         INNER JOIN user_account AS u on m.user_id = u.user_id
-                        WHERE pa.start_date IS NULL AND pa.end_date IS NULL;""")
+                        WHERE pa.start_date IS NULL AND pa.end_date IS NULL
+                        ORDER BY u.register_date;""")
             No_List = sql_data.fetchall()
             sql = """SELECT m.first_name,m.last_name, DATE_FORMAT(p.payment_date,'%d %b %Y'), DATE_FORMAT(pa.start_date,'%d %b %Y'),DATE_FORMAT(pa.end_date,'%d %b %Y'),m.phone_number, u.email, m.member_id
                         FROM member AS m
@@ -680,8 +681,33 @@ def attendance_report():
                 else:
                     total_list[2] += 1
                 total += 1
+
+            sql = """SELECT  a.class_id,DATE_FORMAT(a.class_date,'%d %b %Y'),a.start_time,a.end_time,a.class_name,a.group_count,IFNULL(b.attendance_count, 0) AS attendance_count
+                                    FROM 
+                                        (SELECT bcl.book_class_id AS class_id, bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name,
+                                        (SELECT COUNT(*) FROM book_list AS bl WHERE bl.class_id = bcl.book_class_id) AS group_count
+                                        FROM book_class_list AS bcl
+                                        LEFT JOIN class_list AS cl ON cl.class_id = bcl.class_id
+                                        WHERE bcl.class_id != 1
+                                        GROUP BY CONCAT(bcl.class_date, bcl.start_time, bcl.end_time, cl.class_name)) AS a
+                                    LEFT JOIN
+                                        (SELECT class_id,COUNT(*) AS attendance_count
+                                        FROM attendance_log
+                                        GROUP BY class_id) AS b
+                                    ON a.class_id = b.class_id
+                                    WHERE a.class_date<=%s
+                                    ORDER BY a.class_date DESC;"""
+            sql_data.execute(sql, (today,))
+            attendance = sql_data.fetchall()
+            for i in range(len(attendance)):
+                attendance[i] = list(attendance[i])
+                if attendance[i][5]:
+                    attendance[i].append(int(attendance[i][6]) / int(attendance[i][5]) * 100)
+                    attendance[i][7] = round(attendance[i][7], 1)
+                else:
+                    attendance[i].append(0.0)
             sql_data.close()
-            return render_template('admin/attendance_report.html', total=total, total_list=total_list, permissions=check_permissions())
+            return render_template('admin/attendance_report.html', total=total, total_list=total_list, attendance=attendance, permissions=check_permissions())
         else:
             return redirect(url_for('index'))
     else:
@@ -714,7 +740,7 @@ def admin_financial_report():
                     month_flag = True
                 else:
                     year_flag = True
-                    for i in range(2000,2025):
+                    for i in range(2015,2025):
                         year_list.append(i)
                 return render_template('admin/financial_report.html', title=title, month_flag=month_flag, year_flag=year_flag, year_list=year_list, payment_list=payment_list, lesson_float=lesson_float, membership_float=membership_float, total_float=total_float, method_list=method_list, count_list=count_list, month_list=month_list, income_list=income_list, permissions=check_permissions())
             # if the user chooses monthly report
@@ -752,7 +778,7 @@ def admin_financial_report():
             for sql in sql_list:
                 temp_list = list(sql)
                 temp_list[2] = format(temp_list[2], '.2f')
-                temp_list[3] = sql[3].strftime("%d/%m/%Y")
+                temp_list[3] = sql[3].strftime("%d %b %Y")
                 payment_list.append(temp_list)
             # Calculate membership subscription and individual lesson total revenue
             for payment in payment_list:
