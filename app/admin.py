@@ -453,7 +453,7 @@ def admin_edit_class():
                 class_id = request.form.get('class_id')
                 if form_date:
                     current_year = datetime.now().year
-                    parsed_date = datetime.strptime(form_date, '%Y-%m-%d')
+                    parsed_date = datetime.strptime(form_date, '%m-%d')
                     complete_date = parsed_date.replace(year=current_year)
                     complete_date_string = complete_date.strftime('%Y-%m-%d')
                     parsed_time = datetime.strptime(form_time, '%H:%M').time()

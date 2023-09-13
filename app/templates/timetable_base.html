@@ -102,17 +102,17 @@
                                 <th rowspan="2" style="text-align: center; font-size: x-large;">{{ (i + 1)//2 + 5 }}:00</th>
                             {% endif %}
                             {% for j in range(1,8,1) %}
-{#                                {% if j < before_day %}#}
-{#                                    <th id="{{j}}{{i}}" class="little_box2"></th>#}
-{#                                {% elif j==before_day %}#}
-{#                                    {% if i<before_time %}#}
-{#                                        <th id="{{j}}{{i}}" class="little_box2"></th>#}
-{#                                    {% else %}#}
-{#                                        <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>#}
-{#                                    {% endif %}#}
-{#                                {% else %}#}
+                                {% if j < before_day %}
+                                    <th id="{{j}}{{i}}" class="little_box2"></th>
+                                {% elif j==before_day %}
+                                    {% if i<before_time %}
+                                        <th id="{{j}}{{i}}" class="little_box2"></th>
+                                    {% else %}
+                                        <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
+                                    {% endif %}
+                                {% else %}
                                     <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
-{#                                {% endif %}#}
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     {% endfor %}
@@ -120,10 +120,7 @@
             </table>
         </div>
     </div>
-
-    {% block timetable_body2 %}{% endblock %}
-
-    <div class="modal fade" id="myOwnModal" tabindex="-1" aria-labelledby="myOwnModalLabel" aria-hidden="true">
+<div class="modal fade" id="myOwnModal" tabindex="-1" aria-labelledby="myOwnModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -201,6 +198,7 @@
             </div>
         </div>
     </div>
+    {% block timetable_body2 %}{% endblock %}
 {% endblock %}
 
 {% block myjs %}
@@ -286,7 +284,9 @@
                 let id = class_list[i]["x"] + class_list[i]["y"];
                 const box = document.getElementById(id);
                 box.removeAttribute('class')
+                box.classList.add("p-0");
                 const classElement = document.createElement("div");
+                classElement.classList.add("mx-2");
                 {% if permissions == 1 %}
                     let num_a = 0
                     let num_b = 30
@@ -298,6 +298,7 @@
                 {% else %}
                     classElement.innerHTML = `<a href="javascript:void(0);" style="color:white;text-decoration: none">${class_list[i]["class_name"]}</a>`;
                 {% endif %}
+                classElement.style.minHeight = "25px";
                 if (class_list[i]["is_individual"]) {
                     box.style.backgroundColor = "#f89696";
                 } else {

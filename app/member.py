@@ -306,7 +306,7 @@ def member_class_detail():
                         LEFT JOIN title AS t ON t.title_id=i.title_id
                         LEFT JOIN pool AS p ON p.pool_id=bl.pool_id
                         LEFT JOIN member AS m ON m.member_id=bl.member_id
-                        WHERE m.user_id=%s AND bc.class_date>%s
+                        WHERE m.user_id=%s AND bc.class_date>=%s
                         order by bc.class_date;"""
             sql_data.execute(sql, (user_id, today,))
             detail_list = sql_data.fetchall()
