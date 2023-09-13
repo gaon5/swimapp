@@ -89,22 +89,23 @@
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}" style="color: #DFF6FF">View Payments</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('subscriptions_due_date') }}" style="color: #DFF6FF">Subscriptions Details</a></li>
                                         {% elif permissions == 3 %}
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}" style="color: #DFF6FF">View Payments</a></li>
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('subscriptions_due_date') }}" style="color: #DFF6FF">Subscriptions Details</a></li>
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('attendance_report') }}" style="color: #DFF6FF">Attendance Report</a></li>
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_financial_report') }}" style="color: #DFF6FF">Financial Report</a></li>
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_popularity_report') }}" style="color: #DFF6FF">Popularity Report</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_change_information') }}" style="color: #DFF6FF">My Details</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('change_password') }}" style="color: #DFF6FF">Change Password</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('subscriptions_due_date') }}" style="color: #DFF6FF">Subscriptions Details</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('attendance_report') }}" style="color: #DFF6FF">Attendance Report</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_popularity_report') }}" style="color: #DFF6FF">Popularity Report</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}" style="color: #DFF6FF">View Payments Report</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_financial_report') }}" style="color: #DFF6FF">Financial Report</a></li>
                                         {% elif permissions == 2 %}
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_change_information') }}" style="color: #DFF6FF">My Details</a></li>
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('schedule_time') }}" style="color: #DFF6FF">My Schedule Time</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('change_password') }}" style="color: #DFF6FF">Change Password</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('schedule_time') }}" style="color: #DFF6FF">My Schedule Time</a></li>
                                         {% elif permissions == 1 %}
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_class_detail') }}" style="color: #DFF6FF">View My Class</a></li>
-                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('my_membership') }}" style="color: #DFF6FF">My Membership</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_change_information') }}" style="color: #DFF6FF">My Details</a></li>
                                             <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('change_password') }}" style="color: #DFF6FF">Change Password</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('my_membership') }}" style="color: #DFF6FF">My Membership</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_class_detail') }}" style="color: #DFF6FF">View My Class</a></li>
+
                                         {% endif %}
                                         <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href={{ url_for('logout') }} style="color: #DFF6FF">Log out</a></li>
                                     </ul>

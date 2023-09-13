@@ -26,7 +26,7 @@
                         <tr>
                             <td>{{ attendance_detail[i][1] }}</td>
                             <td>{{ attendance_detail[i][2] }} {{ attendance_detail[i][3] }}</td>
-                            <td>
+                            <td {% if attendance_detail[i][4] == 1 %}style="background-color: greenyellow"{% else %}style="background-color: indianred"{% endif %}>
                                 <form action="/attendance" method="post" id="attendance{{ attendance_detail[i][0] }}">
                                     <input type="checkbox" onchange="document.getElementById('attendance{{ attendance_detail[i][0] }}').submit();"
                                            {% if attendance_detail[i][4] == 1 %}checked{% endif %}>
