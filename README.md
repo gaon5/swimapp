@@ -1,6 +1,8 @@
 # COMP639_group_6_project1
 
-### Title and description - Begin with a clear and concise title for your project. Provide a brief description or overview of the project's purpose and goals.
+### Title and description 
+
+The **Waikirikiri Swim Centre Management System** is a comprehensive software solution designed to modernize and streamline the operations of the Waikirikiri Swim Centre. With approximately 1000 members and a team of 10 swim instructors, this system aims to automate and enhance the management of crucial aspects of the swim centre's activities. 
 
 ### Usage - describe how to use your project. Provide examples, code snippets, or screenshots to illustrate its functionality.
 
