@@ -287,6 +287,44 @@ This route allows the admin to add an aqua aerobics class name into the system. 
 
 ### Testing - Exaplin how to run tests (if applicable). Provide informatio on test coverage and test data
 
+## Overview 
+
+Testing is a crucial part of ensuring the reliability and functionality of the Waikirikiri Swim Centre Management System. This section provides information on test coverage, and details about the test data used. 
+
+## Test Coverage 
+ 
+Test coverage measures how much of the codebase is exercised by our tests. It helps identify areas that may need more testing to ensure robustness. The Waikirikiri Swim Centre Management System aims for comprehensive test coverage, targeting critical areas such as: 
+
+- Member registration and profile management 
+
+- Payment processing and subscription tracking 
+
+- Class scheduling and booking 
+
+- Individual swimming lesson management 
+
+- Attendance tracking and pool usage 
+
+- Financial reporting and revenue calculations 
+
+- User roles and permissions 
+
+## Test Data 
+
+Test data is essential for evaluating system behavior and ensuring that the application handles various scenarios effectively. The testing process involves the use of both real and synthetic data to validate different functionalities.
+ 
+- **Member Registration:** Test data includes sample member profiles with various input values for registration, ensuring that the system processes registrations correctly. 
+
+- **Class Scheduling:** Test data covers class schedules, instructor availability, and member bookings to validate class management features. 
+
+- **Individual Swimming Lessons:** Data for individual lessons includes instructor availability, member bookings, and lesson details to assess lesson booking functionality. 
+
+- **Attendance Tracking:** Test data models member attendance across pool usage, class participation, and individual lessons, ensuring accurate attendance recording. 
+
+- **Financial Reports:** Synthetic financial data helps validate financial reporting features, including revenue calculations and breakdowns. 
+
+The combination of real and synthetic data ensures comprehensive testing of the Waikirikiri Swim Centre Management System, providing confidence in its performance and reliability.
+
 ### Credit - acknowledge and give credit to individuals or organizations that have contributed to the project.
 
 Leo played a major role in making sure the project codes functioned correctly. He is a team player who willingly assists other team members with their user stories and provides solutions on how to approach them. He has successfully completed all the user stories assigned to him in every sprint.
