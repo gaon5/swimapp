@@ -24,6 +24,21 @@ The primary goals of this system are:
 
 8. **Communication:** Admins and managers can communicate with members through on-screen reminders and updates, ensuring effective and timely information dissemination. 
 
+### User Roles 
+
+The system accommodates three primary user roles: 
+
+1. **Admin/Manager:** This role involves managing member profiles, monitoring payments, generating reports, and updating their own profiles. 
+
+2. **Member:** Members can view and update their profiles, book swimming lessons and classes, manage subscriptions, and make payments, providing a seamless experience.
+
+3. **Instructors:** Instructors can manage their profiles, schedule classes, and access information related to individual lesson bookings. 
+
+### Core Functionality 
+
+The system's core functionality revolves around the efficient tracking of member attendance. When members arrive at the Swim Centre and scan their membership cards, the system intelligently categorizes their activities (pool usage, individual lessons, or class attendance). 
+
+The Waikirikiri Swim Centre Management System aims to simplify the registration process, offer a user-friendly experience for members, and provide comprehensive tools for administrators and instructors to enhance operational efficiency. 
 
 ### Usage - describe how to use your project. Provide examples, code snippets, or screenshots to illustrate its functionality.
 
