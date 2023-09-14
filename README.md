@@ -40,7 +40,7 @@ The system's core functionality revolves around the efficient tracking of member
 
 The Waikirikiri Swim Centre Management System aims to simplify the registration process, offer a user-friendly experience for members, and provide comprehensive tools for administrators and instructors to enhance operational efficiency. 
 
-### Usage - describe how to use your project. Provide examples, code snippets, or screenshots to illustrate its functionality.
+### Usage
 
 **In the guest.py all users can use these functions:**
 
@@ -265,7 +265,7 @@ Template: ‘edit_class.html’
 
 This route allows the admin to add an aqua aerobics class name into the system. The database will add the new aqua aerobics class name using the SQL query. 
 
-### Login details - Put every user's username and password below
+### Login details
 
     root
     root/adminpassword
@@ -282,10 +282,11 @@ This route allows the admin to add an aqua aerobics class name into the system. 
     member
     member1/memberpassword
     member2/memberpassword
+    member3/memberpassword
     ...
     member40/memberpassword
 
-### Testing - Exaplin how to run tests (if applicable). Provide informatio on test coverage and test data
+### Testing
 
 #### Overview 
 
@@ -325,7 +326,7 @@ Test data is essential for evaluating system behavior and ensuring that the appl
 
 The combination of real and synthetic data ensures comprehensive testing of the Waikirikiri Swim Centre Management System, providing confidence in its performance and reliability.
 
-### Credit - acknowledge and give credit to individuals or organizations that have contributed to the project.
+### Credit
 
 Leo played a major role in making sure the project codes functioned correctly. He is a team player who willingly assists other team members with their user stories and provides solutions on how to approach them. He has successfully completed all the user stories assigned to him in every sprint.
 
