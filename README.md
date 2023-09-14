@@ -3,6 +3,8 @@
 ### Title and description - Begin with a clear and concise title for your project. Provide a brief description or overview of the project's purpose and goals.
 
 ### Usage - describe how to use your project. Provide examples, code snippets, or screenshots to illustrate its functionality.
+In member.py the user needs to log in as a member to access these functions:
+
 
 ### Login details - Put every user's username and password below
 
