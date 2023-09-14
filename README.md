@@ -287,11 +287,11 @@ This route allows the admin to add an aqua aerobics class name into the system. 
 
 ### Testing - Exaplin how to run tests (if applicable). Provide informatio on test coverage and test data
 
-## Overview 
+#### Overview 
 
 Testing is a crucial part of ensuring the reliability and functionality of the Waikirikiri Swim Centre Management System. This section provides information on test coverage, and details about the test data used. 
 
-## Test Coverage 
+#### Test Coverage 
  
 Test coverage measures how much of the codebase is exercised by our tests. It helps identify areas that may need more testing to ensure robustness. The Waikirikiri Swim Centre Management System aims for comprehensive test coverage, targeting critical areas such as: 
 
@@ -309,7 +309,7 @@ Test coverage measures how much of the codebase is exercised by our tests. It he
 
 - User roles and permissions 
 
-## Test Data 
+#### Test Data 
 
 Test data is essential for evaluating system behavior and ensuring that the application handles various scenarios effectively. The testing process involves the use of both real and synthetic data to validate different functionalities.
  
