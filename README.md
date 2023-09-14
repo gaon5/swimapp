@@ -1,4 +1,4 @@
-# COMP639_group_6_project1
+# COMP639 Group 6 Project1
 
 ### Title and description 
 
@@ -44,232 +44,69 @@ The Waikirikiri Swim Centre Management System aims to simplify the registration 
 
 **In the guest.py all users can use these functions:**
 
-@app.route('/') 
-Template: index.html' 
+| Route                            | Method    | Template or URL            | Description                                                                                                                      |
+|----------------------------------|-----------|----------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| `@app.route('/')`                | -         | `index.html`               | This route renders the welcome page to all users. Displays pictures, news feed, etc. Footer with contact info and opening hours. |
+| `@app.route('/login/')`          | GET, POST | `login.html`               | User can type in their username and password to login or register an account.                                                    |
+| `@app.route('/dashboard')`       | -         | Varies                     | Renders different templates based on user type: `dashboard.html` for admin, URLs for member and instructor.                      |
+| `@app.route('/jump')`            | GET, POST | `jump.html`                | Takes user to logged-in homepage via `dashboard` URL. Redirects to login page if login was unsuccessful.                         |
+| `@app.route('/logout')`          | -         | index                      | After logout, redirects to welcome page.                                                                                         |
+| `@app.route('/register')`        | GET, POST | `register.html, jump.html` | User can fill out registration form. If successful, redirects to welcome page for login.                                         |
+| `@app.route('/change_password')` | GET, POST | `change_password.html`     | Page to type in new password. If successful, flashes message that password has been changed.                                     |
 
-This route renders the welcome page to all users, and this is where the user can login. This page shows pictures, the news feed, information about Waikirikiri Swim Centre, and the pricing for lessons and membership. There is also a footer with the contact information and the opening hours. 
+**In member.py the user needs to log in as a member to access these functions:**
 
-@app.route('/login/', methods=['GET', 'POST']) 
-Template: ‘login.html' 
-
-This route lets the user type in their username and password to login or they can register an account here too.  
-
-@app.route('/dashboard') 
-Template: ‘dashboard.html' or URL: ‘instructor_timetable’ or URL: ‘index’ 
-
-This route will render different templates depending on the type of user that has logged into the system. If the user is an instructor, it will redirect to the ‘instructor_timetable’ URL, ‘index’ URL for member or render the ‘dashboard.html’ template for admin. 
-
-@app.route('/jump', methods=['GET', 'POST']) 
-Template: ‘jump.html' 
-
-This route will take the user to their logged in homepage by going through the URL for ‘dashboard.’ If the log in was unsuccessful then it will jump back to the log in page. 
-
-@app.route('/logout') 
-URL: 'index' 
-
-After the user has logged out it will take them back to the welcome page. 
-
-@app.route('/register', methods=['GET', 'POST']) 
-Template: ‘register.html’ and ‘jump.html’ 
-
-This route is where the user can fill out the registration form by creating a log in account and fill in their personal details. If the registration form has no errors, then it will redirect back to the welcome page (URL called ‘/’) where they can log in using their newly created account. 
-
-@app.route('/change_password', methods=['GET', 'POST']) 
-Template: ‘change_password.html’ 
-
-This route renders the page to type in a new password and if the new password meets the requirements, then it will flash a message saying the password has been changed. 
-
-**In member.py the user needs to log in as a member to access these functions:** 
-
-@app.route('/member_change_information', methods=['GET', 'POST']) 
-Template: ‘change_information.html' 
-
-This route renders the page to allow members to change their personal details and update the database using a SQL query. 
-
-@app.route('/view_class', methods=['GET', 'POST']) 
-Template: ‘timetable.html’ 
-
-This route renders the timetable page for the member to filter through the classes using the pool or instructor filter. The member can navigate the weeks by clicking on the arrow to go to next week or the previous week. The member can see more details or book the class by clicking on a class name. They can also check if the class is fully booked by looking at the number of spaces available under the class name. To book an individual lesson they click on an empty slot in the timetable. 
-
-@app.route('/member_book_lesson', methods=['POST']) 
-Template: ‘book_lesson.html’ 
-
-This route renders the booking details for individual lessons after they have clicked on ‘Book individual lesson’ from the timetable. After they have filled out the form they can click on ‘Go to pay’ to be directed to the payment page.  
-
-@app.route('/individual_payment', methods=['POST']) 
-Template: ‘individual_payment.html' 
-
-This route renders the booking confirmation page to show their selections from the previous page to allow them to double check the booking information entered. The member will click on their payment method and then they can click on ‘Confirm’ to complete their booking. 
-
-@app.route('/pay_successful', methods=['POST']) 
-Template: ‘jump.html’  
-
-This route renders the jump page which tells the member that their payment was successful and redirects the member to a different URL page called ‘member_class_detail' to see their list of bookings. 
-
-@app.route('/member_class_detail', methods=['GET']) 
-Template: ‘class_detail.html’ 
-
-This shows all the information about their booking, and they have the option to cancel the booking if they change their mind. 
-
-@app.route('/delete_book_class', methods=['POST']) 
-Template: ‘jump.html’ 
-
-This route renders the jump page with the ‘Cancel Successfully’ message to let the member know the deletion of their class booking is complete before redirecting back to the list of bookings page (URL called '/member_class_detail').  
-
-@app.route('/delete_book_lesson', methods=['POST']) 
-Template: ‘jump.html’ 
-
-This route renders the jump page with the ‘Cancel Successfully’ message to let the member know the deletion of their individual lesson booking is complete before redirecting back to the list of bookings page (URL called (URL called '/member_class_detail') 
-
-@app.route('/class_detail', methods=['POST']) 
-Template: ‘class_details.html' 
-
-This renders the details for the selected aqua aerobics class from the timetable. It shows information like the instructor’s name, pool name, and times. 
-
-@app.route('/member_book_class', methods=['POST']) 
-Template: ‘jump.html' 
-
-This route renders the jump page which tells the member that their booking for the class was successful and redirects the member to a different page to see their list of bookings URL called '/member_class_detail'. However, if the class is already fully booked then it will take the member to view the timetable (URL called '/view_class') so they can book a different class.  
-
-@app.route('/monthly_payment', methods=['GET', 'POST']) 
-Template: ‘jump.html' and ‘monthly_payment.html' 
-
-This route renders the page to show the different subscription options (1-12months) with the price and payment method before they can click on ‘Pay Immediately.’ If the member chooses to pay then it will redirect them back to the home page (URL called ‘/’). 
-
-@app.route('/my_membership', methods=['GET']) 
-Template: ‘my_membership.html’ 
-
-This route renders the page with the member’s subscription details showing the status, start and end of their membership. 
+| Route                                      | Method    | Template or URL                     | Description                                                                                                                                                                                                                              |
+|--------------------------------------------|-----------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `@app.route('/member_change_information')` | GET, POST | `change_information.html`           | This route renders the page to allow members to change their personal details and update the database using a SQL query.                                                                                                                 |
+| `@app.route('/view_class')`                | GET, POST | `timetable.html`                    | This route renders the timetable page for the member to filter through the classes using the pool or instructor filter. The member can navigate the weeks by clicking on the arrow to go to next week or the previous week...            |
+| `@app.route('/member_book_lesson')`        | POST      | `book_lesson.html`                  | This route renders the booking details for individual lessons after they have clicked on ‘Book individual lesson’ from the timetable. After they have filled out the form they can click on ‘Go to pay’ to be directed to...             |
+| `@app.route('/individual_payment')`        | POST      | `individual_payment.html`           | This route renders the booking confirmation page to show their selections from the previous page to allow them to double check the booking information entered. The member will click on their payment method and then...                |
+| `@app.route('/pay_successful')`            | POST      | `jump.html`                         | This route renders the jump page which tells the member that their payment was successful and redirects the member to a different URL page called ‘member_class_detail' to see their list of bookings.                                   |
+| `@app.route('/member_class_detail')`       | GET       | `class_detail.html`                 | This shows all the information about their booking, and they have the option to cancel the booking if they change their mind.                                                                                                            |
+| `@app.route('/delete_book_class')`         | POST      | `jump.html`                         | This route renders the jump page with the ‘Cancel Successfully’ message to let the member know the deletion of their class booking is complete before redirecting back to the list of bookings page (URL called '/member_class_detail'). |
+| `@app.route('/delete_book_lesson')`        | POST      | `jump.html`                         | This route renders the jump page with the ‘Cancel Successfully’ message to let the member know the deletion of their individual lesson booking is complete before redirecting back to the list of bookings page...                       |
+| `@app.route('/class_detail')`              | POST      | `class_details.html`                | This renders the details for the selected aqua aerobics class from the timetable. It shows information like the instructor’s name, pool name, and times.                                                                                 |
+| `@app.route('/member_book_class')`         | POST      | `jump.html`                         | This route renders the jump page which tells the member that their booking for the class was successful and redirects the member to a different page to see their list of bookings URL called '/member_class_detail'. However,...        |
+| `@app.route('/monthly_payment')`           | GET, POST | `jump.html`, `monthly_payment.html` | This route renders the page to show the different subscription options (1-12months) with the price and payment method before they can click on ‘Pay Immediately.’ If the member chooses to pay then it will redirect them...             |
+| `@app.route('/my_membership')`             | GET       | `my_membership.html`                | This route renders the page with the member’s subscription details showing the status, start and end of their membership.                                                                                                                |
 
 **In instructors.py the user needs to log in as an instructor to access the functions:**
 
-@app.route('/instructor_change_information', methods=['GET', 'POST']) 
-Template: ‘change_information.html' 
-
-This route renders the page that lets the member change their personal details and update the database using a SQL query. 
-
-@app.route('/instructor_timetable', methods=['GET', 'POST']) 
-Template: ‘timetable.html' 
-
-This route renders the timetable page for the instructor to filter through the classes using the pool or instructor filter.  The instructor can navigate the weeks by clicking on the arrow to go to next week or the previous week. By clicking on the individual lesson or on one of the aqua aerobics classes from the timetable they can do different functions: view class/lesson details and mark attendance for lessons. If the instructor wants to lock in a time to let the admin know when they can’t teach, it can be done by clicking on an empty slot. 
-
-@app.route('/schedule_time', methods=['GET', 'POST']) 
-Template: ‘schedule_time.html' 
-
-This route renders the page for the instructor to choose the date, start and end time to before adding it to the list of unavailable time slots which is seen below. If the instructor wants to delete their unavailable time this can be done by clicking on ‘Delete’ too. 
-
-@app.route('/lock_delete', methods=['POST']) 
-URL: 'schedule_time' 
-
-This route redirects the page back to the ‘schedule_time’ page after the instructor has deleted their unavailable time from the ‘My unavailable schedule for individual lessons’ table. 
-
-@app.route('/instructor_class_details', methods=['GET', 'POST']) 
-Template: ‘class_details.html' 
-
-This route renders the selected aqua aerobics class from the timetable. It shows the pool name, class name, start and end time, who the instructor is along with their details and the members’ name and information who have booked the class. 
-
-@app.route('/class_attendance', methods=['GET']) 
-Template: ‘class_attendance.html' 
-
-This page lets the instructor mark attendance of the members who have booked and showed up to the class. There is a tick box next to the members’ name which by default is coloured in red for not attended and it will change to green once the box has been ticked to show they have attended the class.   
-
-@app.route('/attendance', methods=['POST']) 
-URL: 'class_attendance' 
-
-If the instructor did click on the tick box for attendance this route updates the database by removing the members from book_class_list and inserting the member into attendance_log.  If the instructor unclicks the tick box, then member will be removed from the attendance_log table. 
+| Route                                          | Method    | Template or URL           | Description                                                                                                                                                                                                                                    |
+|------------------------------------------------|-----------|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `@app.route('/instructor_change_information')` | GET, POST | `change_information.html` | This route renders the page that lets the member change their personal details and update the database using a SQL query.                                                                                                                      |
+| `@app.route('/instructor_timetable')`          | GET, POST | `timetable.html`          | This route renders the timetable page for the instructor to filter through the classes using the pool or instructor filter. The instructor can navigate the weeks, view class/lesson details, mark attendance, and indicate unavailable slots. |
+| `@app.route('/schedule_time')`                 | GET, POST | `schedule_time.html`      | This route renders the page for the instructor to choose the date, start and end time for their unavailability. Instructors can also delete their unavailable times.                                                                           |
+| `@app.route('/lock_delete')`                   | POST      | schedule_time             | This route redirects the page back to the ‘schedule_time’ page after the instructor has deleted their unavailable time from the list.                                                                                                          |
+| `@app.route('/instructor_class_details')`      | GET, POST | `class_details.html`      | This route renders the selected aqua aerobics class from the timetable. It showcases the class details, instructor's info, and member's info who booked the class.                                                                             |
+| `@app.route('/class_attendance')`              | GET       | `class_attendance.html`   | This page lets the instructor mark attendance of the members. Attendance is indicated by tick boxes, which by default show as red for not attended and turn green when ticked to indicate attendance.                                          |
+| `@app.route('/attendance')`                    | POST      | `class_attendance`        | This route updates the database based on attendance marking. If the instructor ticks the attendance box, the member is moved from the book_class_list to the attendance_log. If unticked, the member is removed from the attendance_log.       |
 
 **In the admin.py only the admin can access these functions:**
 
-@app.route('/member_list', methods=['GET', 'POST']) 
-Template: ‘member_list.html’ 
-
-This route renders the member list which contains all the users who have signed up as a member. The admin can add members, edit the members’ details or inactivate their accounts. If the admin does add members or edit their details, it will update the database using SQL queries. 
-
-@app.route('/instructor_list', methods=['GET', 'POST']) 
-Template: ‘instructor_list.html’ 
-
-This route renders the instructor list which contains all the users who have signed up as an instructor. The admin can add instructors, edit the instructors’ details or inactivate their accounts. If the admin does add instructors or edit their details, it will update the database using SQL queries. 
-
-@app.route('/delete_user', methods=['POST']) 
-URL: ‘instructor_list’ 
-
-If the admin clicked on the ‘Inactivate’ button in the member list the member will still have an account, but they can’t book a class or lesson as they need to repurchase a subscription. For instructors, they can no longer use their account. 
-
-@app.route('/admin_change_information', methods=['GET', 'POST']) 
-Template: ‘change_information.html’ 
-
-This route renders the page with pre-filled fields of the admin’s current details which they can change and update. This also updates the database using SQL queries. 
-
-@app.route('/admin_timetable', methods=['GET', 'POST']) 
-Template: ‘timetable.html’ 
-
-This route renders the page for the admin to see all the aqua aerobics classes and individual lessons in one timetable. The admin can filter by classes or lessons, pool name or instructor name so it is easier to find what they want. By clicking on an individual lesson or aqua aerobics class, a pop-up box with the class details will be shown. However, the aqua aerobics class details box will also have the function to edit or delete the class. If the admin wants to add a class, they can do this by clicking on an empty slot. 
-
-@app.route('/admin_add_class', methods=['POST']) 
-Template: ‘add_class.html’ 
-
-This route renders the page for the admin to fill out the class details for the specific date and time so they can add it into the timetable. The admin can still choose a different date or time on this page. If the instructor has set a certain time where they aren’t available, it won’t show their name in the list of instructors to choose from. 
-
-@app.route('/admin_edit_class', methods=['GET', 'POST']) 
-Template: ' add_class.html’ and URL: ‘admin_timetable’ 
-
-This route renders the same page for adding a class, but it will have the pre-filled with the current details for the class. Once the change has been made the admin will be redirected back to the timetable. 
-
-@app.route('/admin_delete_class', methods=['POST']) 
-URL: ‘admin_timetable’ 
-
-This route will delete the selected class from the timetable and update the database using the SQL query. 
-
-@app.route('/view_payments', methods=['GET']) 
-Template: view_payments.html' 
-
-This route renders a template that displays a table of payments made by members, including the date of payment, the amount, payment type (membership or lesson), payment method, and the members' usernames. 
-
-@app.route('/subscriptions_due_date') 
-Template: ‘subscriptions_due.html’ 
-
-This route generates a template that provides an overview of the subscription status for all system members. Administrators can use it to identify users with no active subscription, those with expired subscriptions, individuals whose subscriptions are set to expire within 7 days, and those with currently active subscriptions. 
-
-@app.route('/add_news', methods=['POST']) 
-URL: ‘dashboard’ 
-
-This lets the admin type news or updates and add it into the news feed which will be shown in the homepage for all users and welcome page for guests. It also shows the time and date of when the news/update was posted. Once the news has been posted into the news feed it will redirect back to the dashboard of the admin.   
-
-@app.route('/delete_news', methods=['POST']) 
-URL: ‘dashboard’ 
-
-This route will delete the selected news post and redirect back to the admin’s dashboard. The post will be deleted from all the news feeds, so all users can't see it anymore. 
-
-@app.route('/attendance_report', methods=['GET','POST']) 
-Template: ‘attendance_report.html’ 
-
-This route generates the report page, displaying a pie chart representing attendance statistics for aqua aerobics classes, individual lessons, and general pool usage. Additionally, it includes a table presenting details such as date, time, class name, the count of booked participants, attendees, and a corresponding attendance percentage. 
-
-@app.route('/admin_financial_report', methods=['GET','POST']) 
-Template: ‘financial_report.html’ 
-
-This route generates a template that displays two revenue tables: one for Membership Subscriptions and another for individual lessons. These tables include member IDs, payment dates, amounts, and payment methods, providing insights into income sources from both memberships and lessons. Additionally, two pie charts are presented—one illustrating income distribution between memberships and lessons, and the other revealing payment method preferences for a more comprehensive financial overview. 
-
-@app.route('/admin_popularity_report') 
-Template: ‘popularity_report.html’ 
-
-This route generates a template that presents a pie chart showcasing all aqua aerobics classes within the system, categorized by the quantity of bookings made by members for each class. Additionally, there's another pie chart depicting attendance for these aqua aerobics classes. This page provides a comprehensive report for all aqua aerobics classes. 
-
-@app.route('/edit_pool', methods=['GET', 'POST']) 
-Template: ‘edit_pool.html’ 
-
-This route allows the admin to add a pool name into the system. The database will add the new pool name using the SQL query. 
-
-@app.route('/edit_classes', methods=['GET', 'POST']) 
-Template: ‘edit_class.html’ 
-
-This route allows the admin to add an aqua aerobics class name into the system. The database will add the new aqua aerobics class name using the SQL query. 
+| Route                                     | Method    | Template or URL           | Description                                                                                                                                                                                              |
+|-------------------------------------------|-----------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `@app.route('/member_list')`              | GET, POST | `member_list.html`        | Admin views and manages member details. They can add, edit, or inactivate member accounts. Changes result in database updates.                                                                           |
+| `@app.route('/instructor_list')`          | GET, POST | `instructor_list.html`    | Admin views and manages instructor details. They can add, edit, or inactivate instructor accounts. Changes result in database updates.                                                                   |
+| `@app.route('/delete_user')`              | POST      | instructor_list           | Handles the 'Inactivate' button action for members and instructors. Members remain but cannot book; instructors cannot use their account.                                                                |
+| `@app.route('/admin_change_information')` | GET, POST | `change_information.html` | Admin can view and modify their own details. The database is updated accordingly.                                                                                                                        |
+| `@app.route('/admin_timetable')`          | GET, POST | `timetable.html`          | Admin can view a comprehensive timetable and interact with class details through a pop-up. They can also add or delete classes.                                                                          |
+| `@app.route('/admin_add_class')`          | POST      | `add_class.html`          | Admin provides details for a new class. The interface respects instructor availability.                                                                                                                  |
+| `@app.route('/admin_edit_class')`         | GET, POST | `add_class.html`          | Admin modifies existing class details, with pre-filled class information. After updates, redirection happens to the timetable.                                                                           |
+| `@app.route('/admin_delete_class')`       | POST      | admin_timetable           | Admin can delete a specific class from the timetable. The database reflects this deletion.                                                                                                               |
+| `@app.route('/view_payments')`            | GET       | `view_payments.html`      | Admin views a comprehensive list of payments made by members, with details like payment date, amount, type, method, and username.                                                                        |
+| `@app.route('/subscriptions_due_date')`   | -         | `subscriptions_due.html`  | Overview of subscription statuses for all members: active, expiring soon, expired, or no subscription.                                                                                                   |
+| `@app.route('/add_news')`                 | POST      | dashboard                 | Admin can post news updates, which will be reflected on the homepage for all users and a welcome page for guests. After posting, a redirect to the admin dashboard occurs.                               |
+| `@app.route('/delete_news')`              | POST      | dashboard                 | Admin can remove a specific news post. This deletion is reflected across all news feeds for users.                                                                                                       |
+| `@app.route('/attendance_report')`        | GET, POST | `attendance_report.html`  | Detailed attendance report: a pie chart for attendance across different activities and a detailed table with date, time, class name, bookings, attendees, and attendance percentage.                     |
+| `@app.route('/admin_financial_report')`   | GET, POST | `financial_report.html`   | Revenue reports for memberships and individual lessons. Tables present member IDs, payment dates, amounts, and methods. Pie charts provide an overview of income sources and payment method preferences. |
+| `@app.route('/admin_popularity_report')`  | -         | `popularity_report.html`  | Pie charts representing popularity metrics for aqua aerobics classes, both in terms of bookings and actual attendance.                                                                                   |
+| `@app.route('/edit_pool')`                | GET, POST | `edit_pool.html`          | Admin can add a new pool name to the system. This addition is reflected in the database.                                                                                                                 |
+| `@app.route('/edit_classes')`             | GET, POST | `edit_class.html`         | Admin can add a new aqua aerobics class name to the system. This addition is reflected in the database.                                                                                                  |
 
 ### Login details
 
-    root
-    root/adminpassword
-    
     admin
     admin1/adminpassword
     

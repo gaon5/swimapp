@@ -1,8 +1,5 @@
 dbpass = "SSsnjHpPjbLWK5c2"
-dbhost = "leoselfcloud.top"
+dbhost = "127.0.0.1"
 dbport = "3306"
-
-# dbname = "swimming"
-# dbuser = "swimming"
 dbname = "new_swim"
 dbuser = "new_swim"
