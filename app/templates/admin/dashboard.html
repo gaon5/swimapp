@@ -1,0 +1,171 @@
+{% extends "guest/base.html" %}
+
+
+{% block mytitle %}
+    Admin dashboard
+{% endblock %}
+
+{% block mycss %}
+    <style>
+        .table {
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .filter {
+            margin-left: 5%;
+        }
+
+        .custom-bg-primary {
+            background-color: #47B5FF;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container" style="min-height: 800px">
+        <div class="row pt-5">
+            <div class="col-md-3">
+                <div class="card text-white custom-bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Instructors</h5>
+                        <p class="card-text">
+                            {% for instructor in instructor_count %}
+                                {% for count in instructor %}
+                                    {{ count }}
+                                {% endfor %}
+                            {% endfor %}
+                            <a role="button" id="yellow" class="btn btn-dark btn-sm" style="float: right;" href="/instructor_list">Manage</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white custom-bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Members</h5>
+                        <p class="card-text">
+                            {% for member in member_count %}
+                                {% for count in member %}
+                                    {{ count }}
+                                {% endfor %}
+                            {% endfor %}
+                            <a role="button" id="yellow" class="btn btn-dark btn-sm" style="float: right;" href="/member_list">Manage</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white custom-bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Pools</h5>
+                        <p class="card-text">
+                            {% for pool in pool_count %}
+                                {% for count in pool %}
+                                    {{ count }}
+                                {% endfor %}
+                            {% endfor %}
+                            <a role="button" id="yellow" class="btn btn-dark btn-sm" style="float: right;" href="/edit_pool">Manage</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white custom-bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Classes</h5>
+                        <p class="card-text">
+                            {% for class in class_count %}
+                                {% for count in class %}
+                                    {{ count }}
+                                {% endfor %}
+                            {% endfor %}
+                            <a role="button" id="yellow" class="btn btn-dark btn-sm" style="float: right;" href="/edit_classes">Manage</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="m-5" id="feed">
+            <div class="border-left border-right px-0">
+                <div class="card p-3 border-bottom">
+                    <h4 class="d-flex align-items-center mb-0">
+                        News<i class="far fa-xs ms-auto text-primary"></i>
+                    </h4>
+                </div>
+                <div>
+                    <div class="card shadow-0">
+                        <div class="card-body border-bottom pb-2">
+                            <div class="d-flex">
+                                <img src="{{ url_for('static', filename='images/wsc.png') }}" class="rounded-circle"
+                                     height="50" alt="Avatar" loading="lazy"/>
+                                <div class="d-flex align-items-center w-100 ps-3">
+                                    <div class="w-100">
+                                        <form action="{{ url_for('add_news') }}" method="post">
+                                            <input type="text" class="form-control form-status border-0 py-1 px-0" name="news" placeholder="What's happening"/>
+                                            <div class="d-flex flex-row ps-3 pt-3">
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                                <span class="message"><b>{{ msg }}</b></span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-0 my-5">
+                    <h4 class="p-3">News List</h4>
+                    {% for message in posted_news %}
+                        <div class="d-flex p-3 border-bottom">
+                            <img src="{{ url_for('static', filename='images/wsc.png') }}" class="rounded-circle"
+                                 height="50" alt="Avatar" loading="lazy"/>
+                            <div class="d-flex w-100 ps-3">
+                                <div>
+                                    <h6 class="text-body">{{ message[2] }}
+                                        <a role="button" class="fas fa-trash-alt" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showLink({{ message[0] }})"></a>
+                                    </h6>
+                                    <p>{{ message[1] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to inactivate?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="/delete_news" method="post">
+                        <input type="hidden" id="news_id" name="news_id">
+                        <button type="submit" class="btn btn-danger my-1">Yes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        function showLink(news_id) {
+            document.getElementById("news_id").value = news_id;
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "guest/base.html" %}
+
+
+{% block mytitle %}
+    My membership details
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container" style="min-height: 800px">
+        <h1 class="my-4">Your Subscription Details</h1>
+        <p>Status: {{ status }}</p>
+        {% if start_date and end_date %}
+            <p>Start Date: {{ start_date }}</p>
+            <p>End Date: {{ end_date }}</p>
+            {% if status == "Expired" %}
+                <form action="/monthly_payment" method="post">
+                    <input type="submit" value="Reactivate Subscription" class="btn btn-primary">
+                </form>
+            {% endif %}
+            <a class="btn btn-success" href="/monthly_payment">Add on</a>
+        {% else %}
+            <p>You have no active or past subscriptions.</p>
+            <a class="btn btn-success" href="/monthly_payment">Go to pay</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}

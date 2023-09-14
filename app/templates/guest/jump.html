@@ -1,0 +1,37 @@
+{% extends "guest/base.html" %}
+
+
+{% block mytitle %}
+    Admin dashboard
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+<div class="container" style="min-height: 800px;">
+    <div class="row py-5">
+        <div class="col text-center py-5">
+            <p>{{ msg }}</p>
+            <p>Jump in three seconds.</p>
+            <a href="{{ goUrl }}">If not working, click this link</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block myjs %}
+<script type="text/javascript">
+    onload = function () {
+        setInterval(go, 1000);
+    };
+    let x = 3;
+    function go() {
+        x--;
+        if (x <= 0) {
+            location.href = '{{ goUrl }}';
+        }
+    }
+</script>
+{% endblock %}

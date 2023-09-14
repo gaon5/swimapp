@@ -1,0 +1,402 @@
+{% extends "guest/base.html" %}
+
+{% block mycss %}
+    <style>
+        #navigation-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #info {
+            margin: 0 20px;
+        }
+        .little_box:hover {
+            background-color: #dbe3e8;
+            border-radius: 15px;
+        }
+        .little_box{
+            background-color: #ffffff;
+        }
+        .little_box2:hover {
+            background-color: #dbe3e8 !important;
+            border-radius: 15px;
+        }
+        .little_box2{
+            background-color: #f3f3f3 !important;
+        }
+        th {
+            height: 40px;
+            width: 120px;
+            border-radius: 5px;
+        }
+        th a {
+            font-size: 15px;
+        }
+    </style>
+    {% block timetable_css %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+    {% block timetable_body1 %}{% endblock %}
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-3">
+                <select name="pool_type" class="form-select" id="pool_type">
+                    <option value="" disabled selected>-- Select Pool --</option>
+                    {% for pool in pool_list %}
+                        <option value="{{ pool[0] }}">{{ pool[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if permissions != 1 %}
+                <div class="col-md-3">
+                    <select name="class_type" class="form-select" id="class_type">
+                        <option value="" disabled selected>-- Select Class Type --</option>
+                        <option value="1">Aqua Aerobics Classes</option>
+                        <option value="2">Individual Lesson</option>
+                    </select>
+                </div>
+            {% else %}
+                <input type="hidden" name="class_type" id="class_type">
+            {% endif %}
+            {% if permissions != 2 %}
+                <div class="col-md-3">
+                    <select name="instructor" class="form-select" id="instructor">
+                        <option value="" disabled selected>-- Select Instructor --</option>
+                        {% for instructor in instructor_list %}
+                            <option value="{{ instructor[0] }}">{{ instructor[9] }} {{ instructor[3] }} {{ instructor[4] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% else %}
+                <input type="hidden" name="instructor" id="instructor" value="{{ instructor_id }}">
+            {% endif %}
+
+            <div class="col-md-3">
+                <button class="btn btn-primary my-1" onclick="reset_select()">Reset</button>
+            </div>
+        </div>
+    </div>
+    <div class="container my-3">
+        <div class="row" style="min-width: 960px">
+            <form action="{{ link }}" method="post" id="this_week" class="mb-3">
+                <input type="hidden" id="day" name="day">
+                <div id="navigation-container">
+                    <button type="button" class="btn btn-dark mx-5 px-4" onclick="previous_week()">&larr;</button>
+                    <p id="info" class="px-5">2023</p>
+                    <button type="button" class="btn btn-dark mx-5 px-4" onclick="next_week()">&rarr;</button>
+                </div>
+            </form>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        {% for i in range(0,8,1) %}
+                            <th class="table-dark" style="text-align: center;">{{ week_list[i][2] }}<br>{{ week_list[i][1] }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(1,29,1) %}
+                        <tr>
+                            {% if i%2 == 1 %}
+                                <th rowspan="2" style="text-align: center; font-size: x-large;">{{ (i + 1)//2 + 5 }}:00</th>
+                            {% endif %}
+                            {% for j in range(1,8,1) %}
+                                {% if j < before_day %}
+                                    <th id="{{j}}{{i}}" class="little_box2"></th>
+                                {% elif j==before_day %}
+                                    {% if i<before_time %}
+                                        <th id="{{j}}{{i}}" class="little_box2"></th>
+                                    {% else %}
+                                        <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
+                                    {% endif %}
+                                {% else %}
+                                    <th id="{{j}}{{i}}" class="little_box" data-bs-toggle="modal" data-bs-target="#myOwnModal" onclick="showLink({{j}},{{i}})"></th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+<div class="modal fade" id="myOwnModal" tabindex="-1" aria-labelledby="myOwnModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myOwnModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pt-3 pb-3">
+                        <div class="container w-75">
+                            {% block myOwnModalLabel %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myOwnModal2" tabindex="-1" aria-labelledby="myOwnModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myOwnModalLabel2">Class Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pt-3 pb-3">
+                        <div class="container w-75">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="class_name" class="input-group-text">Class name :</label>
+                                        <input type="text" class="form-control" name="class_name" id="class_name" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="pool_name" class="input-group-text">Pool name :</label>
+                                        <input type="text" class="form-control" name="pool_name" id="pool_name" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="instructor_name" class="input-group-text">Instructor name :</label>
+                                        <input type="text" class="form-control" name="instructor_name" id="instructor_name" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="instructor_phone" class="input-group-text">Instructor phone :</label>
+                                        <input type="text" class="form-control" name="instructor_phone" id="instructor_phone" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="class_number" class="input-group-text">Number of members :</label>
+                                        <input type="text" class="form-control" name="class_number" id="class_number" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 is_individual">
+                                    <div class="input-group mb-3">
+                                        <label for="available_slots" class="input-group-text">Available slots :</label>
+                                        <input type="text" class="form-control" name="available_slots" id="available_slots" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            {% block myOwnModalLabel2 %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block timetable_body2 %}{% endblock %}
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        const currentDate = new Date("{{ today }}");
+        const day = currentDate.getDate().toString().padStart(2, '0');
+        const monthIndex = currentDate.getMonth();
+        const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const year = currentDate.getFullYear().toString();
+        const formattedDate = `${day} ${month[monthIndex]} ${year}`;
+        member_count = JSON.parse('{{ member_count|tojson }}');
+        document.getElementById('info').innerHTML = formattedDate;
+
+        function previous_week() {
+            currentDate.setDate(currentDate.getDate() - 7);
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10);
+            document.getElementById("this_week").submit();
+        }
+
+        function next_week() {
+            currentDate.setDate(currentDate.getDate() + 7);
+            document.getElementById('day').value = currentDate.toISOString().slice(0, 10);
+            document.getElementById("this_week").submit();
+        }
+
+        class_list = JSON.parse('{{ all_details|tojson }}');
+
+        {% if lock_list %}
+            lock_list = JSON.parse('{{ lock_list|tojson }}');
+        {% endif %}
+
+        function clean_table() {
+            for (let w = 1; w < 8; w++) {
+                for (let e = 1; e < 29; e++) {
+                    let temp = String(w) + String(e);
+                    const thElement = document.getElementById(temp);
+
+                    thElement.removeAttribute('style');
+
+                    thElement.setAttribute('rowspan', '1');
+                    if (w < {{before_day}}) {
+                        thElement.classList.add('little_box2');
+                    } else if (w === {{before_day}}) {
+                        if (e< {{before_time}}){
+                            thElement.classList.add('little_box2');
+                        } else {
+                            thElement.classList.add('little_box');
+                        }
+                    } else {
+                        thElement.classList.add('little_box');
+                    }
+                    if (thElement.hasChildNodes()) {
+                        const childNodes = thElement.getElementsByTagName('div');
+                        for (let i = childNodes.length - 1; i >= 0; i--) {
+                            const childNode = childNodes[i];
+                            thElement.removeChild(childNode);
+                        }
+                    }
+                }
+            }
+        }
+
+        function display_timetable() {
+            for (const i in class_list) {
+                let pool_type = Number(document.getElementById("pool_type").value);
+                if (pool_type) {
+                    if (class_list[i]["pool_id"] !== pool_type) {
+                        continue;
+                    }
+                }
+                let class_type = Number(document.getElementById("class_type").value);
+                if (class_type) {
+                    if (class_list[i]["is_individual"] !== (class_type - 1)) {
+                        continue;
+                    }
+                }
+                let instructor = Number(document.getElementById("instructor").value);
+                if (instructor) {
+                    if (class_list[i]["instructor_id"] !== instructor) {
+                        continue;
+                    }
+                }
+                let id = class_list[i]["x"] + class_list[i]["y"];
+                const box = document.getElementById(id);
+                box.removeAttribute('class')
+                box.classList.add("p-0");
+                const classElement = document.createElement("div");
+                classElement.classList.add("mx-2");
+                {% if permissions == 1 %}
+                    let num_a = 0
+                    let num_b = 30
+                    if (member_count[class_list[i]["id"]]){
+                        num_a = member_count[class_list[i]["id"]]
+                        num_b = 30 - member_count[class_list[i]["id"]]
+                    }
+                    classElement.innerHTML = `<a href="javascript:void(0);" style="color:white;text-decoration: none">${class_list[i]["class_name"] + " (" + num_a + "/" + num_b + ")"}</a>`;
+                {% else %}
+                    classElement.innerHTML = `<a href="javascript:void(0);" style="color:white;text-decoration: none">${class_list[i]["class_name"]}</a>`;
+                {% endif %}
+                classElement.style.minHeight = "25px";
+                if (class_list[i]["is_individual"]) {
+                    box.style.backgroundColor = "#f89696";
+                } else {
+                    box.style.backgroundColor = "#89d0ff";
+                }
+                classElement.setAttribute("data-bs-toggle", "modal");
+                classElement.setAttribute("data-bs-target", "#myOwnModal2");
+                classElement.setAttribute("onclick", "show_detail_base(" + i + ")");
+                if (box.style.display === 'none') {
+                    let id3 = class_list[i]["x"] + String(Number(class_list[i]["y"]) - 1);
+                    const box3 = document.getElementById(id3);
+                    box3.appendChild(classElement);
+                } else {
+                    box.appendChild(classElement);
+                    if (class_list[i]["continuance"] > 1) {
+                        box.rowSpan = class_list[i]["continuance"];
+                        let id2 = class_list[i]["x"] + String(Number(class_list[i]["y"]) + 1);
+                        const box2 = document.getElementById(id2);
+                        box2.style.display = 'none';
+                    }
+                }
+            }
+
+            {% if lock_list %}
+                for (const i in lock_list) {
+                    let id4 = lock_list[i][1] + lock_list[i][2];
+                    const box3 = document.getElementById(id4);
+                    for (let u = 1; u < lock_list[i][3]; u++) {
+                        let id5 = lock_list[i][1] + String(Number(lock_list[i][2]) + u);
+                        const box4 = document.getElementById(id5);
+                        box4.style.backgroundColor = "#868686";
+                    }
+                    box3.style.backgroundColor = "#868686";
+                }
+            {% endif %}
+
+        }
+
+        document.getElementById('pool_type').addEventListener('change', function () {
+            clean_table();
+            display_timetable();
+        });
+        document.getElementById('class_type').addEventListener('change', function () {
+            clean_table();
+            display_timetable();
+        });
+        document.getElementById('instructor').addEventListener('change', function () {
+            clean_table();
+            display_timetable();
+        });
+
+        function reset_select() {
+            document.getElementById('pool_type').value = "";
+            document.getElementById('class_type').value = "";
+            {% if permissions != 2 %}
+                document.getElementById('instructor').value = "";
+            {% endif %}
+            clean_table();
+            display_timetable();
+        }
+
+        display_timetable();
+
+        function show_detail_base(id) {
+            event.stopPropagation();
+            document.getElementById("class_name").value = class_list[id]["class_name"];
+            document.getElementById("pool_name").value = class_list[id]["pool_name"];
+            document.getElementById("instructor_name").value = class_list[id]["instructor_name"];
+            document.getElementById("instructor_phone").value = class_list[id]["instructor_phone"];
+            document.getElementById("class_id").value = id;
+            if (member_count[id]) {
+                document.getElementById("class_number").value = member_count[id];
+                document.getElementById("available_slots").value = 30 - member_count[id];
+            } else {
+                document.getElementById("class_number").value = 0;
+                document.getElementById("available_slots").value = 30;
+            }
+            if(class_list[id]["is_individual"]){
+                const individual = document.querySelectorAll(".is_individual")
+                for (let i = 0; i < individual.length; i++) {
+                individual[i].style.display = 'none';
+                }
+            }else{
+                const individual = document.querySelectorAll(".is_individual")
+                for (let i = 0; i < individual.length; i++) {
+                individual[i].style.display = 'inline';
+                }
+            }
+        }
+
+        const week_dat = JSON.parse('{{ week_list|tojson }}');
+
+        function showLink(x, y) {
+            const time = ['06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
+                '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
+            document.getElementById("send_day").value = week_dat[x][0];
+            document.getElementById("send_time").value = time[y - 1];
+        }
+    </script>
+    {% block timetable_js %}{% endblock %}
+{% endblock %}

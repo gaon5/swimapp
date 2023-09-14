@@ -1,0 +1,84 @@
+{% extends "guest/base.html" %}
+
+
+{% block mytitle %}
+    Instructor dashboard
+{% endblock %}
+
+{% block mycss %}
+    <style>
+        .custom-bg-primary {
+            background-color: #47B5FF;
+        }
+    </style>
+
+{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 py-2">
+                <div class="card card-body h-100">
+                    <p class="h1">Instructors</p>
+                    <h1 class="display-1">{% for instructor in instructor_count %}
+                        {% for count in instructor %}
+                            {{ count }}
+                        {% endfor %}
+                    {% endfor %}
+                    </h1>
+                </div>
+            </div>
+            <div class="col-sm-4 py-2">
+                <div class="card card-body h-100">
+                    <p class="h1">Members</p>
+                    <h1 class="display-1">
+                        {% for member in member_count %}
+                            {% for count in member %}
+                                {{ count }}
+                            {% endfor %}
+                        {% endfor %}
+                </div>
+            </div>
+            <div class="col-sm-4 py-2">
+                <div class="card h-100 card-body">
+                    <p class="h1">Users</p>
+                    <h1 class="display-1">
+                        {% for user in user_count %}
+                            {% for count in user %}
+                                {{ count }}
+                            {% endfor %}
+                        {% endfor %}
+                </div>
+            </div>
+            <div class="col-sm-4 py-2">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <p class="h1">Pools</p>
+                        <h1 class="display-1">
+                            {% for pool in pool_count %}
+                                {% for count in pool %}
+                                    {{ count }}
+                                {% endfor %}
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 py-2">
+                <div class="card h-100 card-body">
+                    <p class="h1">Classes</p>
+                    <h1 class="display-1">
+                        {% for class in class_count %}
+                            {% for count in class %}
+                                {{ count }}
+                            {% endfor %}
+                        {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}

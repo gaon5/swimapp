@@ -1,0 +1,173 @@
+{% extends "guest/base.html" %}
+
+
+{% block mytitle %}
+    Self Information
+{% endblock %}
+
+{% block mycss %}
+    <style>
+        .msg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: red
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container" style="max-width: 800px;min-height: 800px">
+        <h5 class="msg py-3">{{ msg }}</h5>
+        <form action="/admin_change_information" class="row" method="post" onsubmit="return validateForm()">
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <label for="first_name" class="input-group-text">First name :</label>
+                    <input type="text" class="form-control" name="first_name" id="first_name" value="{{ admin_list[2] }}" disabled required>
+                </div>
+                <p id="first_name_msg" style="color: red"></p>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <label for="last_name" class="input-group-text">Last name :</label>
+                    <input type="text" class="form-control" name="last_name" id="last_name" value="{{ admin_list[3] }}" disabled required>
+                </div>
+                <p id="last_name_msg" style="color: red"></p>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <label for="email" class="input-group-text">Email :</label>
+                    <input type="email" class="form-control" name="email" id="email" value="{{ admin_list[5] }}" disabled required>
+                </div>
+                <p id="email_msg" style="color: red"></p>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <label for="phone_number" class="input-group-text">Phone number :</label>
+                    <input type="tel" class="form-control" name="phone_number" id="phone_number" value="{{ admin_list[4] }}" disabled required>
+                </div>
+                <p id="phone_number_msg" style="color: red"></p>
+            </div>
+            <div class="col-md-12">
+                <div class="input-group mb-3">
+                    <label for="title" class="input-group-text">Title :</label>
+                    <select name="title" class="form-select" id="title" disabled required>
+                        <option value="">-----Choose title-----</option>
+                        {% for i in title_list %}
+                            {% if i[0] == admin_list[1] %}
+                                <option value={{ i[0] }} selected="selected">{{ i[1] }}</option>
+                            {% else %}
+                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <input type="hidden" id="user_id" name="user_id" value="{{ admin_list[0] }}">
+            <button type="button" id="Change" class="btn btn-info my-1" onclick="Change_form()">Change</button>
+            <button type="reset" id="Cancel" class="btn btn-danger my-1" onclick="Cancel_form()" style="display: none">Cancel</button>
+            <button type="submit" id="Submit" class="btn btn-outline-primary my-1" disabled>Submit</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        const Change = document.getElementById('Change');
+        const Cancel = document.getElementById('Cancel');
+        const Submit = document.getElementById('Submit');
+
+        function Change_form() {
+            const inputElements = document.querySelectorAll('input');
+            const selectElements = document.querySelectorAll('select');
+            for (let i = 0; i < inputElements.length; i++) {
+                inputElements[i].disabled = false;
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = false;
+            }
+            Change.style.display = 'none';
+            Cancel.style.display = '';
+            Submit.disabled = false;
+            Submit.classList.remove("btn-outline-primary");
+            Submit.classList.add("btn-primary");
+        }
+
+        const first_name_msg = document.getElementById('first_name_msg');
+        const last_name_msg = document.getElementById('last_name_msg');
+        const email_msg = document.getElementById('email_msg');
+        const phone_number_msg = document.getElementById('phone_number_msg');
+        const first_name = document.getElementById('first_name');
+        const last_name = document.getElementById('last_name')
+        const email = document.getElementById('email');
+        const phone_number = document.getElementById('phone_number');
+
+        function Cancel_form() {
+            const inputElements = document.querySelectorAll('input');
+            const selectElements = document.querySelectorAll('select');
+            for (let i = 0; i < inputElements.length; i++) {
+                inputElements[i].disabled = true;
+            }
+            for (let i = 0; i < selectElements.length; i++) {
+                selectElements[i].disabled = true;
+            }
+            Change.style.display = '';
+            Cancel.style.display = 'none';
+            Submit.disabled = true;
+            Submit.classList.remove("btn-primary");
+            Submit.classList.add("btn-outline-primary");
+            first_name_msg.innerText = "";
+            last_name_msg.innerText = "";
+            email_msg.innerText = "";
+            phone_number_msg.innerText = "";
+            first_name.classList.remove("is-invalid");
+            last_name.classList.remove("is-invalid");
+            email.classList.remove("is-invalid");
+            phone_number.classList.remove("is-invalid");
+        }
+
+        function validateForm() {
+            const namePattern = /^[a-zA-Z]+$/;
+            const phonePattern = /^\d{7,11}$/;
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            let i = 0;
+
+            if (!namePattern.test(first_name.value)) {
+                first_name.classList.add("is-invalid");
+                first_name_msg.innerText = "First name should contain only letters.";
+                i = 1;
+            } else {
+                first_name.classList.remove("is-invalid");
+                first_name_msg.innerText = "";
+            }
+
+            if (!namePattern.test(last_name.value)) {
+                last_name.classList.add("is-invalid");
+                last_name_msg.innerText = "Last name should contain only letters.";
+                i = 1;
+            } else {
+                last_name.classList.remove("is-invalid");
+                last_name_msg.innerText = "";
+            }
+
+            if (!emailPattern.test(email.value)) {
+                email.classList.add("is-invalid");
+                email_msg.innerText = "E-mail format error.";
+                i = 1;
+            } else {
+                email.classList.remove("is-invalid");
+                email_msg.innerText = "";
+            }
+
+            if (!phonePattern.test(phone_number.value)) {
+                phone_number.classList.add("is-invalid");
+                phone_number_msg.innerText = "Wrong phone number.";
+                i = 1;
+            } else {
+                phone_number.classList.remove("is-invalid");
+                phone_number_msg.innerText = "";
+            }
+            return i !== 1;
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends "guest/base.html" %}
+
+
+{% block title %}
+    Add class
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container py-4" style="min-height: 800px;">
+        <form action="javascript:void(0);" method="post" id="class_form" class="row" style="max-width: 800px; margin: auto">
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <label for="available_date" class="input-group-text">Date <span style="color: red">*</span> :</label>
+                    <input type="date" class="form-control" name="available_date" id="available_date" value="{{ date }}" onchange="check_time()">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <label for="start_time" class="input-group-text">Start Time <span style="color: red">*</span> :</label>
+                    <select class="form-select" id="start_hour" name="start_hour" onchange="check_time()">
+                        <option value="6">06</option>
+                        <option value="7">07</option>
+                        <option value="8">08</option>
+                        <option value="9">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+                    <span class="px-3">:</span>
+                    <select class="form-select" id="start_minute" name="start_minute" onchange="check_time()">
+                        <option value="00">00</option>
+                        <option value="30">30</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-12" style="display: none">
+                <div class="input-group mb-3">
+                    <label for="hour" class="input-group-text">Course Time <span style="color: red">*</span> :</label>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="hour" id="hour1" autocomplete="off" value="1">
+                        <label class="btn btn-outline-primary" for="hour1">30 minutes</label>
+                        <input type="radio" class="btn-check" name="hour" id="hour2" autocomplete="off" value="2" checked>
+                        <label class="btn btn-outline-primary" for="hour2">60 minutes</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="input-group mb-3">
+                    <label for="class_name" class="input-group-text">Class <span style="color: red">*</span> :</label>
+                    <select name="class_name" class="form-select" id="class_name" required>
+                        <option value="" selected="selected" disabled>---Choose class---</option>
+                        {% for i in class_list %}
+                            {% if i[0] != 1 %}
+                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="input-group mb-3">
+                    <label for="instructor" class="input-group-text">Instructor <span style="color: red">*</span> :</label>
+                    <select name="instructor" class="form-select" id="instructor" required>
+                        <option value="" selected="selected" disabled>---Choose instructor---</option>
+                        {% for i in instructor_list %}
+                            <option value="{{ i[0] }}">{{ i[3] }} {{ i[1] }} {{ i[2] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="input-group mb-3">
+                    <label for="pool" class="input-group-text">Pool <span style="color: red">*</span> :</label>
+                    <select name="pool" class="form-select" id="pool" required>
+                        <option value="" selected="selected" disabled>---Choose pool---</option>
+                        {% for i in pool_list %}
+                            {% if i[0]>2 %}
+                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="input-group mb-3">
+                    <label for="detailed_information" class="input-group-text">Class Detailed Information :</label>
+                    <textarea id="detailed_information" class="form-control" name="detailed_information" rows="3" cols="33"></textarea>
+                </div>
+            </div>
+            <input type="hidden" id="class_id" name="class_id">
+            <input type="hidden" id="send_day" name="send_day">
+            <input type="hidden" id="send_time" name="send_time">
+            <div class="d-grid gap-2">
+                {% if not edit %}
+                    <input type="button" class="btn btn-primary" value="Add Class" onclick="submit_form()">
+                {% else %}
+                    <input type="button" class="btn btn-primary" value="Submit" onclick="submit_form()">
+                {% endif %}
+                <a href="/admin_timetable" class="btn btn-primary">Back To Timetable</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        const time = "{{ time }}";
+        document.getElementById("start_hour").value = Number(time.split(':')[0]);
+        document.getElementById("start_minute").value = String(time.split(':')[1]);
+        {% if request.form.get('hour','') %}
+            const value = {{ request.form.get('hour','') }};
+            if (value === 1){
+                document.getElementById('hour1').checked = true;
+            }else{
+                document.getElementById('hour2').checked = true;
+            }
+        {% endif %}
+        {% if request.form.get('class_name','') %}
+            document.getElementById('class_name').value = {{ request.form.get('class_name','') }};
+        {% endif %}
+        {% if request.form.get('instructor','') %}
+            document.getElementById('instructor').value = {{ request.form.get('instructor','') }};
+        {% endif %}
+        {% if request.form.get('pool','') %}
+            document.getElementById('pool').value = {{ request.form.get('pool','') }};
+        {% endif %}
+        {% if request.form.get('detailed_information','') %}
+            document.getElementById('detailed_information').value = "{{ request.form.get('detailed_information','') }}";
+        {% endif %}
+        {% if class_id %}
+            document.getElementById('class_id').value = {{ class_id }};
+        {% endif %}
+        {% if class_detail %}
+            class_detail = JSON.parse('{{ class_detail|tojson }}');
+            document.getElementById('available_date').value = '{{ class_detail[3] }}';
+            document.getElementById("start_hour").value = class_detail[5];
+            document.getElementById("start_minute").value = class_detail[6];
+            if (class_detail[7] === 1){
+                document.getElementById('hour1').checked = true;
+            }else{
+                document.getElementById('hour2').checked = true;
+            }
+            document.getElementById('class_name').value = class_detail[2];
+            document.getElementById('instructor').value = class_detail[0];
+            document.getElementById('pool').value = class_detail[1];
+            document.getElementById('detailed_information').value = class_detail[4];
+            document.getElementById('class_id').value = class_detail[8];
+        {% endif %}
+        function submit_form(){
+            let i = 1;
+            const class_name = document.getElementById('class_name');
+            if (class_name.value === ""){
+                class_name.classList.add("is-invalid");
+                i=0;
+            } else {
+                class_name.classList.remove("is-invalid");
+            }
+            const instructor = document.getElementById('instructor');
+            if (instructor.value === ""){
+                instructor.classList.add("is-invalid");
+                i=0;
+            } else {
+                instructor.classList.remove("is-invalid");
+            }
+            const pool = document.getElementById('pool');
+            if (pool.value === ""){
+                pool.classList.add("is-invalid");
+                i=0;
+            } else {
+                pool.classList.remove("is-invalid");
+            }
+            if(i){
+                document.getElementById("class_form").action = "/admin_edit_class";
+                document.getElementById("class_form").submit();
+            }
+        }
+        function check_time(){
+            document.getElementById("send_day").value = document.getElementById("available_date").value.substring(5, 10);
+            const sometime = [String(document.getElementById("start_hour").value), String(document.getElementById("start_minute").value)];
+            const formattedTime = sometime.join(':');
+            document.getElementById("send_time").value = formattedTime.split(':').map(item => item.padStart(2, '0')).join(':');
+            document.getElementById("class_form").action = "/admin_edit_class";
+            document.getElementById("class_form").submit();
+        }
+    </script>
+{% endblock %}

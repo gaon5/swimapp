@@ -1,0 +1,47 @@
+{% extends "timetable_base.html" %}
+
+{% block timetable_css %}
+
+{% endblock %}
+
+{% block timetable_body1 %}
+    <div class="container mt-3">
+        <h1>My Schedule</h1>
+    </div>
+{% endblock %}
+
+{% block myOwnModalLabel %}
+    <form action="javascript:void(0);" id="schedule_time">
+        <input type="hidden" id="send_day" name="send_day">
+        <input type="hidden" id="send_time" name="send_time">
+        <button type="button" class="btn btn-primary my-1" onclick="lock_time()">Lock time</button>
+    </form>
+{% endblock %}
+
+{% block myOwnModalLabel2 %}
+    <form action="javascript:void(0);" id="attendance_detail">
+        <input type="hidden" id="class_id" name="class_id">
+        <button type="button" class="btn btn-primary my-1" onclick="class_detail()">View class detail</button>
+        <button type="button" class="btn btn-primary my-1" onclick="attendance_detail()">Attendance</button>
+    </form>
+{% endblock %}
+
+{% block timetable_js %}
+    <script>
+        function lock_time(){
+            document.getElementById("schedule_time").action = "/schedule_time"
+            document.getElementById("schedule_time").method = "get"
+            document.getElementById("schedule_time").submit();
+        }
+        function class_detail(){
+            document.getElementById("attendance_detail").action = "/instructor_class_details"
+            document.getElementById("attendance_detail").method = "post"
+            document.getElementById("attendance_detail").submit();
+        }
+        function attendance_detail(){
+            document.getElementById("attendance_detail").action = "/class_attendance"
+            document.getElementById("attendance_detail").method = "get"
+            document.getElementById("attendance_detail").submit();
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "guest/base.html" %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div style="min-height: 800px">
+        <div class="container py-3">
+            <h2 class="py-3">Individual lesson</h2>
+            <table class="table table-bordered table-light table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">Date</th>
+                        <th scope="col">Start time</th>
+                        <th scope="col">End time</th>
+                        <th scope="col">Instructor name</th>
+                        <th scope="col">Instructor number</th>
+                        <th scope="col">Pool</th>
+                        <th scope="col">Cancel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in detail_list %}
+                        {% if detail[6] %}
+                            <tr>
+                                <td>{{ detail[0] }}</td>
+                                <td>{{ detail[1] }}</td>
+                                <td>{{ detail[2] }}</td>
+                                <td>{{ detail[3] }}</td>
+                                <td>{{ detail[4] }}</td>
+                                <td>{{ detail[5] }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showLink({{ detail[7] }}, 1)">Cancel
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="container py-3">
+            <h2 class="py-3">Aqua Aerobics class</h2>
+            <table class="table table-bordered table-light table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">Date</th>
+                        <th scope="col">Start time</th>
+                        <th scope="col">End time</th>
+                        <th scope="col">Instructor name</th>
+                        <th scope="col">Instructor number</th>
+                        <th scope="col">Pool</th>
+                        <th scope="col">Cancel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in detail_list %}
+                        {% if not detail[6] %}
+                            <tr>
+                                <td>{{ detail[0] }}</td>
+                                <td>{{ detail[1] }}</td>
+                                <td>{{ detail[2] }}</td>
+                                <td>{{ detail[3] }}</td>
+                                <td>{{ detail[4] }}</td>
+                                <td>{{ detail[5] }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showLink({{ detail[7] }}, 0)">Cancel
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="javascript:void(0);" method="post" id="delete_class">
+                        <input type="hidden" id="class_id" name="class_id">
+                        <button type="submit" class="btn btn-danger my-1">Yes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        function showLink(class_id, i) {
+            if (i){
+                document.getElementById("delete_class").action = "/delete_book_lesson"
+            } else {
+                document.getElementById("delete_class").action = "/delete_book_class"
+            }
+            document.getElementById("class_id").value = class_id;
+        }
+    </script>
+{% endblock %}

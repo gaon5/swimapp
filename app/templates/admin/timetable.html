@@ -1,0 +1,68 @@
+{% extends "timetable_base.html" %}
+
+{% block timetable_css %}
+
+{% endblock %}
+
+{% block timetable_body1 %}
+    <div class="container mt-3">
+        <h1>Timetable</h1>
+    </div>
+{% endblock %}
+
+{% block timetable_body2 %}
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger my-1" onclick="delete_class()">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myOwnModalLabel %}
+    <form action="javascript:void(0);" id="schedule_time">
+        <input type="hidden" id="send_day" name="send_day">
+        <input type="hidden" id="send_time" name="send_time">
+        <button type="button" class="btn btn-primary my-1" onclick="add_class()">Add Class</button>
+    </form>
+{% endblock %}
+
+{% block myOwnModalLabel2 %}
+    <form action="javascript:void(0);" id="manage_class" class="is_individual">
+        <input type="hidden" id="class_id" name="class_id">
+        <button type="button" class="btn btn-primary my-1" onclick="edit_class()">Edit Class</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete Class</button>
+    </form>
+{% endblock %}
+
+{% block timetable_js %}
+    <script>
+        function add_class(){
+            document.getElementById("schedule_time").action = "/admin_add_class"
+            document.getElementById("schedule_time").method = "post"
+            document.getElementById("schedule_time").submit();
+        }
+        function edit_class(){
+            document.getElementById("manage_class").action = "/admin_edit_class"
+            document.getElementById("manage_class").method = "get"
+            document.getElementById("manage_class").submit();
+        }
+        function delete_class(){
+            document.getElementById("manage_class").action = "/admin_delete_class"
+            document.getElementById("manage_class").method = "post"
+            document.getElementById("manage_class").submit();
+        }
+    </script>
+{% endblock %}

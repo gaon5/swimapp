@@ -1,0 +1,40 @@
+{% extends "guest/base.html" %}
+
+
+{% block mytitle %}
+    Payment
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container py-5" style="min-height: 800px">
+        <div class="jumbotron px-5">
+            <h2 class="display-4">Booking Confirmation</h2>
+            <p class="lead">You are about to book a class in <strong>{{ session['available_date'] }}</strong>, from <strong>{{ session['start_time'] }}</strong> to <strong>{{ session['end_time'] }}</strong>.</p>
+            <p class="lead">The location is <strong>{{ pool_name }}</strong> and the instructor is <strong>{{ instructor_name }}</strong>.</p>
+            <p class="lead">Payment amount: <strong>{% if hour == "1" %}$44{% else %}$80{% endif %}</strong></p>
+            <form action="/pay_successful" method="post">
+                <label for="payment_method" class="form-label">Payment Method:
+                    <select class="form-select" name="payment_method">
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Master Card">Master Card</option>
+                        <option value="Paypal">Paypal</option>
+                    </select>
+                </label>
+                <hr class="my-4">
+                <p class="lead">Please confirm your booking.</p>
+
+                <button type="submit" class="btn btn-primary btn-lg" role="button">Confirm</button>
+                <a href="/view_class" class="btn btn-primary btn-lg">Back to timetable</a>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}

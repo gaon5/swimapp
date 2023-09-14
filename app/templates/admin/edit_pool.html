@@ -1,0 +1,100 @@
+{% extends "guest/base.html" %}
+
+{% block title %}
+    Edit Pool
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container py-3">
+        <h4 class="mx-5 px-5">Pool List</h4>
+        <div class="row justify-content-end">
+            <div class="col-md-6">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop2">
+                    Add Pool
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="container py-4" style="min-height: 800px;">
+        <div class="row justify-content-center">
+            <div class="tab-pane fade show active col-md-8" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <table class="table table-bordered table-light table-hover">
+                    <thead>
+                    <tr class="table-dark">
+                        <th scope="col">Pool Name</th>
+{#                        <th scope="col">Delete</th>#}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in range(pool_list|length) %}
+                        <tr>
+                            <td>{{ pool_list[i][1] }}</td>
+{#                            <td>#}
+{#                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showLink({{ pool_list[i][0] }})">Delete</button>#}
+{#                            </td>#}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="/edit_pool" method="post">
+                        <input type="hidden" id="pool_id" name="pool_id">
+                        <button type="submit" class="btn btn-danger my-1">Yes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop2" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Pool</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/edit_pool" method="post" class="row" >
+                        <div class="col-md-12">
+                            <div class="input-group my-2">
+                                <label for="pool_name" class="input-group-text">Pool Name <span style="color: red">*</span>:</label>
+                                <input type="text" class="form-control" name="pool_name" id="pool_name" required>
+                            </div>
+                            <p id="instructor_first_name_msg" style="color: red"></p>
+                        </div>
+                        <input type="hidden" id="pool_id2" name="pool_id">
+                        <button type="submit" class="btn btn-primary my-1">Submit</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        function showLink(pool_id) {
+            document.getElementById("pool_id").value = pool_id;
+        }
+    </script>
+{% endblock %}

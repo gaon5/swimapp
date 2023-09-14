@@ -1,0 +1,137 @@
+{% extends "guest/base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <div style="min-height: 800px">
+        <div class="container mt-3">
+            <h1 style="text-align: center;">Schedule Unavailable Time</h1>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Select date, start time and end time below:</h5><br>
+                            <form action="{{ url_for('schedule_time') }}" method="post" onsubmit="return validateForm()">
+                                <div class="input-group mb-3">
+                                    <div class="input-group mb-3">
+                                        <label for="available_date" class="input-group-text">Date <span style="color: red">*</span>:</label>
+                                        <input type="date" class="form-control" name="available_date" id="available_date" min={{ today }} max="2024-01-01" value="{{ complete_date_string }}"
+                                               required>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="start_time" class="input-group-text">Start Time <span style="color: red">*</span>:</label>
+                                        <select class="form-control" name="start_time" id="start_time" required>
+                                            <option value="" selected="selected" disabled>---Choose Time---</option>
+                                            {% for i in range(6,20,1) %}
+                                                {% if i == 18 %}
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
+                                                {% else %}
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="end_time" class="input-group-text">End Time <span style="color: red">*</span>:</label>
+                                        <select class="form-control" name="end_time" id="end_time" required>
+                                            <option value="" selected="selected" disabled>---Choose Time---</option>
+                                            {% for i in range(7,21,1) %}
+                                                {% if i == 18 %}
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
+                                                {% else %}
+                                                    <option value="{{ i }}:00:00">{{ i }}:00:00</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <input type="submit" class="btn btn-primary" value="Add">
+                                    </div>
+                                </div>
+                            </form>
+                            {% if error_msg %}
+                                <div class="alert alert-danger">
+                                    {{ error_msg }}
+                                </div>
+                            {% elif success_msg %}
+                                <div class="alert alert-success">
+                                    {{ success_msg }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if date_list %}
+            <div class="container mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card mt-5">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">My unavailable schedule for individual lessons</h5><br>
+                                <table class="table table-bordered table-light table-hover">
+                                    <thead>
+                                        <tr class="table-dark">
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Start Time</th>
+                                            <th scope="col">End Time</th>
+                                            <th scope="col">Edit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for date in date_list %}
+                                            <tr>
+                                                <th scope="row">{{ date[0] }}</th>
+                                                <td>{{ date[1] }}</td>
+                                                <td>{{ date[2] }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                                            onclick="submit_value({{ date[3] }})">Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <form action="/lock_delete" method="post">
+                            <input type="hidden" id="lock_id" name="lock_id">
+                            <button type="submit" class="btn btn-primary my-1">Yes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        function submit_value(id){
+            document.getElementById("lock_id").value = id;
+        }
+    </script>
+{% endblock %}

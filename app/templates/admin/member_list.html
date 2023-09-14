@@ -1,0 +1,429 @@
+{% extends "guest/base.html" %}
+
+{% block mytitle %}
+    Member list
+{% endblock %}
+
+{% block body %}
+    <div class="container py-3">
+        <h4>Member List</h4>
+        <div class="row justify-content-end">
+            <div class="col-md-6 col-sm-8">
+                <div class="input-group">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#member_Modal2" onclick="showLink(-1)">
+                        Add member
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if member_list|length == 0 %}
+        <div class="pt-3 text-center pb-3">
+            <h4>No results found</h4>
+        </div>
+    {% else %}
+        <div class="container pt-3 pb-3">
+            <table class="table table-bordered table-light table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">Full Name</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(member_list|length) %}
+                        <tr>
+                            <td>{{ member_list[i][4] }} {{ member_list[i][1] }} {{ member_list[i][2] }}</td>
+                            <td>{{ member_list[i][5] }}</td>
+                            <td>{{ member_list[i][6] }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#member_Modal" onclick="showLink({{ i }})">Edit</button>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="confirmDelete({{ member_list[i][0] }})">Inactivate</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation member_">
+                <ul class="pagination justify-content-center">
+                    {% if member_count %}
+                        {% for i in range(member_count) %}
+                            <li class="page-item"><a class="page-link" href="{{ url_for('member_list') }}?page={{ i + 1 }}">{{ i + 1 }}</a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="item">1</li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+
+    <div class="modal fade" id="member_Modal" tabindex="-1" aria-labelledby="member_Modal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pt-3 pb-3">
+                        <div class="container w-75">
+                            <form action="/member_list" id="change_information" class="row" method="post" onsubmit="return validateForm(0)">
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_first_name" class="input-group-text">First name <span style="color: red">*</span>:</label>
+                                        <input type="text" class="form-control" name="first_name" id="member_first_name" required>
+                                    </div>
+                                    <p id="member_first_name_msg" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_last_name" class="input-group-text">Last name <span style="color: red">*</span>:</label>
+                                        <input type="text" class="form-control" name="last_name" id="member_last_name" required>
+                                    </div>
+                                    <p id="member_last_name_msg" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_birth_date" class="input-group-text">Birth date <span style="color: red">*</span>:</label>
+                                        <input type="date" class="form-control" name="birth_date" id="member_birth_date" max="{{ today }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_title" class="input-group-text">Title <span style="color: red">*</span>:</label>
+                                        <select name="title" class="form-select" id="member_title" required>
+                                            <option value="" disabled>---Choose title---</option>
+                                            {% for i in title_list %}
+                                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_email" class="input-group-text">Email <span style="color: red">*</span>:</label>
+                                        <input type="email" class="form-control" name="email" id="member_email" required>
+                                    </div>
+                                    <p id="member_email_msg" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_phone_number" class="input-group-text">Phone number <span style="color: red">*</span>:</label>
+                                        <input type="tel" class="form-control" name="phone_number" id="member_phone_number" required>
+                                    </div>
+                                    <p id="member_phone_number_msg" style="color: red"></p>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <label for="member_detailed_information" class="input-group-text">Detailed information :</label>
+                                    <textarea id="member_detailed_information" class="form-control" name="detailed_information" rows="3" cols="33"></textarea>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_region" class="input-group-text">Region <span style="color: red">*</span>:</label>
+                                        <select name="region" class="form-select" id="member_region" onchange="update_region()" required>
+                                            <option value="" disabled>---Choose region---</option>
+                                            {% for i in region_list %}
+                                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_city" class="input-group-text">City <span style="color: red">*</span>:</label>
+                                        <select name="city" class="form-select" id="member_city" required>
+                                            <option value="" disabled>---Choose city---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_street_name" class="input-group-text">Street name <span style="color: red">*</span>:</label>
+                                        <input type="text" class="form-control" name="street_name" id="member_street_name" required>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <label for="member_health_information" class="input-group-text">Health information :</label>
+                                    <textarea id="member_health_information" class="form-control" name="health_information" rows="4" cols="33"></textarea>
+                                </div>
+                                <input type="hidden" id="member_user_id" name="user_id">
+                                <button type="submit" class="btn btn-primary my-1">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="member_Modal2" tabindex="-1" aria-labelledby="member_Modal2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="pt-3 pb-3">
+                        <div class="container w-75">
+                            <form action="/member_list" class="row" method="post" onsubmit="return validateForm(1)">
+                                <div class="col-md-12">
+                                    <div class="input-group my-2">
+                                        <label for="username" class="input-group-text">Username <span style="color: red">*</span>:</label>
+                                        <input type="text" class="form-control" name="username" id="username" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group my-2">
+                                        <label for="password" class="input-group-text">Password <span style="color: red">*</span>:</label>
+                                        <input type="password" class="form-control" name="password" id="password" required>
+                                    </div>
+                                    <p id="member_password_msg_" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_first_name" class="input-group-text">First name <span style="color: red">*</span>:</label>
+                                        <input type="text" class="form-control" name="first_name" id="member_first_name_" required>
+                                    </div>
+                                    <p id="member_first_name_msg" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_last_name" class="input-group-text">Last name <span style="color: red">*</span>:</label>
+                                        <input type="text" class="form-control" name="last_name" id="member_last_name_" required>
+                                    </div>
+                                    <p id="member_last_name_msg" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_birth_date" class="input-group-text">Birth date <span style="color: red">*</span>:</label>
+                                        <input type="date" class="form-control" name="birth_date" id="member_birth_date_" max={{ today }} required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_title" class="input-group-text">Title <span style="color: red">*</span>:</label>
+                                        <select name="title" class="form-select" id="member_title_" required>
+                                            <option value="" disabled>---Choose title---</option>
+                                            {% for i in title_list %}
+                                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_email" class="input-group-text">Email <span style="color: red">*</span>:</label>
+                                        <input type="email" class="form-control" name="email" id="member_email_" required>
+                                    </div>
+                                    <p id="member_email_msg" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_phone_number" class="input-group-text">Phone number <span style="color: red">*</span>:</label>
+                                        <input type="tel" class="form-control" name="phone_number" id="member_phone_number_" required>
+                                    </div>
+                                    <p id="member_phone_number_msg" style="color: red"></p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_region" class="input-group-text">Region <span style="color: red">*</span>:</label>
+                                        <select name="region" class="form-select" id="member_region_" onchange="update_region2()" required>
+                                            <option value="" disabled>---Choose region---</option>
+                                            {% for i in region_list %}
+                                                <option value={{ i[0] }}>{{ i[1] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_city" class="input-group-text">City <span style="color: red">*</span>:</label>
+                                        <select name="city" class="form-select" id="member_city_" required>
+                                            <option value="" disabled>---Choose city---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group mb-3">
+                                        <label for="member_street_name" class="input-group-text">Street name <span style="color: red">*</span>:</label>
+                                        <input type="text" class="form-control" name="street_name" id="member_street_name_" required>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="member_user_id_" name="user_id">
+                                <button type="submit" class="btn btn-primary my-1">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="/delete_user" method="post">
+                        <input type="hidden" id="user_id" name="user_id">
+                        <input type="hidden" id="is_member" name="is_member">
+                        <button type="submit" class="btn btn-danger my-1">Yes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script>
+        const member_Modal = document.getElementById('member_Modal');
+        member_Modal.addEventListener('shown.bs.modal', function () {
+        });
+        const member_Modal2 = document.getElementById('member_Modal2');
+        member_Modal2.addEventListener('shown.bs.modal', function () {
+        });
+
+        const city_list = JSON.parse('{{ city_list|tojson }}');
+        function update_region() {
+            const region = document.getElementById('member_region');
+            const city = document.getElementById('member_city');
+            city.innerHTML = '<option value="" disabled>---Choose city---</option>';
+            for (const i in city_list) {
+                if (String(city_list[i][1]) === region.value) {
+                    const option = document.createElement('option');
+                    option.value = city_list[i][0];
+                    option.text = city_list[i][2];
+                    city.appendChild(option);
+                }
+            }
+        }
+        function update_region2() {
+            const region = document.getElementById('member_region_');
+            const city = document.getElementById('member_city_');
+            city.innerHTML = '<option value="" disabled>---Choose city---</option>';
+            for (const i in city_list) {
+                if (String(city_list[i][1]) === region.value) {
+                    const option = document.createElement('option');
+                    option.value = city_list[i][0];
+                    option.text = city_list[i][2];
+                    city.appendChild(option);
+                }
+            }
+        }
+        const member_list = JSON.parse('{{ member_list|tojson }}');
+        function showLink(id){
+            if (id === -1){
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('member_first_name_').value = '';
+                document.getElementById('member_last_name_').value = '';
+                document.getElementById('member_birth_date_').value = '';
+                document.getElementById('member_title_').value = '';
+                document.getElementById('member_email_').value = '';
+                document.getElementById('member_phone_number_').value = '';
+                document.getElementById('member_region_').value = '';
+                document.getElementById('member_city_').value = '';
+                document.getElementById('member_street_name_').value = '';
+            }else{
+                document.getElementById('member_first_name').value = member_list[id][1];
+                document.getElementById('member_last_name').value = member_list[id][2];
+                document.getElementById('member_birth_date').value = member_list[id][12];
+                document.getElementById('member_title').value = member_list[id][7];
+                document.getElementById('member_email').value = member_list[id][6];
+                document.getElementById('member_phone_number').value = member_list[id][3];
+                document.getElementById('member_detailed_information').value = member_list[id][8];
+                document.getElementById('member_region').value = member_list[id][9];
+                update_region();
+                document.getElementById('member_city').value = member_list[id][10];
+                document.getElementById('member_street_name').value = member_list[id][11];
+                document.getElementById('member_health_information').value = member_list[id][13];
+                document.getElementById('member_user_id').value = member_list[id][0];
+                validateForm(0);
+            }
+        }
+
+        function validateForm(add) {
+            const first_name = document.getElementById('member_first_name');
+            const first_name_msg = document.getElementById('member_first_name_msg');
+            const namePattern = /^[a-zA-Z]+$/;
+            const phonePattern = /^\d{7,11}$/;
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            let i = 0;
+            if (add){
+                const password = document.getElementById('password');
+                const password_msg = document.getElementById('password_msg');
+                if (!namePattern.test(password.value)) {
+                    password_msg.innerText = "Password.....";
+                    password.classList.add("is-invalid");
+                    i = 1;
+                } else {
+                    password.classList.remove("is-invalid");
+                    password_msg.innerText = "";
+                }
+            }
+            if (!namePattern.test(first_name.value)) {
+                first_name_msg.innerText = "First name should contain only letters.";
+                first_name.classList.add("is-invalid");
+                i = 1;
+            } else {
+                first_name.classList.remove("is-invalid");
+                first_name_msg.innerText = "";
+            }
+            const last_name = document.getElementById('member_last_name');
+            const last_name_msg = document.getElementById('member_last_name_msg');
+            if (!namePattern.test(last_name.value)) {
+                last_name_msg.innerText = "Last name should contain only letters.";
+                last_name.classList.add("is-invalid");
+                i = 1;
+            } else {
+                last_name.classList.remove("is-invalid");
+                last_name_msg.innerText = "";
+            }
+            const phone_number = document.getElementById('member_phone_number');
+            const phone_number_msg = document.getElementById('member_phone_number_msg');
+            if (!phonePattern.test(phone_number.value)) {
+                phone_number.classList.add("is-invalid");
+                phone_number_msg.innerText = "Wrong phone number.";
+                i = 1;
+            } else {
+                phone_number.classList.remove("is-invalid");
+                phone_number_msg.innerText = "";
+            }
+            const email = document.getElementById('member_email');
+            const email_msg = document.getElementById('member_email_msg');
+            if (!emailPattern.test(email.value)) {
+                email.classList.add("is-invalid");
+                email_msg.innerText = "Invalid email address.";
+                i = 1;
+            } else {
+                email.classList.remove("is-invalid");
+                email_msg.innerText = "";
+            }
+            return i !== 1;
+        }
+
+        function confirmDelete(user_id) {
+            document.getElementById("user_id").value = user_id;
+            document.getElementById("is_member").value = 1;
+        }
+    </script>
+{% endblock %}

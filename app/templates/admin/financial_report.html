@@ -1,0 +1,228 @@
+{% extends "guest/base.html" %}
+
+
+{% block title %}
+    Financial Report
+{% endblock %}
+
+{% block mycss %}
+{% endblock %}
+
+{% block body %}
+    <div style="min-height: 800px">
+        <div class="container mt-3">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <h1 style="text-align: center">Financial Report</h1>
+                </div>
+            </div>
+        </div>
+        <div class="container mt-3">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <form action="{{ url_for('admin_financial_report') }}" method="post">
+                        <select class="form-control" name="report_type" id="report_type" onchange="this.form.submit();" required>
+                            <option value="" selected="selected" disabled>---Choose a report type---</option>
+                            <option value="month">Monthly Report</option>
+                            <option value="year">Annual Report</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% if month_flag %}
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="col-md-4">
+                        <form action="{{ url_for('admin_financial_report') }}" method="post">
+                            <label for="month">Select a month for monthly report:</label>
+                            <input type="month" id="month" name="month" onchange="this.form.submit();" required>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if year_flag %}
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="col-md-4">
+                        <form action="{{ url_for('admin_financial_report') }}" method="post">
+                            <select class="form-control" name="year" id="year" onchange="this.form.submit();" required>
+                                <option value="" selected="selected" disabled>---Choose a financial year for annual report---</option>
+                                {% for year in year_list %}
+                                    <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <br>
+        </br>
+        {% if lesson_float %}
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="col-md-8" style="text-align: center">
+                        <h4>{{ title }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Revenue from Membership Subscriptions</h5><br>
+                            <table class="table table-bordered table-light table-hover">
+                                <thead>
+                                <tr class="table-dark">
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Method</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for payment in payment_list %}
+                                    {% if payment[4] == 'Membership' %}
+                                        <tr>
+                                            <td>{{ payment[3] }}</td>
+                                            <td>{{ payment[2] }}</td>
+                                            <td>{{ payment[5] }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="container mt-3">
+                        <h6 style="text-align: center">Total revenue from membership subscriptions: ${{ membership_float }}</h6>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if membership_float %}
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Revenue from Individual Swimming Lessons</h5><br>
+                            <table class="table table-bordered table-light table-hover">
+                                <thead>
+                                <tr class="table-dark">
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Method</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for payment in payment_list %}
+                                    {% if payment[4] == 'Lesson' %}
+                                        <tr>
+                                            <td>{{ payment[3] }}</td>
+                                            <td>{{ payment[2] }}</td>
+                                            <td>{{ payment[5] }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="container mt-3">
+                        <h6 style="text-align: center">Total revenue from individual swimming lessons: ${{ lesson_float }}</h6>
+                    </div>
+                    <br>
+                    <div class="container mt-3">
+                        <h6 style="text-align: center">Income Sources</h6>
+                    </div>
+                    <div class="container mt-3">
+                        <canvas style="text-align: center" id="myChart1"></canvas>
+                    </div>
+                    <br>
+                    <div class="container mt-3">
+                        <h6 style="text-align: center">Payment Methods</h6>
+                    </div>
+                    <div class="container mt-3">
+                        <canvas style="text-align: center" id="myChart2"></canvas>
+                    </div>
+                    <br>
+                    {% if income_list %}
+                        <div class="container mt-3">
+                            <h6 style="text-align: center">Monthly Income</h6>
+                        </div>
+                        <div class="container mt-5">
+                            <canvas style="text-align: center" id="myChart3"></canvas>
+                        </div>
+                    {% endif %}
+                    <br>
+                    <div class="container mt-3">
+                        <h3 style="text-align: center">Overall total revenue: ${{ total_float }}</h3>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx1 = document.getElementById('myChart1');
+        const name_list = ["Membership Subscriptions", "Individual Lessons"];
+        const membership_float = {{membership_float|tojson}};
+        const lesson_float = {{lesson_float|tojson}};
+
+        new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: name_list,
+                datasets: [{
+                    label: 'NZ dollars',
+                    data: [membership_float, lesson_float],
+                    borderWidth: 0
+                }]
+            }
+        });
+
+        const ctx2 = document.getElementById('myChart2');
+        const method_list = JSON.parse('{{ method_list|tojson }}');
+        const count_list = JSON.parse('{{ count_list|tojson }}');
+
+        new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: method_list,
+                datasets: [{
+                    label: 'no. of users',
+                    data: count_list,
+                    borderWidth: 0
+                }]
+            }
+        });
+
+        const ctx3 = document.getElementById('myChart3');
+        const income_list = JSON.parse('{{ income_list|tojson }}');
+        const month_list = JSON.parse('{{ month_list|tojson }}');
+
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: month_list,
+                datasets: [{
+                    label: 'NZ dollars',
+                    data: income_list,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

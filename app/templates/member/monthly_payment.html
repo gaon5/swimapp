@@ -1,0 +1,83 @@
+{% extends "guest/base.html" %}
+
+{% block mytitle %}
+    Payment
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container" style="min-height: 800px">
+        <h1 class="my-4">Choose your subscription and payment options</h1>
+
+        {% if msg %}
+            <div class="alert alert-danger">
+                {{ msg }}
+            </div>
+        {% elif success_msg %}
+            <div class="alert alert-success">
+                {{ success_msg }}
+            </div>
+        {% endif %}
+        {% if membership_due %}
+            <div class="alert alert-info">
+                Your membership expiration date is: <strong>{{ membership_due }}</strong>. Do you want to continue?
+            </div>
+        {% endif %}
+        <form action="/monthly_payment" method="post">
+            <div class="d-flex justify-content-between">
+                <!-- Individual Sections -->
+                <div class="row">
+                    <div class="col-md-3 ">
+                        <label class="card form-check">
+                            <input type="radio" class="form-check-input" name="subscription_duration" value="1" checked>
+                            <div class="card-body" style="min-height: 130px">
+                                <h5 class="card-title">1 Month(s) - ${{ member_price }}</h5>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="card form-check">
+                            <input type="radio" class="form-check-input" name="subscription_duration" value="2">
+                            <div class="card-body" style="min-height: 130px">
+                                <h5 class="card-title">3 Month(s) - ${{ member_price * 3 * 0.95 }}</h5>
+                                <h5 class="card-title">5% OFF</h5>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="card form-check">
+                            <input type="radio" class="form-check-input" name="subscription_duration" value="3">
+                            <div class="card-body" style="min-height: 130px">
+                                <h5 class="card-title">6 Month(s) - ${{ member_price * 6 * 0.9 }}</h5>
+                                <h5 class="card-title">10% OFF</h5>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="card form-check">
+                            <input type="radio" class="form-check-input" name="subscription_duration" value="4">
+                            <div class="card-body" style="min-height: 130px">
+                                <h5 class="card-title">12 Month(s) - ${{ member_price * 12 * 0.85 }}</h5>
+                                <h5 class="card-title">15% OFF</h5>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="my-3 ">
+                <label for="payment_method" class="form-label">Payment Method:
+                    <select class="form-select" name="payment_method">
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Master Card">Master Card</option>
+                        <option value="Paypal">Paypal</option>
+                    </select>
+                </label>
+            </div>
+            <input type="submit" value="Pay Immediately" class="btn btn-primary">
+            <a href="/" class="btn btn-primary">Back to home</a>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "guest/base.html" %}
+
+{% block mytitle %}
+    Class detail
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2>Class Information</h2>
+        <table class="table table-bordered table-light table-hover">
+            <tbody>
+            <tr>
+                <th>Pool Name</th>
+                <td>{{ information[1] }}</td>
+            </tr>
+            <tr>
+                <th>Class Name</th>
+                <td>{{ information[2] }}</td>
+            </tr>
+            <tr>
+                <th>Class Date</th>
+                <td>{{ information[3] }}</td>
+            </tr>
+            <tr>
+                <th>Start Time</th>
+                <td>{{ information[4] }}</td>
+            </tr>
+            <tr>
+                <th>End Time</th>
+                <td>{{ information[5] }}</td>
+            </tr>
+            <tr>
+                <th>Detailed Information</th>
+                <td>{{ information[6] }}</td>
+            </tr>
+            <tr>
+                <th>Instructor Name</th>
+                <td>{{ information[8] }}</td>
+            </tr>
+            <tr>
+                <th>Instructor Phone</th>
+                <td>{{ information[9] }}</td>
+            </tr>
+            <tr>
+                <th>Instructor Information</th>
+                <td>{{ information[10] }}</td>
+            </tr>
+            <tr>
+                <th>Number of members</th>
+                <td>{{ member_count[1] }}</td>
+            </tr>
+            </tbody>
+        </table>
+        {% if member_list %}
+            <div class="container mt-4">
+                <h2>Member Information</h2>
+                <table class="table table-bordered table-light table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">Member name</th>
+                        <th scope="col">Phone number</th>
+                        <th scope="col">Detailed information</th>
+                        <th scope="col">Health information</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in member_list %}
+                        <tr>
+                            <td>{{ member[0] }} {{ member[1] }} {{ member[2] }}</td>
+                            <td>{{ member[3] }}</td>
+                            <td>{{ member[4] }}</td>
+                            <td>{{ member[5] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}

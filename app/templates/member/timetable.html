@@ -1,0 +1,79 @@
+{% extends "timetable_base.html" %}
+
+{% block timetable_css %}
+
+{% endblock %}
+
+{% block timetable_body1 %}
+    <div class="container mt-3">
+        <h1>Book Class</h1>
+    </div>
+{% endblock %}
+
+{% block timetable_body2 %}
+    <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>The course is fully booked</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myOwnModalLabel %}
+    <form action="javascript:void(0);" method="post"  id="schedule_time">
+        <input type="hidden" id="send_day" name="send_day">
+        <input type="hidden" id="send_time" name="send_time">
+        <button type="button" class="btn btn-primary my-1" onclick="book_lesson()">Book Individual Lesson</button>
+    </form>
+{% endblock %}
+
+{% block myOwnModalLabel2 %}
+    <form action="javascript:void(0);" method="post" id="book_class">
+        <input type="hidden" id="class_id" name="class_id">
+        <button type="button" class="btn btn-primary my-1" onclick="class_detail()">Class detail</button>
+        <button type="button" class="btn btn-primary my-1" onclick="book_class()">Book this class</button>
+    </form>
+    <button id="openModalBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#memberModal" style="display: none">
+        Open Modal
+    </button>
+{% endblock %}
+
+{% block timetable_js %}
+    <script>
+        function book_class() {
+            const class_id = document.getElementById("class_id")
+            const count = JSON.parse('{{ member_count|tojson }}');
+            const memberModal = new bootstrap.Modal(document.getElementById("memberModal"));
+            if (count[class_id.value]) {
+                if (count[class_id.value] >= 30) {
+                    memberModal.show();
+                } else {
+                    document.getElementById("book_class").action = "/member_book_class"
+                    document.getElementById("book_class").submit();
+                }
+            } else {
+                document.getElementById("book_class").action = "/member_book_class"
+                document.getElementById("book_class").submit();
+            }
+        }
+
+        function class_detail() {
+            document.getElementById("book_class").action = "/class_detail"
+            document.getElementById("book_class").submit();
+        }
+
+        function book_lesson() {
+            document.getElementById("schedule_time").action = "/member_book_lesson"
+            document.getElementById("schedule_time").submit();
+        }
+    </script>
+{% endblock %}

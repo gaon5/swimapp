@@ -1,0 +1,143 @@
+{% extends "guest/base.html" %}
+
+
+{% block title %}
+    Subscriptions
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container py-3" style="min-height: 800px">
+        <ul class="nav nav-tabs p-3" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab"
+                        aria-controls="home-tab-pane" aria-selected="true">
+                        <span style="font-size: large">No Subscriptions</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab"
+                        aria-controls="home-tab-pane" aria-selected="false">
+                        <span style="font-size: large">Expired Subscriptions</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-2-pane" type="button" role="tab"
+                        aria-controls="profile-tab-pane" aria-selected="false">
+                        <span style="font-size: large">Subscriptions Due</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4" id="profile-tab-2" data-bs-toggle="tab" data-bs-target="#profile-tab-3-pane" type="button" role="tab"
+                        aria-controls="profile-tab-2-pane" aria-selected="false">
+                        <span style="font-size: large">Active Subscriptions</span>
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content pt-3" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="profile-tab-2" tabindex="0">
+                <table class="table table-bordered table-light table-hover">
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Member Full Name</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Register Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(No_List|length) %}
+                            <tr>
+                                <td>{{ No_List[i][0] }} {{ No_List[i][1] }} </td>
+                                <td>{{ No_List[i][2] }}</td>
+                                <td>{{ No_List[i][3] }}</td>
+                                <td>{{ No_List[i][4] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <table class="table table-bordered table-light table-hover">
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Member Full Name</th>
+                            <th scope="col">Subscription Start Date</th>
+                            <th scope="col">Subscription End Date</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(Due_List|length) %}
+                            <tr>
+                                <td>{{ Due_List[i][0] }} {{ Due_List[i][1] }} </td>
+                                <td>{{ Due_List[i][3] }}</td>
+                                <td>{{ Due_List[i][4] }}</td>
+                                <td>{{ Due_List[i][5] }}</td>
+                                <td>{{ Due_List[i][6] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <span>{{ msg }}</span>
+            </div>
+            <div class="tab-pane fade" id="profile-tab-2-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <table class="table table-bordered table-light table-hover">
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Member Full Name</th>
+                            <th scope="col">Subscription Start Date</th>
+                            <th scope="col">Subscription End Date</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(About_to_due_list|length) %}
+                            <tr>
+                                <td>{{ About_to_due_list[i][0] }} {{ About_to_due_list[i][1] }} </td>
+                                <td>{{ About_to_due_list[i][3] }}</td>
+                                <td>{{ About_to_due_list[i][4] }}</td>
+                                <td>{{ About_to_due_list[i][5] }}</td>
+                                <td>{{ About_to_due_list[i][6] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="profile-tab-3-pane" role="tabpanel" aria-labelledby="profile-tab-2" tabindex="0">
+                <table class="table table-bordered table-light table-hover">
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Member Full Name</th>
+                            <th scope="col">Subscription Start Date</th>
+                            <th scope="col">Subscription End Date</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(Active_List|length) %}
+                            <tr>
+                                <td>{{ Active_List[i][0] }} {{ Active_List[i][1] }} </td>
+                                <td>{{ Active_List[i][3] }}</td>
+                                <td>{{ Active_List[i][4] }}</td>
+                                <td>{{ Active_List[i][5] }}</td>
+                                <td>{{ Active_List[i][6] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block myjs %}
+
+{% endblock %}

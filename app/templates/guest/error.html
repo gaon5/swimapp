@@ -1,0 +1,30 @@
+{% extends "guest/base.html" %}
+
+{% block mytitle %}
+    ERROR!
+{% endblock %}
+
+
+{% block body %}
+    <div class="container pt-5 pb-5">
+        <img src="{{ url_for('static', filename='images/404.png') }}" class="img-fluid" style="width: 100%;" alt="404 Page">
+    </div>
+{% endblock %}
+
+{% block myjs %}
+
+    <script type="text/javascript">
+        onload = function () {
+            setInterval(go, 1000);
+        };
+        let x = 3;
+
+        function go() {
+            x--;
+            if (x <= 0) {
+                location.href = '/';
+            }
+        }
+    </script>
+
+{% endblock %}

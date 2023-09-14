@@ -1,0 +1,98 @@
+{% extends "guest/base.html" %}
+
+
+{% block title %}
+    Attendance Report
+{% endblock %}
+
+{% block mycss %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="container py-3" style="min-height: 800px">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="container mt-3">
+                    <h2 style="text-align: center">Attendance Report of last 30 days</h2>
+                </div>
+                <div class="container mt-3">
+                    <canvas style="text-align: center" id="attendance_chart"></canvas>
+                </div>
+                <br>
+            </div>
+            <div class="container mt-3">
+                <h3 style="text-align: center">Total attendance: {{ total }} visits</h3>
+            </div>
+            <br>
+        </div>
+
+        <h1 class="p-3" style="font-size: x-large">Aqua Aerobics Class Attendance Report</h1>
+        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <table class="table table-bordered table-light table-hover">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">Time</th>
+                        <th scope="col">Start Time</th>
+                        <th scope="col">End Time</th>
+                        <th scope="col">Class Name</th>
+                        <th scope="col">Book Number</th>
+                        <th scope="col">Attendance</th>
+                        <th scope="col">Attendance Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(attendance|length) %}
+                        <tr>
+                            <td>{{ attendance[i][1] }}</td>
+                            <td>{{ attendance[i][2] }}</td>
+                            <td>{{ attendance[i][3] }}</td>
+                            <td>{{ attendance[i][4] }}</td>
+                            <td>{{ attendance[i][5] }}</td>
+                            <td>{{ attendance[i][6] }}</td>
+                            <td>{{ attendance[i][7] }} %</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block myjs %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx1 = document.getElementById('attendance_chart');
+        const name_list = ["Aqua aerobics class", "Individual swimming lesson", "Just using the pool"];
+        const total_list = JSON.parse('{{ total_list|tojson }}');
+
+        let myChart1 = new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: name_list,
+                datasets: [{
+                    label: 'no. of visits',
+                    data: total_list,
+                    borderWidth: 0
+                }]
+            }
+        });
+
+        function handleResize() {
+            myChart1.destroy();
+            myChart1 = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: name_list,
+                    datasets: [{
+                        label: 'no. of visits',
+                        data: total_list,
+                        borderWidth: 0
+                    }]
+                }
+            });
+        }
+
+        window.addEventListener('resize', handleResize);
+    </script>
+{% endblock %}

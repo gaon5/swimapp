@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../../static/images/ico.ico"/>
+    <title>{% block mytitle %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    {% block mycss %}{% endblock %}
+    <style>
+        .custom-footer {
+            background-image: url("{{ url_for('static', filename='images/foot.jpg') }}");
+            background-size: cover;
+            background-position: center center;
+            color: white;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+
+        .dropdown-menu {
+            background-color: #06283D;  
+        }
+
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #256D85;  
+        }
+
+
+    </style>
+</head>
+
+<body style="background-color: #fff">
+<div class="sticky-top " style="background-color: #06283D;">
+    <nav class="navbar navbar-expand-lg container" style="height:85px">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}"><span class="navbar-brand mb-0 h1" id="navtitle" style="font-size: x-large; color:#DFF6FF">Waikirikiri Swim Centre</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-4" href="{{ url_for('index') }}" style="font-size: large; color:#DFF6FF">Home</a></li>
+                    {% if permissions == 4 %}
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}" style="font-size: large; color:#DFF6FF">Dashboard</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_timetable') }}" style="font-size: large; color:#DFF6FF">Timetable</a></li>
+                    {% elif permissions == 3 %}
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('dashboard') }}" style="font-size: large; color:#DFF6FF">Dashboard</a></li>
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_timetable') }}" style="font-size: large; color:#DFF6FF">Timetable</a></li>
+                    {% elif permissions == 2 %}
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_timetable') }}" style="font-size: large; color:#DFF6FF">Timetable</a></li>
+                    {% elif permissions == 1 %}
+                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_class') }}" style="font-size: large; color:#DFF6FF">Book Class</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="d-flex">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if not permissions %}
+                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('login') }}" style="color: #DFF6FF">Login</a></li>
+                        {% else %}
+                            <li class="nav-item mx-2 li_hon">
+                                <div class="dropdown py-2 px-2">
+                                    <button class="btn dropdown-toggle selected" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #DFF6FF">
+                                        Hello {{ session['username'] }}!
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% if permissions == 4 %}
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_list') }}" style="color: #DFF6FF">Manage Instructor</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_list') }}" style="color: #DFF6FF">Manage Member</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}" style="color: #DFF6FF">View Payments</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('subscriptions_due_date') }}" style="color: #DFF6FF">Subscriptions Details</a></li>
+                                        {% elif permissions == 3 %}
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_change_information') }}" style="color: #DFF6FF">My Details</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('change_password') }}" style="color: #DFF6FF">Change Password</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('subscriptions_due_date') }}" style="color: #DFF6FF">Subscriptions Details</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('attendance_report') }}" style="color: #DFF6FF">Attendance Report</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_popularity_report') }}" style="color: #DFF6FF">Popularity Report</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('view_payments') }}" style="color: #DFF6FF">View Payments Report</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('admin_financial_report') }}" style="color: #DFF6FF">Financial Report</a></li>
+                                        {% elif permissions == 2 %}
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('instructor_change_information') }}" style="color: #DFF6FF">My Details</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('change_password') }}" style="color: #DFF6FF">Change Password</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('schedule_time') }}" style="color: #DFF6FF">My Schedule Time</a></li>
+                                        {% elif permissions == 1 %}
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_change_information') }}" style="color: #DFF6FF">My Details</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('change_password') }}" style="color: #DFF6FF">Change Password</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('my_membership') }}" style="color: #DFF6FF">My Membership</a></li>
+                                            <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href="{{ url_for('member_class_detail') }}" style="color: #DFF6FF">View My Class</a></li>
+
+                                        {% endif %}
+                                        <li class="nav-item mx-2 li_hon"><a class="dropdown-item py-3 px-2" href={{ url_for('logout') }} style="color: #DFF6FF">Log out</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+{% block body %}{% endblock %}
+
+<footer class=" text-center fixed-bottom position-relative py-4 custom-footer">
+    <div class="container">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-4">
+                    <h5 class="mb-3" style="letter-spacing: 1px; color: #DFF6FF;">Waikirikiri Swim Centre</h5>
+                </div>
+                <div class="col-4 mb-4">
+                    <h5 class="mb-3" style="letter-spacing: 2px; color: #DFF6FF;">Contacts</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-1">
+                            <p>
+                                <i class="fas fa-envelope me-3 text-secondary"></i>
+                                <span style="color: #DFF6FF">waikirikiricentre@example.com</span>
+                            </p>
+                            <p><i class="fas fa-phone me-3 text-secondary"></i> 
+                                <span style="color: #DFF6FF">03 941568</span>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-4 mb-4">
+                    <h5 class="mb-1" style="color: #DFF6FF;">Opening hours</h5>
+                    <ul style="list-style: none; padding-left: 0">
+                        <li style="color: #DFF6FF">Mon - Sun</li>
+                        <li style="color: #DFF6FF">6AM - 8PM</li>
+                    </ul>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+</footer>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+{% block myjs %}{% endblock %}
+</body>
+</html>
