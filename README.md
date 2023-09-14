@@ -4,6 +4,27 @@
 
 The **Waikirikiri Swim Centre Management System** is a comprehensive software solution designed to modernize and streamline the operations of the Waikirikiri Swim Centre. With approximately 1000 members and a team of 10 swim instructors, this system aims to automate and enhance the management of crucial aspects of the swim centre's activities. 
 
+### Project Objectives 
+
+The primary goals of this system are: 
+
+1. **Member Management:** Simplify member registration, enable profile updates, and provide a convenient platform for members to access essential information. Members can easily view their subscription details, booked lessons, and class schedules. 
+
+2. **Payment Tracking:** Empower administrators to efficiently track member payments. The system offers financial reporting capabilities, sends payment reminders, and ensures seamless payment processing. 
+
+3. **Class Scheduling:** Enable members to book aqua aerobics classes while allowing instructors to manage their class schedules effectively. Instructors can also view and update their availability. 
+ 
+4. **Swimming Lessons:** Facilitate the booking of individual swimming lessons by members. Instructors can manage their availability, access swim trainee information, and efficiently deliver specialized swimming instruction. 
+
+5. **Attendance Tracking:** The system records member attendance across various activities, including pool usage, individual lessons, and class participation. This feature enhances operational efficiency and member engagement. 
+
+6. **Pool Management:** The Waikirikiri Swim Centre boasts multiple pools, each with its purpose. Aqua aerobics classes and individual lessons can be scheduled in different pools based on specific requirements, providing flexibility and convenience. 
+ 
+7. **Financial Reports:** Administrators and managers have access to comprehensive financial reports. These reports include revenue breakdowns by subscription fees and lesson charges, helping track overall revenue and financial performance. 
+
+8. **Communication:** Admins and managers can communicate with members through on-screen reminders and updates, ensuring effective and timely information dissemination. 
+
+
 ### Usage - describe how to use your project. Provide examples, code snippets, or screenshots to illustrate its functionality.
 
 **In the guest.py all users can use these functions:**
