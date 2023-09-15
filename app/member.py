@@ -9,8 +9,19 @@ from app import app, check_permissions, get_cursor, title_list, region_list, cit
 @app.route('/member_change_information', methods=['GET', 'POST'])
 def member_change_information():
     """
-    The webpage used to give the member change his own information
-    :return: change_information.html
+    Webpage used for members to change their own information.
+    This function performs the following tasks:
+    - Checks if the user is logged in.
+    - Validates user permissions (assuming 1 represents permission).
+    - Handles member information change when the HTTP request method is POST.
+    - Validates and updates the member's details in the database.
+    - Checks if the provided email is already in use.
+    - Redirects to the previous page or user list page based on the referrer URL.
+    - Retrieves the member's details from the database and renders the 'change_information.html' template.
+    Returns:
+        - If the user is logged in and has permission, renders the 'change_information.html' template with member details.
+        - If not logged in, redirects to the login page.
+        - If not a member or lacking permission, redirects to the index page.
     """
     if 'loggedIn' in session:
         if check_permissions() == 1:
@@ -42,12 +53,15 @@ def member_change_information():
                 user_account_list = sql_data.fetchall()[0]
                 if email != user_account_list[1]:
                     sql_data.execute("SELECT user_id, email FROM `user_account` WHERE email=%s;", (email,))
+                    # Check if the new email is already in use
                     if len(sql_data.fetchall()) > 0:
                         msg = "This email is already in use."
                     else:
                         sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
+                # Get the previous URL to determine redirection
                 previous_url = str(request.referrer)
                 urlList = [x for x in previous_url.split('/') if x != '']
+                # If the user came from the 'user_list' page, redirect there
                 if urlList[-1] == 'user_list':
                     return redirect(url_for('user_list'))
             sql = """SELECT m.user_id,m.title_id,m.first_name,m.last_name,m.phone_number,m.detailed_information,m.region_id,
@@ -68,6 +82,12 @@ def member_change_information():
 
 @app.route('/view_class', methods=['GET', 'POST'])
 def view_class():
+    """
+    Display a timetable of classes for members.
+    This route handles both GET and POST requests. It provides members with a timetable of classes for the current week
+    or a selected date. It allows members to view class details, such as class name, instructor, pool, and available slots.
+    :return: The 'timetable.html' template with class timetable data.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             if request.method == 'POST':
@@ -85,9 +105,11 @@ def view_class():
             else:
                 before_day = 9
                 before_time = 30
+            # Calculate the start of the week for the selected or current date
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
+            # Generate the timetable header with dates and weekdays
             for i in range(7):
                 x = (start_of_week + timedelta(days=i)).strftime('%d %b %Y')
                 temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
@@ -115,6 +137,7 @@ def view_class():
                         GROUP BY class_id;"""
             sql_data.execute(sql)
             member_count = sql_data.fetchall()
+            # Convert member_count data to a dictionary for easy access
             for i in range(len(member_count)):
                 member_count[i] = list(member_count[i])
             member_count = {item[0]: item[1] for item in member_count}
@@ -146,16 +169,26 @@ def view_class():
 
 @app.route('/member_book_lesson', methods=['POST'])
 def member_book_lesson():
+    """
+    Handle member class booking.
+    This route allows members to book classes based on instructor availability for a selected date and time.
+    It also checks for active subscriptions and instructor availability.
+    :return: The 'book_lesson.html' template with booking options.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
+            # Extract date and time information from the form data
             form_date = request.form.get('send_day')
             form_time = request.form.get('send_time')
             current_year = datetime.now().year
+            # Parse the selected date and set it to the current year
             parsed_date = datetime.strptime(form_date, '%Y-%m-%d')
             complete_date = parsed_date.replace(year=current_year)
             complete_date_string = complete_date.strftime('%Y-%m-%d')
+            # Parse the selected time and format it as 'HH:MM:SS'
             parsed_time = datetime.strptime(form_time, '%H:%M').time()
             start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
+            # Calculate the end time, which is 30 minutes after the selected start time
             end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
             sql_data = get_cursor()
 
@@ -166,6 +199,7 @@ def member_book_lesson():
             sql = """SELECT start_date, end_date FROM payment_due WHERE member_id = %s AND end_date>=%s"""
             sql_data.execute(sql, (member_id, datetime.today().date()))
             subscription = sql_data.fetchall()
+            # If the member doesn't have an active subscription, redirect to the index page
             if not subscription:
                 return redirect(url_for('index'))
 
@@ -206,8 +240,15 @@ def member_book_lesson():
 
 @app.route('/individual_payment', methods=['POST'])
 def individual_payment():
+    """
+    Handle individual payment for booking a class.
+    This route allows members to make individual payments for booking a class.
+    It collects class details, instructor information, and payment options.
+    :return: The 'individual_payment.html' template with payment options.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
+            # Retrieve form data for available date, start time, hour, instructor, and pool
             available_date = request.form.get('available_date')
             start_hour = request.form.get('start_hour')
             start_minute = request.form.get('start_minute')
@@ -216,12 +257,14 @@ def individual_payment():
             pool = int(request.form.get('pool'))
             start_time = str(start_hour) + ":" + str(start_minute)
             parsed_time = datetime.strptime(start_time, '%H:%M').time()
+            # Format start time and calculate end time based on class duration
             start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
             if int(hour) == 1:
                 end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
             else:
                 end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=60)
             end_time = end_time.replace(second=0).strftime('%H:%M:%S')
+            # Store relevant session data
             session['available_date'] = available_date
             session['start_time'] = start_time
             session['end_time'] = end_time
@@ -244,8 +287,16 @@ def individual_payment():
 
 @app.route('/pay_successful', methods=['POST'])
 def pay_successful():
+    """
+    Handle successful payment for booking a class.
+    This route is used to process successful payments for class bookings.
+    It calculates the price based on the class duration, records the payment,
+    and updates the database with the booking information.
+    :return: The 'jump.html' template with a success message and redirection link.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
+            # Retrieve session data and form data
             available_date = session['available_date']
             start_time = session['start_time']
             end_time = session['end_time']
@@ -258,6 +309,7 @@ def pay_successful():
                 price = 44
             else:
                 price = 80
+            #     Remove session data to avoid duplication
             session.pop('available_date', None)
             session.pop('start_time', None)
             session.pop('end_time', None)
@@ -294,6 +346,12 @@ def pay_successful():
 
 @app.route('/member_class_detail', methods=['GET'])
 def member_class_detail():
+    """
+    Display class details for a member.
+    This route displays details of upcoming classes for a logged-in member.
+    It retrieves class information from the database and renders it in the 'class_detail.html' template.
+    :return: The 'class_detail.html' template with class details.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             today = datetime.today().date()
@@ -311,6 +369,7 @@ def member_class_detail():
             sql_data.execute(sql, (user_id, today,))
             detail_list = sql_data.fetchall()
             sql_data.close()
+            # Prepare the data for rendering
             for i in range(len(detail_list)):
                 detail_list[i] = list(detail_list[i])
                 detail_list[i][0] = str(detail_list[i][0])
@@ -325,6 +384,12 @@ def member_class_detail():
 
 @app.route('/class_detail', methods=['POST'])
 def class_detail():
+    """
+    Display class details for an instructor.
+    This route displays details of a specific class for instructors.
+    It retrieves class information from the database and renders it in the 'class_details.html' template.
+    :return: The 'class_details.html' template with class details.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             class_id = request.form.get('class_id')
@@ -339,6 +404,7 @@ def class_detail():
                         WHERE b.book_class_id=%s AND i.state=1;"""
             sql_value = (class_id,)
             sql_data.execute(sql, sql_value)
+            # Fetch the class information
             information = sql_data.fetchall()[0]
             information = list(information)
             information[4] = str(information[4])
@@ -358,6 +424,12 @@ def class_detail():
 
 @app.route('/member_book_class', methods=['POST'])
 def member_book_class():
+    """
+    Allow members to book a class.
+    This route allows members to book a specific class.
+    It checks user permissions, class availability, and handles the booking process.
+    :return: A confirmation message and redirection based on the booking result.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             user_id = session['user_id']
@@ -375,11 +447,13 @@ def member_book_class():
             sql = """SELECT start_date, end_date FROM payment_due WHERE member_id = %s AND end_date>=%s"""
             sql_data.execute(sql, (member_id, datetime.today().date()))
             subscription = sql_data.fetchall()
+            # If there's no active subscription, redirect to the index page
             if not subscription:
                 return redirect(url_for('index'))
 
             sql = """SELECT book_id From book_list WHERE class_id=%s AND member_id=%s;"""
             sql_data.execute(sql, (class_id, member_id,))
+            # If the member hasn't booked the same class, proceed with the booking
             if not sql_data.fetchall():
                 sql_data.execute("""SELECT count(book_id) From book_list WHERE class_id=%s AND member_id=%s;""", (class_id, member_id,))
                 count = sql_data.fetchall()[0][0]
@@ -404,6 +478,12 @@ def member_book_class():
 
 @app.route('/monthly_payment', methods=['GET', 'POST'])
 def monthly_payment():
+    """
+    Handle monthly membership payments for members.
+    This route allows members to choose a subscription duration, calculate the price, and process the payment.
+    It also updates the membership due date based on the chosen subscription duration.
+    :return: A confirmation message and redirection based on the payment result.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             msg = ''
@@ -418,6 +498,7 @@ def monthly_payment():
             sql_data.execute(sql, (member_id,))
             membership_due = sql_data.fetchall()
             due = ''
+            # If there's an existing membership due record, get the end date
             if membership_due:
                 due = membership_due[0][2]
             member_price = 70
@@ -427,6 +508,7 @@ def monthly_payment():
             else:
                 subscription_duration = int(request.form.get('subscription_duration'))
                 payment_method = request.form.get('payment_method')
+                # Calculate the price based on the selected duration
                 if subscription_duration == 1:
                     month = 1
                     price = member_price
@@ -445,6 +527,7 @@ def monthly_payment():
                         VALUES (%s, %s, %s, 'Membership', %s)"""
                 value = (member_id, price, datetime.today().date(), payment_method,)
                 sql_data.execute(sql, value)
+                # Update the membership due date based on the selected subscription duration
                 if membership_due:
                     start_date = membership_due[0][2]
                     end_date = start_date + timedelta(days=30 * month)
@@ -467,6 +550,12 @@ def monthly_payment():
 
 @app.route('/my_membership', methods=['GET'])
 def my_membership():
+    """
+    Display the membership details of a logged-in member.
+    This route retrieves and displays information about a member's current membership status,
+    including the start and end dates of their subscription.
+    :return: The 'my_membership.html' template with membership details.
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             user_id = session["user_id"]
@@ -478,6 +567,7 @@ def my_membership():
             sql_data.execute(sql, (member_id,))
             subscription = sql_data.fetchone()
             sql_data.close()
+            # Determine the membership status and dates
             if subscription:
                 start_date, end_date = subscription
                 status = "Active" if end_date >= datetime.today().date() else "Expired"
@@ -495,6 +585,9 @@ def my_membership():
 
 @app.route('/delete_book_class', methods=['POST'])
 def delete_book_class():
+    """
+    Cancel scheduled class
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             user_id = session["user_id"]
@@ -515,6 +608,9 @@ def delete_book_class():
 
 @app.route('/delete_book_lesson', methods=['POST'])
 def delete_book_lesson():
+    """
+    Cancel scheduled lesson
+    """
     if 'loggedIn' in session:
         if check_permissions() == 1:
             user_id = session["user_id"]

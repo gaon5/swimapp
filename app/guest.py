@@ -8,13 +8,28 @@ from app import app, check_permissions, get_cursor, title_list, region_list, cit
 
 @app.route('/')
 def index():
+    """
+    Render the index page, which serves as the main landing page of the web application.
+    This function handles the following tasks:
+    - Initializes a variable 'notice' to indicate whether there is a notice to be displayed.
+    - Checks if the user is logged in by inspecting the 'loggedIn' key in the session data.
+    - Retrieves the user's ID and permissions.
+    - Queries the database for the latest 3 news items.
+    - If the user has specific permissions (assumed '1' represents permission), checks for an active subscription.
+    - Renders the 'guest/index.html' template with appropriate data, including any notices and news items.
+    Returns:
+        A rendered HTML template based on the user's status (logged in or guest) and permissions.
+    """
     notice = False
     sql_data = get_cursor()
     sql_data.execute("""SELECT news_id,news,DATE_FORMAT(time,'%d %b %Y  %H:%i:%s') FROM news ORDER BY time DESC LIMIT 3;""")
     posted_news = sql_data.fetchall()
+    # Check if the user is logged in
     if 'loggedIn' in session:
         user_id = session["user_id"]
+        # Get user permissions
         permissions = check_permissions()
+        # Check if the user has specific permissions (assuming 1 represents permission)
         if permissions == 1:
             sql = """SELECT member_id FROM member WHERE user_id=%s;"""
             sql_data.execute(sql, (user_id,))
@@ -34,15 +49,17 @@ def index():
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     """
-    Handle user login:
-    1. Check if "username" and "password" POST data exist (i.e., the form has been submitted).
-    2. Create variables for the username and password for easy access.
-    3. Check if the username exists in the database.
-    4. If the username exists, validate the hashed password against the submitted password.
-    5. If passwords match, create session data for the logged-in user.
-    6. Redirect the user to the appropriate dashboard based on their role.
-    7. If the username or password is incorrect, inform the user.
-    8. If the request is a GET request or the form hasn't been submitted, show the login form.
+    Handle user login functionality.
+    This function performs the following tasks:
+    - Checks if the HTTP request is a POST request and if 'username' and 'password' were submitted in the form.
+    - Validates the user's credentials by checking if the account exists in the database.
+    - Compares the hashed password stored in the database with the provided password.
+    - If the passwords match, logs the user in by setting session variables.
+    - Redirects the user to the 'dashboard' page upon successful login.
+    - Displays an error message if the provided credentials are incorrect.
+    Returns:
+        - If a GET request, renders the login form.
+        - If a POST request, redirects to the dashboard or displays an error message on the login page.
     """
     # Check if "username" and "password" POST requests exist (user submitted form)
     msg = ""
@@ -92,6 +109,25 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
+    """
+    Render the dashboard page with various statistics and information.
+    This function performs the following tasks:
+    - Acquires a database cursor for SQL operations.
+    - Retrieves and counts various statistics from the database, including:
+      - The count of instructors
+      - The count of members
+      - The count of user accounts
+      - The count of pools
+      - The count of distinct class IDs
+      - The latest 3 news items sorted by time
+      - The class list
+      - Attendance information (complex SQL query)
+      - Visit statistics (complex SQL query)
+    - Closes the database cursor after data retrieval.
+    - Checks if the user is logged in and their role (instructor, admin, root), then renders the appropriate dashboard template.
+    Returns:
+        - Rendered HTML templates for instructor, admin, root, or redirects to the index page for non-logged-in users.
+    """
     sql_data = get_cursor()
     sql_data.execute("""SELECT COUNT(instructor_id) FROM instructor WHERE state = 1;""")
     instructor_count = sql_data.fetchall()
@@ -107,6 +143,7 @@ def dashboard():
     posted_news = sql_data.fetchall()
     sql_data.execute("""SELECT * FROM class_list;""")
     class_list = sql_data.fetchall()
+    # Complex SQL query to fetch attendance information
     sql = """SELECT a.log_id, a.attendance_date, CONCAT(m.first_name, ' ', m.last_name) AS name, cl.class_name, p.pool_name
                 FROM attendance_log AS a
                 INNER JOIN member AS m ON m.member_id = a.member_id
@@ -116,6 +153,7 @@ def dashboard():
                 ORDER BY class_name;"""
     sql_data.execute(sql)
     attendance = sql_data.fetchall()
+    # Complex SQL query to fetch visit statistics
     sql = """SELECT m.member_id, CONCAT(m.first_name, ' ', m.last_name) AS name, DATE_FORMAT(a.attendance_date, '%Y-%m') AS Month, 
                 COUNT(*) AS Monthly_Count, week(a.attendance_date, 1) AS Week, COUNT(*) AS Weekly_Count
                 FROM member AS m
@@ -153,9 +191,20 @@ def jump():
 @app.route('/logout')
 def logout():
     """
-    Handle user logout:
-    1. Remove user-specific data from the session to log the user out.
-    2. Redirect or inform the user that they have successfully logged out.
+    Handle user logout functionality.
+    This function performs the following tasks:
+    - Removes session data, effectively logging the user out by clearing session variables.
+    - Removes the following session variables:
+      - 'loggedIn': Indicates whether the user is logged in.
+      - 'user_id': Stores the user's ID.
+      - 'username': Stores the user's username.
+      - 'is_member': Indicates if the user is a member.
+      - 'is_admin': Indicates if the user is an admin.
+      - 'is_instructor': Indicates if the user is an instructor.
+      - 'is_root': Indicates if the user has root-level access.
+    - Redirects the user to the index page after logout.
+    Returns:
+        - A redirection to the index page.
     """
     # Remove session data, this will log the user out
     session.pop('loggedIn', None)
@@ -173,14 +222,21 @@ def logout():
 def register():
     """
     Handle user registration.
-    1. Setup: Establishes the /register route for GET and POST requests.
-    2. Feedback Init: Initializes an empty feedback message with msg = ''.
-    3. GET Handling: On GET, retrieves titles, cities, and citys; returns the registration form.
-    4. POST Handling: On POST, extracts and processes submitted form data.
-    5. Validation: Checks for duplicate accounts, validates email, password, username, and birthdate formats.
-    6. Data Storage: If valid, hashes password, stores user data in the database, retrieves the user's ID, and saves detailed info.
-    7. Feedback Setup: Sets a feedback message based on the registration outcome.
-    8. Response: Renders the register.html template with the feedback message.
+    This function performs the following tasks:
+    - Initializes an empty message variable 'msg'.
+    - Retrieves the current date.
+    - Processes user registration when the HTTP request method is POST.
+    - Validates the presence of required fields in the submitted form.
+    - Extracts form values for both required and optional fields.
+    - Checks if the provided email or username already exists in the database.
+    - If not, generates a password hash, inserts the user's basic and detailed information into the database,
+      and logs the user in by setting session variables.
+    - If registration is successful, redirects the user to the index page.
+    - Renders the registration form with appropriate messages and options when the HTTP request method is GET.
+    Returns:
+        - If a POST request is successful, redirects to the index page.
+        - If a POST request fails, renders the registration form with error messages.
+        - If a GET request, renders the registration form with initial options.
     """
     # Initial message to display to the user
     msg = ''
@@ -284,12 +340,12 @@ def change_password():
     return render_template('change_password.html',permissions=check_permissions(), old_password=old_password, msg=msg)
 
 
-# @app.errorhandler(Exception)
-# def handle_error(error):
-#     """
-#     Receive all unexpected errors
-#     :param error:
-#     :return: error.html
-#     """
-#     print(error)
-#     return render_template('guest/error.html', permissions=check_permissions())
+@app.errorhandler(Exception)
+def handle_error(error):
+    """
+    Receive all unexpected errors
+    :param error:
+    :return: error.html
+    """
+    print(error)
+    return render_template('guest/error.html', permissions=check_permissions())
