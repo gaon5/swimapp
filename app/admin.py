@@ -9,6 +9,19 @@ from app import app, check_permissions, get_cursor, title_list, region_list, cit
 
 @app.route('/member_list', methods=['GET', 'POST'])
 def member_list():
+    """
+    Renders the member list management page, allowing admins to view, update, and register members.
+    This function handles the following tasks:
+    - Paginates member data for easier navigation.
+    - Handles both member registration and updates.
+    - Validates user input and checks for duplicate accounts.
+    - Retrieves and displays member details.
+
+    Returns:
+        A rendered HTML template with member data, pagination, and registration/update functionality.
+    """
+
+    # Define a function to check if there are changes in member data
     def check_change(old, new):
         for i in range(len(new)):
             if old[i + 1] != new[i]:
@@ -17,6 +30,7 @@ def member_list():
 
     today = datetime.today().date()
     msg = ''
+    # Check if the user is logged in
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
@@ -24,13 +38,16 @@ def member_list():
             sql_data.execute(sql)
             member_count = sql_data.fetchall()[0][0]
             member_count = math.ceil(member_count / 10)
+            # Get the current page from the request or set it to the first page
             page = request.args.get('page')
             if not page:
                 sql_page = 0
             else:
                 page = int(page)
                 sql_page = (page - 1) * 10
+            # Handle POST requests (form submissions)
             if request.method == 'POST':
+                # Extract data from the form
                 first_name = request.form.get('first_name').capitalize()
                 last_name = request.form.get('last_name').capitalize()
                 title = int(request.form.get('title'))
@@ -44,6 +61,7 @@ def member_list():
                 health_information = request.form.get('health_information')
                 user_id = request.form.get('user_id')
                 if user_id:
+                    # If user_id is provided, update existing member information
                     sql = """SELECT m.user_id,m.first_name,m.last_name,m.title_id,u.email,m.phone_number,m.detailed_information FROM `member` AS m
                                 LEFT JOIN `user_account` AS u ON m.user_id=u.user_id
                                 WHERE m.user_id=%s;"""
@@ -51,6 +69,7 @@ def member_list():
                     sql_data.execute(sql, sql_value)
                     sql_instructor_list = sql_data.fetchall()[0]
                     new_data = (first_name, last_name, title, email, phone_number, detailed_information)
+                    # Check if there are changes in member data
                     if check_change(sql_instructor_list, new_data):
                         sql = """UPDATE `member` SET first_name=%s,last_name=%s,birth_date=%s,title_id=%s,phone_number=%s,region_id=%s,city_id=%s,street_name=%s,
                                                     detailed_information=%s, health_information=%s 
@@ -69,8 +88,10 @@ def member_list():
                     else:
                         msg = "No modification"
                 else:
+                    # Handle member registration
                     username = request.form.get('username')
                     password = request.form.get('password')
+                    # Check if an account with the same email or username already exists
                     sql_data.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username,))
                     existing_data = sql_data.fetchone()
                     if existing_data:
@@ -81,12 +102,14 @@ def member_list():
                                                     VALUES (%s, %s, %s, 1, %s )""", (username, hashed, email, today))
                         sql_data.execute('SELECT user_id from user_account WHERE username = %s', (username,))
                         user_id = sql_data.fetchone()[0]
+                        # Insert member data
                         sql = """INSERT INTO member (user_id, title_id, first_name, last_name, phone_number, 
                                     region_id, city_id, street_name, birth_date, state)
                                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 1)"""
                         value = (user_id, title, first_name, last_name, phone_number, region, city, street_name, birth_date)
                         sql_data.execute(sql, value)
                         msg = "Registration success!"
+            # Query to retrieve member data for the current page
             sql = """SELECT m.user_id,m.first_name,m.last_name,m.phone_number,t.title,u.username,u.email,m.title_id,
                         m.detailed_information,m.region_id,m.city_id,m.street_name,m.birth_date,m.health_information,m.state FROM member AS m
                         LEFT JOIN `user_account` AS u ON m.user_id=u.user_id
@@ -110,6 +133,18 @@ def member_list():
 
 @app.route('/instructor_list', methods=['GET', 'POST'])
 def instructor_list():
+    """
+    Renders the instructor list management page, allowing admins to view, update, and register instructors.
+    This function handles the following tasks:
+    - Paginates instructor data for easier navigation.
+    - Handles both instructor registration and updates.
+    - Validates user input and checks for duplicate email addresses or usernames.
+    - Retrieves and displays instructor details.
+    Returns:
+        A rendered HTML template with instructor data, pagination, and registration/update functionality.
+    """
+
+    # Define a function to check if there are changes in instructor data
     def check_change(old, new):
         for i in range(len(new)):
             if old[i + 1] != new[i]:
@@ -118,20 +153,25 @@ def instructor_list():
 
     today = datetime.today().date()
     msg = ''
+    # Check if the user is logged in
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
+            # Query to get the total count of active instructors
             sql = """SELECT count(*) FROM instructor WHERE state=1;"""
             sql_data.execute(sql)
             instructor_count = sql_data.fetchall()[0][0]
             instructor_count = math.ceil(instructor_count / 10)
+            # Get the current page from the request or set it to the first page
             page = request.args.get('page')
             if not page:
                 sql_page = 0
             else:
                 page = int(page)
                 sql_page = (page - 1) * 10
+            # Handle POST requests (form submissions)
             if request.method == 'POST':
+                # Extract data from the form
                 first_name = request.form.get('first_name').capitalize()
                 last_name = request.form.get('last_name').capitalize()
                 title = int(request.form.get('title'))
@@ -140,6 +180,7 @@ def instructor_list():
                 detailed_information = request.form.get('detailed_information')
                 user_id = request.form.get('user_id')
                 if user_id:
+                    # If user_id is provided, update existing instructor information
                     sql = """SELECT i.user_id,i.first_name,i.last_name,i.title_id,u.email,i.phone_number,i.detailed_information FROM `instructor` AS i
                                 LEFT JOIN `user_account` AS u ON i.user_id=u.user_id
                                 WHERE i.user_id=%s;"""
@@ -147,6 +188,7 @@ def instructor_list():
                     sql_data.execute(sql, sql_value)
                     sql_instructor_list = sql_data.fetchall()[0]
                     new_data = (first_name, last_name, title, email, phone_number, detailed_information)
+                    # Check if there are changes in instructor data
                     if check_change(sql_instructor_list, new_data):
                         sql = """UPDATE `instructor` SET first_name=%s,last_name=%s,title_id=%s,phone_number=%s,detailed_information=%s WHERE user_id=%s;"""
                         sql_value = (first_name, last_name, title, phone_number, detailed_information, user_id,)
@@ -163,8 +205,10 @@ def instructor_list():
                     else:
                         msg = "No modification"
                 else:
+                    # Handle instructor registration
                     username = request.form.get('username')
                     password = request.form.get('password')
+                    # Check if an account with the same email or username already exists
                     sql_data.execute('SELECT email, username FROM user_account WHERE email = %s OR username = %s', (email, username,))
                     existing_data = sql_data.fetchone()
                     if existing_data:
@@ -197,6 +241,15 @@ def instructor_list():
 
 @app.route('/delete_user', methods=['POST'])
 def delete_user():
+    """
+    Deactivates (soft deletes) a user account, either a member or an instructor, based on the provided parameters.
+    This function handles the following tasks:
+    - Checks if the user is logged in and has sufficient permissions (admin-level).
+    - Retrieves the user ID and user type (member or instructor) from the request.
+    - Updates the corresponding user's state to mark it as deactivated (soft delete).
+    Returns:
+        A redirection to the member_list or instructor_list route based on the user type.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             is_member = request.form.get('is_member')
@@ -221,8 +274,15 @@ def delete_user():
 @app.route('/admin_change_information', methods=['GET', 'POST'])
 def admin_change_information():
     """
-    The webpage used to give the admin change his own information
-    :return: change_information.html
+    Allows an admin user to update their own information.
+    This function handles the following tasks:
+    - Checks if the user is logged in and has admin-level permissions.
+    - Retrieves the admin's user ID and existing information.
+    - Processes a POST request to update the admin's information, including email.
+    - Performs checks to detect changes and update the database accordingly.
+    - Renders the 'admin/change_information.html' template with updated or existing information.
+    Returns:
+        A rendered HTML template for updating admin information.
     """
 
     def check_change(old, new):
@@ -236,6 +296,7 @@ def admin_change_information():
             user_id = session["user_id"]
             sql_data = get_cursor()
             msg = ""
+            # Handle POST request for updating admin information
             if request.method == 'POST':
                 title = int(request.form.get('title'))
                 first_name = request.form.get('first_name')
@@ -266,6 +327,7 @@ def admin_change_information():
                             sql_data.execute("UPDATE `user_account` SET email=%s WHERE user_id=%s;", (email, user_id,))
                 else:
                     msg = "No modification"
+            # Query to retrieve the admin's information
             sql = """SELECT a.user_id,a.title_id,a.first_name,a.last_name,a.phone_number,u.email FROM `admin` AS a
                         LEFT JOIN `user_account` AS u ON a.user_id=u.user_id
                         WHERE a.user_id=%s;"""
@@ -283,6 +345,20 @@ def admin_change_information():
 
 @app.route('/admin_timetable', methods=['GET', 'POST'])
 def admin_timetable():
+    """
+    Display and manage the admin's class timetable.
+    This function handles the following tasks:
+    - Checks if the user is logged in with admin-level permissions.
+    - Retrieves the admin's user ID and the current date.
+    - Processes a POST request to change the selected date (if applicable).
+    - Generates a weekly timetable view starting from the current date.
+    - Queries the database to retrieve class details within the selected week.
+    - Retrieves pool information, instructor details, and member counts for classes.
+    - Renders the 'admin/timetable.html' template with timetable data.
+    Returns:
+        A rendered HTML template displaying the admin's class timetable.
+    """
+    # Check if the user is logged in with admin-level permissions
     if 'loggedIn' in session:
         if check_permissions() > 2:
             user_id = session["user_id"]
@@ -301,9 +377,11 @@ def admin_timetable():
             else:
                 before_day = 9
                 before_time = 30
+            # Calculate the start of the week based on the selected date
             start_of_week = today - timedelta(days=today.weekday())
             week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             week_list = [["", "", "Time/Day"]]
+            # Generate the weekly timetable view
             for i in range(7):
                 x = (start_of_week + timedelta(days=i)).strftime('%d %b %Y')
                 temp_list = [(start_of_week + timedelta(days=i)).strftime('%Y-%m-%d'), week[i], str(x)]
@@ -333,6 +411,7 @@ def admin_timetable():
             sql_instructor_list = sql_data.fetchall()
             for i in range(1, len(week_list), 1):
                 week_list[i][0] = week_list[i][0][5:]
+            # Prepare class details for rendering in the timetable
             all_details = []
             for item in all_details_sql:
                 time = int(((item[10].total_seconds() / 3600) - 5) * 2)
@@ -350,6 +429,7 @@ def admin_timetable():
                     "instructor_name": item[6],
                     "instructor_phone": item[7]
                 })
+            # Organize data into dictionaries for easy access
             all_details = {item['id']: item for item in all_details}
             for i in range(len(member_count)):
                 member_count[i] = list(member_count[i])
@@ -364,6 +444,18 @@ def admin_timetable():
 
 @app.route('/admin_add_class', methods=['POST'])
 def admin_add_class():
+    """
+    Handle the addition of a new class by an admin.
+    This function handles the following tasks:
+    - Checks if the user is logged in with admin-level permissions.
+    - Parses and validates the form input for class date and time.
+    - Constructs a complete datetime object from the input.
+    - Queries the database to retrieve available instructors for the specified date and time.
+    - Retrieves class and pool information from the database.
+    - Renders the 'admin/add_class.html' template with instructor, class, and pool options.
+    Returns:
+        A rendered HTML template for adding a new class.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             form_date = request.form.get('send_day')
@@ -376,6 +468,7 @@ def admin_add_class():
             start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
             end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
             sql_data = get_cursor()
+            # Query to retrieve available instructors for the specified date and time
             sql = """SELECT DISTINCT i.user_id, i.first_name, i.last_name, t.title
                         FROM instructor AS i
                         LEFT JOIN available_time AS a ON i.user_id = a.user_id
@@ -401,6 +494,7 @@ def admin_add_class():
             print(sql % value)
             sql_data.execute(sql, value)
             sql_instructor_list = sql_data.fetchall()
+            # Retrieve class and pool information from the database
             sql_data.execute("SELECT * FROM class_list;")
             class_list = sql_data.fetchall()
             sql_data.execute("""SELECT * FROM pool;""")
@@ -415,9 +509,23 @@ def admin_add_class():
 
 @app.route('/admin_edit_class', methods=['GET', 'POST'])
 def admin_edit_class():
+    """
+    Handle the editing of a class by an admin.
+    This function handles the following tasks:
+    - Checks if the user is logged in with admin-level permissions.
+    - If the request is GET, retrieves class details for editing.
+    - Parses and validates form input for class date and time.
+    - Constructs a complete datetime object from the input.
+    - Queries the database to retrieve available instructors for the specified date and time.
+    - Retrieves class and pool information from the database.
+    - If the request is POST, updates or inserts a new class entry in the database.
+    Returns:
+        A rendered HTML template for editing a class or redirects to the admin timetable page.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             if request.method == 'GET':
+                # Handle GET request to retrieve class details for editing
                 class_id = request.args.get('class_id')
                 if not class_id:
                     return redirect(url_for('admin_timetable'))
@@ -448,6 +556,7 @@ def admin_edit_class():
                 return render_template('admin/add_class.html', instructor_list=sql_instructor_list, class_list=class_list, pool_list=pool_list,
                                        class_detail=class_detail, permissions=check_permissions(), edit=1)
             else:
+                # Handle POST request to update or insert a new class entry in the database
                 form_date = request.form.get('send_day')
                 form_time = request.form.get('send_time')
                 class_id = request.form.get('class_id')
@@ -460,6 +569,7 @@ def admin_edit_class():
                     start_time = parsed_time.replace(second=0).strftime('%H:%M:%S')
                     end_time = datetime.combine(datetime.min, parsed_time) + timedelta(minutes=30)
                     sql_data = get_cursor()
+                    # Query to retrieve available instructors for the specified date and time
                     sql = """SELECT i.user_id, i.first_name, i.last_name, t.title
                                             FROM instructor AS i
                                             LEFT JOIN available_time AS a ON i.user_id = a.user_id
@@ -492,6 +602,7 @@ def admin_edit_class():
                     return render_template('admin/add_class.html', instructor_list=sql_instructor_list, class_list=class_list, pool_list=pool_list,
                                            time=str(start_time), date=complete_date_string, permissions=check_permissions(), edit=1, class_id=class_id)
                 else:
+                    # Handle form submission to update or insert class details
                     available_date = request.form.get('available_date')
                     start_hour = request.form.get('start_hour')
                     start_minute = request.form.get('start_minute')
@@ -512,6 +623,7 @@ def admin_edit_class():
                     sql_data.execute("""SELECT instructor_id,user_id FROM instructor WHERE user_id=%s""", (instructor,))
                     instructor_id = sql_data.fetchall()[0][0]
                     if class_id:
+                        # Update existing class entry in the database
                         sql = """UPDATE book_class_list SET instructor_id=%s,pool_id=%s,class_id=%s,class_date=%s,start_time=%s,end_time=%s,detailed_information=%s WHERE book_class_id=%s;"""
                         value = (instructor_id, pool, class_name, available_date, start_time, str(end_time)[-8:], detailed_information, int(class_id))
                     else:
@@ -529,6 +641,13 @@ def admin_edit_class():
 
 @app.route('/admin_delete_class', methods=['POST'])
 def admin_delete_class():
+    """
+    Handle the deletion of a class by an admin.
+    This function checks if the user is logged in with admin-level permissions,
+    and if so, deletes the specified class entry from the database.
+    Returns:
+        Redirects to the admin timetable page after deletion.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             class_id = request.form.get('class_id')
@@ -544,9 +663,17 @@ def admin_delete_class():
 
 @app.route('/view_payments', methods=['GET'])
 def view_payments():
+    """
+    Display payment details for admin view.
+    This function checks if the user is logged in with admin-level permissions
+    and retrieves payment details from the database for display.
+    Returns:
+        A rendered HTML template displaying payment details.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             cursor = get_cursor()
+            # Query the database for payment details
             sql = """SELECT p.payment_id,DATE_FORMAT(p.payment_date,'%d %b %Y'),p.price,p.payment_type,p.payment_method,ua.username FROM payment_list p
                         LEFT JOIN member m on p.member_id = m.member_id
                         LEFT JOIN user_account ua on m.user_id = ua.user_id
@@ -563,6 +690,13 @@ def view_payments():
 
 @app.route('/subscriptions_due_date')
 def subscriptions_due_date():
+    """
+    Display lists of members with subscriptions due, about to due, and active subscriptions.
+    This function checks if the user is logged in with admin-level permissions
+    and retrieves member subscription details from the database for display.
+    Returns:
+        A rendered HTML template displaying subscription details.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             msg = ''
@@ -613,9 +747,17 @@ def subscriptions_due_date():
 
 @app.route('/admin_delete_member', methods=['POST'])
 def admin_delete_member():
+    """
+    Handle the deletion of a member by an admin.
+    This function checks if the user is logged in with admin-level permissions
+    and deletes the specified member's entry from the database.
+    Returns:
+        A rendered HTML template indicating successful deletion.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             member_id = request.form['member_id']
+            # Query the database to update the member's state to '0' (inactive)
             sql_data = get_cursor()
             sql = """UPDATE member SET state=0 Where member_id=%s"""
             value = (member_id,)
@@ -631,6 +773,13 @@ def admin_delete_member():
 
 @app.route('/add_news', methods=['POST'])
 def add_news():
+    """
+    Add news to the system.
+    This function checks if the user is logged in with admin-level permissions
+    and inserts news with the current timestamp into the database.
+    Returns:
+        Redirects to the dashboard after adding news.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             now = datetime.now()
@@ -646,6 +795,15 @@ def add_news():
 
 @app.route('/delete_news', methods=['POST'])
 def delete_news():
+    """
+    Delete news by its ID.
+    This function checks if the user is logged in with admin-level permissions
+    and deletes a specific news item from the database.
+    Args:
+        news_id (int): The ID of the news item to delete.
+    Returns:
+        Redirects to the dashboard after deleting the news item.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             news_id = request.form['news_id']
@@ -661,12 +819,20 @@ def delete_news():
 
 @app.route('/attendance_report', methods=['GET','POST'])
 def attendance_report():
+    """
+    Generate an attendance report for classes.
+    This function checks if the user is logged in with admin-level permissions
+    and retrieves attendance data for classes from the database.
+    Returns:
+        A rendered HTML template displaying the attendance report.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
             total = 0
             total_list = [0, 0, 0]
             today = datetime.today().date()
+            # Query the database to retrieve class attendance data
             sql = """SELECT log_id, attendance_date, is_individual FROM attendance_log
                             LEFT JOIN book_class_list ON book_class_list.book_class_id = attendance_log.class_id
                             WHERE attendance_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND attendance_date <= %s;"""
@@ -716,6 +882,14 @@ def attendance_report():
 
 @app.route('/admin_financial_report', methods=['GET','POST'])
 def admin_financial_report():
+    """
+    Generate financial reports based on user selection.
+    This function checks if the user is logged in with admin-level permissions
+    and generates financial reports based on user selections, including monthly,
+    yearly, and last 30 days reports.
+    Returns:
+        A rendered HTML template displaying the financial report.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
@@ -825,6 +999,14 @@ def admin_financial_report():
 
 @app.route('/admin_popularity_report')
 def admin_popularity_report():
+    """
+    Generate a popularity report for classes based on bookings and attendance.
+    This function checks if the user is logged in with admin-level permissions
+    and generates a popularity report for classes within the last 30 days. The report
+    includes class details, the number of bookings, and the number of attendances.
+    Returns:
+        A rendered HTML template displaying the popularity report.
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             today = date.today()
@@ -835,7 +1017,7 @@ def admin_popularity_report():
             attendance_numbers = []
             attendance_total = 0
             sql_data = get_cursor()
-            # Fetch a list of class details
+            # Fetch a list of class details within the last 30 days
             sql_data.execute("""SELECT book_class_id, class_name FROM book_class_list 
                                 INNER JOIN class_list ON class_list.class_id = book_class_list.class_id
                                 WHERE (is_individual) = 0 AND (class_date >= DATE_SUB(%s, INTERVAL 30 DAY) AND class_date <= %s);
@@ -881,6 +1063,9 @@ def admin_popularity_report():
 
 @app.route('/edit_pool', methods=['GET', 'POST'])
 def edit_pool():
+    """
+    Add swimming pool
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
@@ -902,6 +1087,9 @@ def edit_pool():
 
 @app.route('/edit_classes', methods=['GET', 'POST'])
 def edit_classes():
+    """
+    Add class
+    """
     if 'loggedIn' in session:
         if check_permissions() > 2:
             sql_data = get_cursor()
