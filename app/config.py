@@ -4,8 +4,14 @@
 # dbname = "azure_swim_db"
 # dbuser = "swimadmin"
 
-dbpass = "12345678"
-dbhost = "127.0.0.1"
+# dbpass = "12345678"
+# dbhost = "127.0.0.1"
+# dbport = "3306"
+# dbname = "new_swim"
+# dbuser = "root"
+
+dbpass = "12345678Or931527@#$%"
+dbhost = "ngao5.mysql.pythonanywhere-services.com"
 dbport = "3306"
-dbname = "new_swim"
-dbuser = "root"
+dbname = "ngao5$swimapp_db"
+dbuser = "ngao5"
