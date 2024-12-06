@@ -10,7 +10,7 @@
 # dbname = "new_swim"
 # dbuser = "root"
 
-dbpass = "12345678Or931527@#$%"
+dbpass = "Or931527@#$%"
 dbhost = "ngao5.mysql.pythonanywhere-services.com"
 dbport = "3306"
 dbname = "ngao5$swimapp_db"
