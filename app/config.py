@@ -1,5 +1,11 @@
-dbpass = "SSsnjHpPjbLWK5c2"
+# dbpass = "Or931527@#$%"
+# dbhost = "new-swim-db.mysql.database.azure.com"
+# dbport = "3306"
+# dbname = "azure_swim_db"
+# dbuser = "swimadmin"
+
+dbpass = "12345678"
 dbhost = "127.0.0.1"
 dbport = "3306"
 dbname = "new_swim"
-dbuser = "new_swim"
+dbuser = "root"
